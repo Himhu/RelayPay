@@ -2,7 +2,8 @@
 
 
 namespace app\index\controller;
-use think\facade\Config;
+use think\facade\Cache;
+use think\facade\Cookie;
 use think\facade\Db;
 use think\facade\Session;
 use app\common\service\YpayUser as S;
@@ -11,77 +12,189 @@ use think\facade\Request;
 
 class Index extends \app\BaseController
 {
+    private const HOME_CACHE_TTL = 60;
+
     protected $middleware = ['Domain','Mtce'];
     
     public function index()
     {
-        $config = getConfig();//获取系统配置参数
+        $config = getConfig();
 
-        if($config['is_aff']){
-            $aff = Request::param('aff');
-            if(!empty($aff)){
-              Session::set('aff_id',$aff);
-            }
-        }
-        if(!$config['is_weboff'])
-        {
+        $this->rememberAffiliate($config);
+
+        if (empty($config['is_weboff'])) {
             return redirect(Request::root().'/User/Login');
-        }else if($config['is_weboff'] == 2){
-            if (filter_var($config['home_url'], FILTER_VALIDATE_URL)) {
-                            return '<html><frameset framespacing="0" border="0" rows="0" frameborder="0">
-        <frame name="main" src="'. $config['home_url'] .'" scrolling="auto" noresize>
-    </frameset></html>';
-            } else {
-               return redirect(Request::root().'/User/Login');
-            }
-
         }
-        $list = Db::table('ypay_navs')->where('status', 1)->order('sort','asc')->select();
-        $news1 = Db::name('ypay_news')->where('type',1)->where('status',1)->order('id desc')->paginate(5);
-        $news2 = Db::name('ypay_news')->where('type',2)->where('status',1)->order('id desc')->paginate(5);
-        $news3 = Db::name('ypay_news')->where('type',3)->where('status',1)->order('id desc')->paginate(5);
-        $is_login = 0;
-        if (S::isLogin()){
-            $is_login = 1;
-        }
-        $homeTemp = $config['home_temp'];
 
-        //首页信息数组
+        if ((int) $config['is_weboff'] === 2) {
+            return $this->renderExternalHome($config['home_url'] ?? '');
+        }
+
+        $homeTemp = $this->resolveHomeTheme($config['home_temp'] ?? '');
+        if ($homeTemp === '') {
+            View::assign('error_tips', '请先配置首页界面');
+            View::assign('error_url', '/');
+            return $this->fetch('error/errorPage');
+        }
+
+        $showNotice = (int) ($config['is_notice'] ?? 0) === 1;
+        $homeData = $this->getHomeData($showNotice);
         $index_array = [
-            'news1'  => $news1, //公告一
-            'news2' => $news2, //公告二
-            'news3' => $news3,//公告三
-            'nav' => $list, //顶部导航
-            'is_login' => $is_login, //判断是否登录
+            'news1' => $homeData['news'][1] ?? [],
+            'news2' => $homeData['news'][2] ?? [],
+            'news3' => $homeData['news'][3] ?? [],
+            'nav' => $homeData['nav'],
+            'is_login' => $this->isFrontLogin() ? 1 : 0,
         ];
 
-        // 获取 public/pay 目录的绝对路径（确保路径正确性）
+        View::assign([
+            'config' => $config,
+            'index_array' => $index_array,
+            'resource' => $homeTemp,
+            'year' => date('Y'),
+            'ver' => env('YuanVer'),
+        ]);
+
+        View::config(['view_path' => app()->getRootPath() . 'public/web/home/'.$homeTemp]);
+        return $this->fetch('/index.html');
+    }
+
+    private function rememberAffiliate(array $config): void
+    {
+        if (empty($config['is_aff'])) {
+            return;
+        }
+
+        $aff = (string) Request::param('aff', '');
+        if ($aff !== '' && ctype_digit($aff)) {
+            Session::set('aff_id', (int) $aff);
+        }
+    }
+
+    private function renderExternalHome(string $url)
+    {
+        $scheme = parse_url($url, PHP_URL_SCHEME);
+        if (!filter_var($url, FILTER_VALIDATE_URL) || !in_array($scheme, ['http', 'https'], true)) {
+            return redirect(Request::root().'/User/Login');
+        }
+
+        $safeUrl = htmlspecialchars($url, ENT_QUOTES, 'UTF-8');
+        return '<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0"><iframe src="'.$safeUrl.'" title="home" style="display:block;width:100vw;height:100vh;border:0"></iframe></body></html>';
+    }
+
+    private function resolveHomeTheme(string $theme): string
+    {
         $homeDir = app()->getRootPath() . 'public/web/home/';
+        $theme = $this->sanitizeTheme($theme);
 
-        // 构建完整模板路径
-        $templatePath = $homeDir . '/' . $homeTemp;
+        if ($theme !== '' && $this->themeExists($homeDir, $theme)) {
+            return $theme;
+        }
 
-        // 有效性验证（目录存在且包含index.html文件）
-        if (!is_dir($templatePath) || !file_exists($templatePath . '/index.html')) {
-            // 尝试获取第一个有效主题
-            if (!empty(S::getHomeTheme()['data'])) {
-                $homeTemp = S::getHomeTheme()['data'][0]['id'];
-            }
-            // 完全无可用模板的兜底处理
-            else {
-                // 跳转到指定的错误页面
-                View::assign('error_tips', "请先配置首页界面");
-                View::assign('error_url','/');
-                return $this->fetch('error/errorPage');
+        $themes = S::getHomeTheme();
+        foreach (($themes['data'] ?? []) as $item) {
+            $fallback = $this->sanitizeTheme((string) ($item['id'] ?? ''));
+            if ($fallback !== '' && $this->themeExists($homeDir, $fallback)) {
+                return $fallback;
             }
         }
 
-        View::assign([
-            'index_array' =>$index_array,
-            'resource' => $homeTemp
-        ]);
-        View::config(['view_path' => app()->getRootPath() . 'public/web/home/'.$homeTemp]);
-        return $this->fetch('/index.html',$this->getSystem());
+        return '';
     }
-    
+
+    private function sanitizeTheme(string $theme): string
+    {
+        $theme = trim($theme);
+        return preg_match('/^[A-Za-z0-9_-]+$/', $theme) ? $theme : '';
+    }
+
+    private function themeExists(string $homeDir, string $theme): bool
+    {
+        $templatePath = $homeDir . $theme;
+        return is_dir($templatePath) && is_file($templatePath . '/index.html');
+    }
+
+    private function getHomeData(bool $showNotice): array
+    {
+        $cacheKey = 'index_home_' . ($showNotice ? 'notice' : 'base');
+        $cached = Cache::get($cacheKey);
+        if (is_array($cached)) {
+            return $cached;
+        }
+
+        $data = [
+            'nav' => $this->getHomeNav(),
+            'news' => [
+                1 => [],
+                2 => [],
+                3 => [],
+            ],
+        ];
+
+        if ($showNotice) {
+            foreach ([1, 2, 3] as $type) {
+                $data['news'][$type] = $this->getHomeNews($type);
+            }
+        }
+
+        Cache::set($cacheKey, $data, self::HOME_CACHE_TTL);
+        return $data;
+    }
+
+    private function getHomeNav(): array
+    {
+        $items = Db::name('ypay_navs')
+            ->field('id,name,url,is_target,sort')
+            ->where('status', 1)
+            ->order('sort', 'asc')
+            ->select()
+            ->toArray();
+
+        foreach ($items as &$item) {
+            $item['url'] = $this->safePublicUrl((string) ($item['url'] ?? ''));
+            $item['is_target'] = (int) ($item['is_target'] ?? 0);
+        }
+        unset($item);
+
+        return $items;
+    }
+
+    private function getHomeNews(int $type): array
+    {
+        return Db::name('ypay_news')
+            ->field('id,title,create_time,type')
+            ->where('type', $type)
+            ->where('status', 1)
+            ->order('id', 'desc')
+            ->limit(5)
+            ->select()
+            ->toArray();
+    }
+
+    private function safePublicUrl(string $url): string
+    {
+        $url = trim($url);
+        if ($url === '') {
+            return '#';
+        }
+
+        if (preg_match('/^(https?:)?\/\//i', $url)) {
+            return $url;
+        }
+
+        if ($url[0] === '/') {
+            return $url;
+        }
+
+        if (preg_match('/^[A-Za-z0-9_\-.\/]+(?:\?.*)?$/', $url)) {
+            return '/' . ltrim($url, '/');
+        }
+
+        return '#';
+    }
+
+    private function isFrontLogin(): bool
+    {
+        return Cookie::has('front_token') && S::isLogin();
+    }
 }

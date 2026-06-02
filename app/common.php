@@ -57,12 +57,24 @@ if (!function_exists('opt_photo'))
 
 
 if (!function_exists('getConfig')) {
-    function getConfig()
+    function getConfig(bool $refresh = false): array
     {
-        $config = function_exists('mysql_get_server_info') ? mysql_get_server_info() : \think\facade\Db::table('admin_config')->select()->toArray();
-        foreach ($config as $key => $value) {
+        static $data = null;
+
+        if (!$refresh && is_array($data)) {
+            return $data;
+        }
+
+        $config = \think\facade\Db::table('admin_config')
+            ->field('config_name,config_value')
+            ->select()
+            ->toArray();
+
+        $data = [];
+        foreach ($config as $value) {
             $data[$value['config_name']] = $value['config_value'];
         }
+
         return $data;
     }
 }
