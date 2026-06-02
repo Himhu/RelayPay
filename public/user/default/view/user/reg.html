@@ -1,145 +1,377 @@
-{include file="public/header" title="注册"/}
-<style>
-    /*屏幕小于750px时*/
-	@media only screen and (max-width: 750px){
-		.layui-layer-page{
-	        width: 50%;
-	        margin: 0 auto;
-	    }
-	}
-</style>
-              <form id="formAuthentication" class="mb-3">
-                <div class="mb-3">
-                  <label for="username" class="form-label">账 号</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    name="username"
-                    placeholder="请输入您的账户(英文|数字)"
-                    autofocus
-                  />
-                </div>
-                <div class="mb-3 form-password-toggle">
-                  <label class="form-label" for="password">密 码</label>
-                  <div class="input-group input-group-merge">
-                    <input
-                      type="password"
-                      class="form-control"
-                      name="password"
-                      placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
-                      aria-describedby="password"
-                    />
-                    <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
-                  </div>
-                </div>
-                <div class="mb-3 form-password-toggle">
-                  <label class="form-label" for="password">确 认 密 码</label>
-                  <div class="input-group input-group-merge">
-                    <input
-                      type="password"
-                      class="form-control"
-                      name="password2"
-                      placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
-                      aria-describedby="password"
-                    />
-                    <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
-                  </div>
-                </div>
-                <div class="mb-3">
-                  <label for="email" class="form-label">邮 箱</label>
-                  <input type="text" class="form-control" id="email" name="email" placeholder="请输入您的邮箱" />
-                </div>
-                
-                <!--引入注册公共部分开始-->
-                {include file="public/regVerification"/}
-                <!--引入注册公共部分结束-->
-                
-                <!--引入验证开始-->
-                {include file="public/verification"/}
-                <!--引入验证结束-->
-                <div class="mb-3">
-                  <div class="form-check">
-                    <input class="form-check-input" type="checkbox" checked name="terms" />
-                    <label class="form-check-label" for="terms-conditions">
-                      我 同 意
-                      <a href="javascript:void(0);" lay-on="user_agreement">用户协议</a> & <a href="javascript:void(0);" lay-on="privacy">隐私政策</a>
-                    </label>
-                  </div>
-                </div>
-                <button class="btn btn-primary d-grid w-100">立 即 注 册</button>
-              </form>
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>注册 - {:htmlspecialchars((string)($config['sitename'] ?? 'RelayPay'), ENT_QUOTES, 'UTF-8')}</title>
+    <meta name="description" content="商户注册">
+    <link rel="icon" href="{:htmlspecialchars((string)($config['favicon'] ?? '/favicon.ico'), ENT_QUOTES, 'UTF-8')}">
+    <link rel="stylesheet" href="/web/home/common/css/home-lite.css">
+    {if condition="$config['captcha-type'] == '2'"}
+      <script src="https://ssl.captcha.qq.com/TCaptcha.js"></script>
+    {elseif condition="$config['captcha-type'] == '3' "}
+      <script src="https://static.geetest.com/v4/gt4.js"></script>
+    {/if}
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="shell header-inner">
+        <a class="brand" href="/" aria-label="返回首页">
+          <span>{:htmlspecialchars((string)($config['sitename'] ?? 'RelayPay'), ENT_QUOTES, 'UTF-8')}</span>
+        </a>
+        <nav class="nav-list" aria-label="主导航">
+          <a href="/">首页</a>
+          <a href="/doc">开发文档</a>
+          <a href="/demo">支付测试</a>
+        </nav>
+        <div class="header-actions">
+          <a class="btn ghost" href="/User/Login">登录</a>
+          <a class="btn primary" href="/User/Reg">注册</a>
+        </div>
+      </div>
+    </header>
 
-              <p class="text-center">
-                <span>已 经 有 账 号 了?</span>
-                <a href="/User/Login">
-                  <span>立 即 登 录</span>
-                </a>
-              </p>
-    <!-- / Content -->
-{include file="public/footer" functons="Reg"/}
+    <main class="auth-page">
+      <section class="shell auth-grid">
+        <div class="auth-copy">
+          <p class="eyebrow">商户入驻</p>
+          <h1>创建商户账户</h1>
+          <p>注册后可进入后台配置通道账户、获取商户接口参数，并进行下单、查询和回调测试。</p>
+          <div class="auth-notes" aria-label="注册后可继续配置的内容">
+            <h2>注册后继续配置</h2>
+            <ul>
+              <li>完善商户资料并保存接口密钥</li>
+              <li>新增收款通道账户和二维码信息</li>
+              <li>按照文档完成 API 下单和通知回调联调</li>
+            </ul>
+          </div>
+        </div>
 
-<script>
-    layui.use(function() {
-    	var layer = layui.layer;
-        var util = layui.util;
-        var width,height;
-        var userAgentInfo = navigator.userAgent;
+        <section class="auth-card" aria-label="注册表单">
+          <div class="auth-card-head">
+            <p class="eyebrow">创建账户</p>
+            <h2>商户注册</h2>
+            <p>填写基础资料，按系统配置完成验证码或付费注册流程。</p>
+          </div>
 
-        var mobileAgents = [ "Android", "iPhone", "SymbianOS", "Windows Phone", "iPad","iPod"];
+          <div class="auth-message" id="authMessage" hidden></div>
 
-        var mobile_flag = false;
+          <form id="formAuthentication" class="auth-form" autocomplete="on">
+            <label class="field">
+              <span>账号</span>
+              <input type="text" name="username" autocomplete="username" placeholder="请输入账号" required autofocus>
+            </label>
 
-        //根据userAgent判断是否是手机
-        for (var v = 0; v < mobileAgents.length; v++) {
-            if (userAgentInfo.indexOf(mobileAgents[v]) > 0) {
-                mobile_flag = true;
-                break;
-            }
+            <label class="field">
+              <span>密码</span>
+              <div class="password-field">
+                <input type="password" name="password" id="password" autocomplete="new-password" placeholder="请输入密码" required>
+                <button type="button" data-password-toggle data-target="password" aria-label="显示或隐藏密码">显示</button>
+              </div>
+            </label>
+
+            <label class="field">
+              <span>确认密码</span>
+              <div class="password-field">
+                <input type="password" name="password2" id="password2" autocomplete="new-password" placeholder="请再次输入密码" required>
+                <button type="button" data-password-toggle data-target="password2" aria-label="显示或隐藏密码">显示</button>
+              </div>
+            </label>
+
+            <label class="field">
+              <span>邮箱</span>
+              <input type="email" name="email" id="email" autocomplete="email" placeholder="请输入邮箱" required>
+            </label>
+
+            {if condition="$config['regcode-type']== '1'"}
+              <label class="field">
+                <span>手机号</span>
+                <input type="tel" name="mobile" id="mobile" inputmode="tel" autocomplete="tel" placeholder="请输入手机号" required>
+              </label>
+              <label class="field">
+                <span>短信验证码</span>
+                <div class="code-field">
+                  <input type="text" name="captcha" id="numeral-mask" inputmode="numeric" placeholder="请输入短信验证码" required>
+                  <button class="btn ghost" type="button" id="send-code">发送验证码</button>
+                </div>
+              </label>
+            {/if}
+
+            {if condition="$config['regcode-type'] == '2'"}
+              <label class="field">
+                <span>邮箱验证码</span>
+                <div class="code-field">
+                  <input type="text" name="captcha" id="numeral-mask" inputmode="numeric" placeholder="请输入邮箱验证码" required>
+                  <button class="btn ghost" type="button" id="send-code">发送验证码</button>
+                </div>
+              </label>
+            {/if}
+
+            {if condition="$config['captcha-type'] == '1'"}
+              <label class="field">
+                <span>验证码</span>
+                <div class="captcha-field">
+                  <input type="text" name="ordinary_captcha" placeholder="请输入验证码" required>
+                  <img id="codeimg" class="login-captcha" alt="验证码">
+                </div>
+              </label>
+            {elseif condition="$config['captcha-type'] == '2'"}
+              <button type="button" class="btn ghost auth-wide" id="TencentCaptcha" data-appid="{:htmlspecialchars((string)($config['tencent_CaptchaAppId'] ?? ''), ENT_QUOTES, 'UTF-8')}">点击完成安全验证</button>
+            {elseif condition="$config['captcha-type'] == '3' "}
+              <div id="geetest_captcha" class="geetest-box"></div>
+            {/if}
+
+            <label class="check-field">
+              <input name="terms" type="checkbox" checked required>
+              <span>我同意 <button type="button" class="text-button" data-dialog="agreement">用户协议</button> 和 <button type="button" class="text-button" data-dialog="privacy">隐私政策</button></span>
+            </label>
+
+            <button class="btn primary auth-submit" type="submit">立即注册</button>
+          </form>
+
+          <p class="auth-bottom">
+            已有账号？<a href="/User/Login">立即登录</a>
+          </p>
+        </section>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="shell footer-inner">
+        <span>© {:date('Y')} {:htmlspecialchars((string)($config['sitename'] ?? ''), ENT_QUOTES, 'UTF-8')}</span>
+        {if condition="!empty($config['icp'])"}
+          <a href="https://beian.miit.gov.cn" target="_blank" rel="noreferrer nofollow">{:htmlspecialchars((string)$config['icp'], ENT_QUOTES, 'UTF-8')}</a>
+        {/if}
+      </div>
+    </footer>
+
+    <div class="policy-dialog" id="agreementDialog" hidden>
+      <div class="policy-panel">
+        <h2>用户协议</h2>
+        <div>{:nl2br(htmlspecialchars((string)($config['user_agreement'] ?? ''), ENT_QUOTES, 'UTF-8'))}</div>
+        <button type="button" class="btn primary" data-close-dialog>知道了</button>
+      </div>
+    </div>
+
+    <div class="policy-dialog" id="privacyDialog" hidden>
+      <div class="policy-panel">
+        <h2>隐私政策</h2>
+        <div>{:nl2br(htmlspecialchars((string)($config['privacy'] ?? ''), ENT_QUOTES, 'UTF-8'))}</div>
+        <button type="button" class="btn primary" data-close-dialog>知道了</button>
+      </div>
+    </div>
+
+    {if condition="($config['reg_popup'] != null || $config['reg_popup'] != '') && $pop =='yes'"}
+      <div class="policy-dialog" id="regPopup">
+        <div class="policy-panel">
+          <h2>注册须知</h2>
+          <div>{:nl2br(htmlspecialchars((string)$config['reg_popup'], ENT_QUOTES, 'UTF-8'))}</div>
+          <button type="button" class="btn primary" data-close-dialog>知道了</button>
+        </div>
+      </div>
+    {/if}
+
+    <script>
+      (function () {
+        var form = document.getElementById('formAuthentication');
+        var message = document.getElementById('authMessage');
+        var captchaImg = document.getElementById('codeimg');
+        var sendCode = document.getElementById('send-code');
+        var tencentButton = document.getElementById('TencentCaptcha');
+
+        function showMessage(text, type) {
+          if (!message) return;
+          message.textContent = text || '';
+          message.className = 'auth-message ' + (type === 'success' ? 'success' : 'error');
+          message.hidden = !text;
         }
 
-        var screen_width = window.screen.width;
-        var screen_height = window.screen.height;    
+        function refreshCaptcha() {
+          if (captchaImg) {
+            captchaImg.src = '/User/Verify?t=' + Date.now();
+          }
+        }
 
-        //根据屏幕分辨率判断是否是手机
-        if(screen_width < 500 && screen_height < 800){
-            mobile_flag = true;
-        }
-        
-        //true 为 手机 false 为 PC
-        if(mobile_flag){
-            width = '90%';
-            height = '60%';
-        }else{
-            width = '600px';
-            height = '700px';
-        }
-        
-        //点击展开用户协议
-        util.on('lay-on', {
-            user_agreement: function(){
-                layer.open({
-                    type: 1, // page 层类型
-                    area: [width, height],
-                    title: '用户协议',
-                    shade: 0.6, // 遮罩透明度
-                    shadeClose: true, // 点击遮罩区域，关闭弹层
-                    maxmin: true, // 允许全屏最小化
-                    anim: 0, // 0-6 的动画形式，-1 不开启
-                    content: `<div style="padding: 32px;">{:getConfig()['user_agreement']}</div>`
-                });
+        function postForm(url, data) {
+          return fetch(url, {
+            method: 'POST',
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest',
+              'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
             },
-            privacy: function(){
-                layer.open({
-                    type: 1, // page 层类型
-                    area: [width, height],
-                    title: '隐私政策',
-                    shade: 0.6, // 遮罩透明度
-                    shadeClose: true, // 点击遮罩区域，关闭弹层
-                    maxmin: true, // 允许全屏最小化
-                    anim: 0, // 0-6 的动画形式，-1 不开启
-                    content: `<div style="padding: 32px;">{:getConfig()['privacy']}</div>`
-                });
+            body: new URLSearchParams(data).toString()
+          }).then(function (response) {
+            if (!response.ok) {
+              throw new Error('请求失败');
             }
+            return response.json();
+          });
+        }
+
+        function setLoading(loading) {
+          var submit = form ? form.querySelector('.auth-submit') : null;
+          if (!submit) return;
+          submit.disabled = loading;
+          submit.textContent = loading ? '注册中...' : '立即注册';
+        }
+
+        function showPayment(res) {
+          var names = (res.paytype || []).map(function (item) {
+            return '<button type="button" class="btn ghost" data-pay="' + String(item.name).replace(/[^a-z0-9_]/gi, '') + '">' + String(item.showname || item.name) + '</button>';
+          }).join('');
+
+          var dialog = document.createElement('div');
+          dialog.className = 'policy-dialog';
+          dialog.innerHTML = '<div class="policy-panel"><h2>支付确认</h2><p>需支付：￥' + (res.need || '0.00') + '</p><div class="payment-list">' + names + '</div></div>';
+          document.body.appendChild(dialog);
+          dialog.addEventListener('click', function (event) {
+            var target = event.target.closest('[data-pay]');
+            if (!target) return;
+            location.href = '/Pay/Reg?typeid=' + encodeURIComponent(target.getAttribute('data-pay')) + '&trade_no=' + encodeURIComponent(res.trade_no || '');
+          });
+        }
+
+        function handleRegister(data) {
+          setLoading(true);
+          postForm('/User/Reg', data)
+            .then(function (res) {
+              if (res.code === 200) {
+                showMessage(res.msg || '注册成功', 'success');
+                window.setTimeout(function () {
+                  location.replace('/User/Login');
+                }, 800);
+                return;
+              }
+
+              if (res.code === 888) {
+                showPayment(res);
+                return;
+              }
+
+              showMessage(res.msg || '注册失败', 'error');
+              refreshCaptcha();
+            })
+            .catch(function () {
+              showMessage('请求失败，请检查网络', 'error');
+              refreshCaptcha();
+            })
+            .finally(function () {
+              setLoading(false);
+            });
+        }
+
+        document.querySelectorAll('[data-password-toggle]').forEach(function (button) {
+          button.addEventListener('click', function () {
+            var input = document.getElementById(button.getAttribute('data-target'));
+            if (!input) return;
+            input.type = input.type === 'password' ? 'text' : 'password';
+            button.textContent = input.type === 'password' ? '显示' : '隐藏';
+          });
         });
-    });
- </script>
+
+        document.querySelectorAll('[data-dialog]').forEach(function (button) {
+          button.addEventListener('click', function () {
+            var id = button.getAttribute('data-dialog') === 'agreement' ? 'agreementDialog' : 'privacyDialog';
+            var dialog = document.getElementById(id);
+            if (dialog) dialog.hidden = false;
+          });
+        });
+
+        document.querySelectorAll('[data-close-dialog]').forEach(function (button) {
+          button.addEventListener('click', function () {
+            var dialog = button.closest('.policy-dialog');
+            if (dialog) dialog.hidden = true;
+          });
+        });
+
+        if (form) {
+          form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            if (!form.checkValidity()) {
+              form.reportValidity();
+              return;
+            }
+
+            if (form.password.value !== form.password2.value) {
+              showMessage('两次密码输入不一致', 'error');
+              return;
+            }
+
+            showMessage('', 'success');
+            handleRegister(new FormData(form));
+          });
+        }
+
+        if (captchaImg) {
+          captchaImg.addEventListener('click', refreshCaptcha);
+          refreshCaptcha();
+        }
+
+        if (sendCode) {
+          sendCode.addEventListener('click', function () {
+            var payload = new URLSearchParams();
+            var email = document.getElementById('email');
+            var mobile = document.getElementById('mobile');
+            if (email) payload.append('email', email.value);
+            if (mobile) payload.append('mobile', mobile.value);
+
+            sendCode.disabled = true;
+            postForm('/User/getRegCode', payload)
+              .then(function (res) {
+                if (res.code !== 200) {
+                  showMessage(res.msg || '验证码发送失败', 'error');
+                  sendCode.disabled = false;
+                  refreshCaptcha();
+                  return;
+                }
+
+                var left = 60;
+                sendCode.textContent = '已发送(' + left + 's)';
+                var timer = window.setInterval(function () {
+                  left -= 1;
+                  sendCode.textContent = left > 0 ? '已发送(' + left + 's)' : '发送验证码';
+                  if (left <= 0) {
+                    window.clearInterval(timer);
+                    sendCode.disabled = false;
+                  }
+                }, 1000);
+              })
+              .catch(function () {
+                showMessage('验证码发送失败，请稍后再试', 'error');
+                sendCode.disabled = false;
+              });
+          });
+        }
+
+        if (tencentButton && window.TencentCaptcha) {
+          tencentButton.addEventListener('click', function () {
+            var appid = tencentButton.getAttribute('data-appid') || '';
+            var captcha = new TencentCaptcha(appid, function (res) {
+              if (res.ret !== 0) return;
+              postForm('/User/Captcha', res).then(function (result) {
+                if (result.code === 200) {
+                  tencentButton.textContent = '验证通过';
+                  tencentButton.disabled = true;
+                  tencentButton.classList.remove('ghost');
+                  tencentButton.classList.add('primary');
+                }
+              });
+            }, {});
+            captcha.show();
+          });
+        }
+
+        {if condition="$config['captcha-type'] == '3' "}
+        if (window.initGeetest4) {
+          initGeetest4({ captchaId: '{:htmlspecialchars((string)($config['geetest_CaptchaAppId'] ?? ''), ENT_QUOTES, 'UTF-8')}' }, function (captcha) {
+            captcha.appendTo('#geetest_captcha');
+            captcha.onSuccess(function () {
+              postForm('/User/Captcha', captcha.getValidate());
+            });
+          });
+        }
+        {/if}
+      })();
+    </script>
+  </body>
+</html>

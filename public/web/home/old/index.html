@@ -3,9 +3,9 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{:htmlspecialchars((string)($config['sitename'] ?? ''), ENT_QUOTES, 'UTF-8')} - {:htmlspecialchars((string)($config['title'] ?? ''), ENT_QUOTES, 'UTF-8')}</title>
-    <meta name="keywords" content="{:htmlspecialchars((string)($config['key'] ?? ''), ENT_QUOTES, 'UTF-8')}">
-    <meta name="description" content="{:htmlspecialchars((string)($config['desc'] ?? ''), ENT_QUOTES, 'UTF-8')}">
+    <title>{:htmlspecialchars((string)($config['sitename'] ?? 'RelayPay'), ENT_QUOTES, 'UTF-8')} - 码支付接入系统</title>
+    <meta name="keywords" content="码支付,API下单,MAPI下单,订单回调,商户后台,收款通道">
+    <meta name="description" content="面向商户测试和私有化部署的码支付接入系统，支持 API 下单、MAPI 下单、订单查询、回调通知和通道账户维护。">
     <link rel="icon" href="{:htmlspecialchars((string)($config['favicon'] ?? '/favicon.ico'), ENT_QUOTES, 'UTF-8')}">
     <link rel="stylesheet" href="/web/home/common/css/home-lite.css">
   </head>
@@ -35,26 +35,39 @@
       <section class="hero">
         <div class="shell hero-grid">
           <div class="hero-copy">
-            <p class="eyebrow">聚合免签收款平台</p>
-            <h1>{:htmlspecialchars((string)($config['title'] ?? ''), ENT_QUOTES, 'UTF-8')}</h1>
-            <p>{:htmlspecialchars((string)($config['desc'] ?? ''), ENT_QUOTES, 'UTF-8')}</p>
+            <p class="eyebrow">码支付接入系统</p>
+            <h1>收款通道、订单通知和商户接口的统一入口</h1>
+            <p>用于商户测试和私有化部署场景，集中处理 API 下单、MAPI 下单、订单查询、扫码状态、回调通知和补单操作。系统负责订单流转与通知记录，不参与资金清算。</p>
             <div class="hero-actions">
-              <a class="btn primary" href="/User/Login">快速开始</a>
-              <a class="btn ghost" href="/doc" target="_blank" rel="noopener noreferrer">查看文档</a>
+              <a class="btn primary" href="/User/Login">进入商户后台</a>
+              <a class="btn ghost" href="/doc" target="_blank" rel="noopener noreferrer">查看 API 文档</a>
+            </div>
+            <div class="trust-list">
+              <span>API 下单</span>
+              <span>MAPI 下单</span>
+              <span>订单查询</span>
+              <span>回调通知</span>
             </div>
           </div>
-          <div class="hero-panel" aria-label="平台能力概览">
-            <div class="metric">
-              <span>接口响应</span>
-              <strong>稳定</strong>
+
+          <div class="product-panel" aria-label="接入流程">
+            <div class="panel-top">
+              <div class="panel-title">
+                <span>接入流程</span>
+                <strong>从商户创建到回调验证</strong>
+              </div>
+              <div class="status-pill">测试环境</div>
             </div>
-            <div class="metric">
-              <span>资金路径</span>
-              <strong>直达</strong>
-            </div>
-            <div class="metric">
-              <span>当前版本</span>
-              <strong>{:htmlspecialchars((string)($ver ?? ''), ENT_QUOTES, 'UTF-8')}</strong>
+            <ol class="process-list">
+              <li><span>1</span><strong>创建商户账户</strong><em>生成商户号和基础资料</em></li>
+              <li><span>2</span><strong>配置收款通道</strong><em>维护通道账户、二维码和状态</em></li>
+              <li><span>3</span><strong>发起测试订单</strong><em>通过页面支付、API 或 MAPI 下单</em></li>
+              <li><span>4</span><strong>接收结果通知</strong><em>校验回调、查询订单并处理补单</em></li>
+            </ol>
+            <div class="quick-entry">
+              <a href="/demo">支付测试</a>
+              <a href="/doc">接口文档</a>
+              <a href="/User/Reg">商户注册</a>
             </div>
           </div>
         </div>
@@ -63,38 +76,38 @@
       <section class="section">
         <div class="shell">
           <div class="section-head">
-            <p class="eyebrow">平台能力</p>
-            <h2>保留核心信息，减少页面负担</h2>
+            <p class="eyebrow">核心能力</p>
+            <h2>把支付测试和订单处理集中到一套后台里</h2>
+            <p>围绕商户、通道、订单、回调和日志组织功能，便于接入、测试和排查。</p>
           </div>
           <div class="feature-grid">
             <article class="feature-card">
-              <h3>接口安全</h3>
-              <p>接口稳定传输，订单数据按业务流程处理，减少前台无关依赖。</p>
+              <h3>商户账户</h3>
+              <p>为商户生成独立账户和接口参数，区分不同业务系统的下单与通知配置。</p>
             </article>
             <article class="feature-card">
-              <h3>接入快速</h3>
-              <p>保留清晰入口和文档链接，商户可以更快完成测试接入。</p>
+              <h3>收款通道</h3>
+              <p>维护通道账户、二维码、在线状态和关联订单，便于测试不同收款方式。</p>
             </article>
             <article class="feature-card">
-              <h3>数据清晰</h3>
-              <p>首页只展示必要内容，降低无效脚本和重复查询带来的消耗。</p>
+              <h3>订单处理</h3>
+              <p>支持平台订单号和商户订单号查询，跟踪订单创建、支付、通知和补单状态。</p>
             </article>
             <article class="feature-card">
-              <h3>REST API</h3>
-              <p>提供支付、订单、回调等接口能力，便于业务系统对接。</p>
+              <h3>回调通知</h3>
+              <p>订单结果按商户配置通知业务系统，保留通知记录，便于失败后排查。</p>
             </article>
             <article class="feature-card">
-              <h3>服务支持</h3>
-              <p>围绕商户开通、通道配置和订单问题提供支持。</p>
+              <h3>接口联调</h3>
+              <p>提供页面支付、API 下单、MAPI 下单、订单查询等接口说明和测试入口。</p>
             </article>
             <article class="feature-card">
-              <h3>资金直达</h3>
-              <p>系统负责交易处理，不参与资金清算，资金进入商户账户。</p>
+              <h3>运行日志</h3>
+              <p>记录登录、请求、订单和通道相关操作，为测试环境问题定位提供依据。</p>
             </article>
           </div>
         </div>
       </section>
-
     </main>
 
     <footer class="site-footer">

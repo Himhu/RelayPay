@@ -13,9 +13,7 @@ class Doc extends \app\BaseController
     //默认首页发起
     public function index()
     {
-        $list = Db::table('ypay_navs')->where('status', 1)->order('id','asc')->select();
-        View::assign('domain',Request::domain());
-        View::assign('nav', $list);
+        $this->assignCommon();
         // 改变当前操作的模板路径
         getDocTemplate();
         return $this->fetch('',$this->getSystem());
@@ -24,9 +22,7 @@ class Doc extends \app\BaseController
     //API下单接口
     public function api()
     {
-        $list = Db::table('ypay_navs')->where('status', 1)->order('id','asc')->select();
-        View::assign('domain',Request::domain());
-        View::assign('nav', $list);
+        $this->assignCommon();
         // 改变当前操作的模板路径
         getDocTemplate();
         return $this->fetch('',$this->getSystem());
@@ -35,9 +31,7 @@ class Doc extends \app\BaseController
     //查询接口接口
     public function result()
     {
-        $list = Db::table('ypay_navs')->where('status', 1)->order('id','asc')->select();
-        View::assign('domain',Request::domain());
-        View::assign('nav', $list);
+        $this->assignCommon();
         // 改变当前操作的模板路径
         getDocTemplate();
         return $this->fetch('',$this->getSystem());
@@ -46,12 +40,33 @@ class Doc extends \app\BaseController
     //查询订单接口
     public function findorder()
     {
-        $list = Db::table('ypay_navs')->where('status', 1)->order('id','asc')->select();
-        View::assign('domain',Request::domain());
-        View::assign('nav', $list);
+        $this->assignCommon();
         // 改变当前操作的模板路径
         getDocTemplate();
         return $this->fetch('',$this->getSystem());
+    }
+
+    private function assignCommon(): void
+    {
+        View::assign('domain', Request::domain());
+        View::assign('nav', $this->docNav());
+    }
+
+    private function docNav(): array
+    {
+        $items = Db::table('ypay_navs')
+            ->field('id,name,url,is_target')
+            ->where('status', 1)
+            ->order('id', 'asc')
+            ->select()
+            ->toArray();
+
+        return array_values(array_filter($items, function (array $item) {
+            $name = trim((string) ($item['name'] ?? ''));
+            $path = parse_url((string) ($item['url'] ?? ''), PHP_URL_PATH) ?: '';
+
+            return $name !== '公告中心' && strcasecmp($path, '/News/Index') !== 0;
+        }));
     }
     
 }

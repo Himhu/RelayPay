@@ -1,183 +1,172 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-	<title>登录</title>
-	<!-- 依 赖 样 式-->
+	<title>后台登录</title>
 	<link rel="stylesheet" href="/static/component/pear/css/pear.css" type="text/css"/>
-	<link rel="stylesheet" href="/user/default/static/assets/vendor/css/rtl/core.css" class="template-customizer-core-css" />
-	<!-- 样 式 文 件 -->
-	<link rel="stylesheet" href="/static/admin/css/login/index.css" />
 	<link rel="stylesheet" href="/static/admin/css/login/variables.css" />
+	<link rel="stylesheet" href="/static/admin/css/login/index.css" />
 	<style>
-			.codeImage {
-				position: absolute;
-    			right: 0;
-    			top: 0;
-                height: 40px;
-                
-                border: #e6e6e6 1px solid;
-            }
-            #geetest_captcha{
-                width: 100%;
-            }
+		#geetest_captcha {
+			width: 100%;
+		}
 
-		    svg{
-		        display: none;
-		    }
-		    .geetest_captcha.geetest_customTheme .geetest_holder, .geetest_popup_wrap.geetest_customTheme .geetest_holder{
-		        width:100%;
-		    }
+		.geetest_captcha.geetest_customTheme .geetest_holder,
+		.geetest_popup_wrap.geetest_customTheme .geetest_holder {
+			width: 100%;
+		}
 	</style>
 </head>
 
 <body>
-	<div class="login-page" style="background-image: url(/static/admin/images/background.svg)">
-		<div class="layui-row">
-			<div class="layui-col-sm6 login-bg layui-hide-xs">
-				<img class="login-bg-img" src="/static/admin/images/banner.png" alt="" />
+	<main class="admin-login-page">
+		<section class="admin-login-shell">
+			<div class="admin-login-copy">
+				<a class="admin-brand" href="/" aria-label="返回首页">
+					<span>{:htmlspecialchars((string)(getConfig()['sitename'] ?? 'RelayPay'), ENT_QUOTES, 'UTF-8')}</span>
+				</a>
+				<p class="admin-eyebrow">管理后台</p>
+				<h1>系统配置、商户与订单管理入口</h1>
+				<p>后台用于维护商户账户、收款通道、订单记录、系统配置和运行日志。请使用管理员账户登录。</p>
+				<ul class="admin-login-points">
+					<li>商户、通道、订单和支付类型配置</li>
+					<li>回调、补单、日志与风险控制排查</li>
+					<li>支持验证码和管理员安全验证</li>
+				</ul>
 			</div>
-			<div class="layui-col-sm6 layui-col-xs12 login-form">
-				<form class="layui-form" action="javascript:void(0);">
-					<div class="form-center">
-						<div class="form-center-box">
-							<div class="top-log-title">
-								<span>YPay Admin</span>
+
+			<div class="admin-login-card">
+				<div class="admin-login-head">
+					<p>ADMIN</p>
+					<h2>后台登录</h2>
+					<span>请输入管理员账户信息</span>
+				</div>
+
+				<form class="layui-form admin-login-form" action="javascript:void(0);">
+					<div class="layui-form-item">
+						<label class="admin-field">
+							<span>账户</span>
+							<div class="layui-input-wrap">
+								<div class="layui-input-prefix">
+									<i class="layui-icon layui-icon-username"></i>
+								</div>
+								<input lay-verify="required" placeholder="请输入管理员账户" autocomplete="username" name="username" class="layui-input">
 							</div>
-							<div class="top-desc">
-								一个专业的系统开发商,用心创造每一款产品
-							</div>
-							<div style="margin-top: 30px;">
-								<div class="layui-form-item">
-									<div class="layui-input-wrap">
-										<div class="layui-input-prefix">
-											<i class="layui-icon layui-icon-username"></i>
-										</div>
-										<input lay-verify="required" placeholder="账户" autocomplete="off"
-										name="username" class="layui-input">
-									</div>
-								</div>
-								<div class="layui-form-item">
-									<div class="layui-input-wrap">
-										<div class="layui-input-prefix">
-											<i class="layui-icon layui-icon-password"></i>
-										</div>
-										<input type="password" name="password" value=""
-											lay-verify="required|confirmPassword" placeholder="密码" autocomplete="off"
-											class="layui-input" lay-affix="eye">
-									</div>
-								</div>
-								{if getConfig()['isAdminSecurity'] == 1}
-								<div class="layui-form-item">
-										<div class="layui-input-wrap">
-											<div class="layui-input-prefix">
-												<i class="layui-icon layui-icon-auz"></i>
-											</div>
-											<input lay-verify="required"  placeholder="谷歌验证码"  name="googleCode" autocomplete="off"
-												class="layui-input">
-										</div>
-								</div>
-									{/if}
-									{if getConfig()['captcha-type'] == 1}
-									<div class="layui-form-item">
-									<div class="verification-text">
-										<div class="layui-input-wrap">
-											<div class="layui-input-prefix">
-												<i class="layui-icon layui-icon-auz"></i>
-											</div>
-											<input lay-verify="required" maxlength="4" name="captcha" placeholder="验证码" autocomplete="off"
-												class="layui-input">
-										</div>
-									</div>
-									<img id="codeimg" class="codeImage" style="cursor: pointer;"/>
-								</div>
-									{elseif condition="getConfig()['captcha-type'] == '2'"}
-<!-- 动态引入验证码JS示例 -->
-<script src="https://ssl.captcha.qq.com/TCaptcha.js"></script>
-<div class="mb-3" id='tencentCaptcha'><button type="button" class="TencentCaptcha btn btn-label-info w-100" id="TencentCaptcha" -appid="{:getConfig()['tencent_CaptchaAppId']}" data-cbfn="qq_captcha_callback" lay-filter="qq_captcha_callback" lay-submit><span c="spinner-grow spinner-grow-sm text-primary mr-2" role="status" aria-hidden="true"></span>&nbsp;点击按钮进行验证</button></div>
-{elseif condition="getConfig()['captcha-type'] == '3' "}
-<script src="https://static.geetest.com/v4/gt4.js"></script>
-<div class="mb-3" id='geetest_captcha' style="width: 100%;"></div>
-{/if}
-							
-								<div class="layui-form-item">
-									<div class="remember-passsword">
-										<div class="remember-cehcked">
-											<input type="checkbox" name="remember" lay-skin="primary" title="自动登录">
-										</div>
-									</div>
-								</div>
-								<div class="login-btn">
-									<button type="button" lay-submit lay-filter="login" class="layui-btn login" >登 录</button>
-								</div>
-							</div>
-						</div>
+						</label>
 					</div>
+
+					<div class="layui-form-item">
+						<label class="admin-field">
+							<span>密码</span>
+							<div class="layui-input-wrap">
+								<div class="layui-input-prefix">
+									<i class="layui-icon layui-icon-password"></i>
+								</div>
+								<input type="password" name="password" value="" lay-verify="required|confirmPassword" placeholder="请输入密码" autocomplete="current-password" class="layui-input" lay-affix="eye">
+							</div>
+						</label>
+					</div>
+
+					{if getConfig()['isAdminSecurity'] == 1}
+					<div class="layui-form-item">
+						<label class="admin-field">
+							<span>管理员安全码</span>
+							<div class="layui-input-wrap">
+								<div class="layui-input-prefix">
+									<i class="layui-icon layui-icon-auz"></i>
+								</div>
+								<input lay-verify="required" placeholder="请输入谷歌验证码" name="googleCode" autocomplete="one-time-code" class="layui-input">
+							</div>
+						</label>
+					</div>
+					{/if}
+
+					{if getConfig()['captcha-type'] == 1}
+					<div class="layui-form-item">
+						<label class="admin-field">
+							<span>验证码</span>
+							<div class="admin-captcha-row">
+								<div class="layui-input-wrap">
+									<div class="layui-input-prefix">
+										<i class="layui-icon layui-icon-auz"></i>
+									</div>
+									<input lay-verify="required" maxlength="4" name="captcha" placeholder="请输入验证码" autocomplete="off" class="layui-input">
+								</div>
+								<img id="codeimg" class="codeImage" alt="验证码">
+							</div>
+						</label>
+					</div>
+					{elseif condition="getConfig()['captcha-type'] == '2'"}
+					<script src="https://ssl.captcha.qq.com/TCaptcha.js"></script>
+					<div class="layui-form-item" id="tencentCaptcha">
+						<button type="button" class="layui-btn admin-verify-btn TencentCaptcha" id="TencentCaptcha" data-appid="{:getConfig()['tencent_CaptchaAppId']}" data-cbfn="qq_captcha_callback" lay-filter="qq_captcha_callback" lay-submit>点击完成安全验证</button>
+					</div>
+					{elseif condition="getConfig()['captcha-type'] == '3' "}
+					<script src="https://static.geetest.com/v4/gt4.js"></script>
+					<div class="layui-form-item" id="geetest_captcha"></div>
+					{/if}
+
+					<div class="admin-login-options">
+						<input type="checkbox" name="remember" lay-skin="primary" title="自动登录">
+					</div>
+
+					<button type="button" lay-submit lay-filter="login" class="layui-btn admin-login-submit">登录后台</button>
 				</form>
 			</div>
-		</div>
-	</div>
-	<!-- 资 源 引 入 -->
-        {include file="public/footer"/}
-		<script>
-			layui.use(['form', 'layer', 'jquery', 'element'], function() {
-				var $ = layui.jquery,
-					layer = layui.layer,
-					element = layui.element,
-					form = layui.form;
-				// 登 录 提 交
-				form.on('submit(login)', function(data) {
-    // 保留原始数据提交结构
-    const postData = data.field; 
-    
-    // 增加基础校验
-    if (!postData.username || !postData.password) {
-        return layer.msg('账号密码不能为空', {icon: 2});
-    }
+		</section>
+	</main>
 
-    layer.load();
-    
-    // 保留原始ajax配置
-    $.ajax({
-        type: "POST",
-        data: postData, // 保持数据结构不变
-        success: function(res) {
-            layer.closeAll('loading');
-            
-            // 兼容性响应处理
-            try {
-                if (res.code == 200) {
-                    layer.msg(res.msg, {
-                        icon: 1,
-                        time: 1000
-                    }, function() {
-                        // 保留原始跳转逻辑
-                        let redirectUrl = '{$Request.root??"/"}';
-                        // 防止双斜杠路径
-                        if (redirectUrl.endsWith('/')) {
-                            redirectUrl = redirectUrl.slice(0, -1);
-                        }
-                        location.href = redirectUrl;
-                    });
-                } else {
-                    layer.msg(res.msg || '登录失败', {icon: 2});
-                    // 安全调用初始化方法
-                    if (typeof initCode === 'function') initCode();
-                }
-            } catch (e) {
-                console.error('响应处理异常:', e);
-                layer.msg('数据处理失败', {icon: 2});
-            }
-        },
-        error: function(xhr) {
-            layer.closeAll('loading');
-            // 保留原始错误处理方式
-            layer.msg('请求失败: ' + xhr.statusText, {icon: 2});
-        }
-    });
-    return false;
-});
+	{include file="public/footer"/}
+	<script>
+		layui.use(['form', 'layer', 'jquery', 'element'], function() {
+			var $ = layui.jquery,
+				layer = layui.layer,
+				form = layui.form;
+
+			form.on('submit(login)', function(data) {
+				var postData = data.field;
+
+				if (!postData.username || !postData.password) {
+					return layer.msg('账号密码不能为空', {icon: 2});
+				}
+
+				layer.load();
+
+				$.ajax({
+					type: 'POST',
+					data: postData,
+					success: function(res) {
+						layer.closeAll('loading');
+
+						try {
+							if (res.code == 200) {
+								layer.msg(res.msg, {
+									icon: 1,
+									time: 1000
+								}, function() {
+									var redirectUrl = '{$Request.root??"/"}';
+									if (redirectUrl.endsWith('/')) {
+										redirectUrl = redirectUrl.slice(0, -1);
+									}
+									location.href = redirectUrl;
+								});
+							} else {
+								layer.msg(res.msg || '登录失败', {icon: 2});
+								if (typeof initCode === 'function') initCode();
+							}
+						} catch (e) {
+							console.error('响应处理异常:', e);
+							layer.msg('数据处理失败', {icon: 2});
+						}
+					},
+					error: function(xhr) {
+						layer.closeAll('loading');
+						layer.msg('请求失败: ' + xhr.statusText, {icon: 2});
+					}
+				});
+				return false;
+			});
 				initCode();
 
 				function initCode() {
@@ -204,7 +193,7 @@
                         if (res.ret === 0) {
                             $.post('/User/Captcha',res, function(res) {
 					    	if (res.code == 200) {
-	                           $('#tencentCaptcha').html('<button type="button" class="TencentCaptcha btn  w-100" id="TencentCaptcha" data-appid ="{:getConfig()['tencent_CaptchaAppId']}" data-cbfn="qq_aptcha_callback" disabled="disabled" style="background-color: rgb(139,  195, 74); color: rgb(255, 255, 255);"><i class="fa-solid fa-circle-check"></i> &nbsp;验证通过</button>');
+	                           $('#tencentCaptcha').html('<button type="button" class="layui-btn admin-verify-btn" disabled="disabled">验证通过</button>');
 					    	}
 					    }, 'json');
 					    return false;
