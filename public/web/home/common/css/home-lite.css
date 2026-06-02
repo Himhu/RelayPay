@@ -235,15 +235,13 @@ img {
   font-size: clamp(26px, 4vw, 38px);
 }
 
-.feature-grid,
-.news-grid {
+.feature-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 18px;
 }
 
-.feature-card,
-.news-card {
+.feature-card {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -262,8 +260,7 @@ img {
   margin-bottom: 18px;
 }
 
-.feature-card h3,
-.news-card h3 {
+.feature-card h3 {
   margin: 0 0 8px;
   font-size: 18px;
 }
@@ -272,73 +269,6 @@ img {
 .notice-content {
   margin: 0;
   color: var(--muted);
-}
-
-.news-section {
-  background: #ffffff;
-  border-top: 1px solid var(--line);
-}
-
-.news-card {
-  overflow: hidden;
-}
-
-.news-cover {
-  min-height: 120px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  background-position: center;
-  background-size: cover;
-  color: #ffffff;
-  font-size: 22px;
-  font-weight: 800;
-}
-
-.news-card ul {
-  min-height: 210px;
-  margin: 0;
-  padding: 18px 18px 0;
-  list-style: none;
-}
-
-.news-card li {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 12px;
-  align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--line);
-  font-size: 14px;
-}
-
-.news-card li a {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.news-card li span {
-  color: var(--muted);
-  white-space: nowrap;
-}
-
-.more-link {
-  display: block;
-  margin: 16px 18px 18px;
-  padding: 9px 12px;
-  border: 1px solid var(--primary);
-  border-radius: 8px;
-  color: var(--primary);
-  text-align: center;
-  font-weight: 700;
-}
-
-.more-link:hover {
-  background: var(--primary);
-  color: #ffffff;
 }
 
 .site-footer {
@@ -421,8 +351,7 @@ img {
     font-size: 22px;
   }
 
-  .feature-grid,
-  .news-grid {
+  .feature-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -446,8 +375,7 @@ img {
   }
 
   .hero-panel,
-  .feature-grid,
-  .news-grid {
+  .feature-grid {
     grid-template-columns: 1fr;
   }
 
@@ -459,12 +387,4 @@ img {
     min-height: auto;
   }
 
-  .news-card ul {
-    min-height: auto;
-  }
-
-  .news-card li {
-    grid-template-columns: 1fr;
-    gap: 4px;
-  }
 }

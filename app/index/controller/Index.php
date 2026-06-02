@@ -37,12 +37,8 @@ class Index extends \app\BaseController
             return $this->fetch('error/errorPage');
         }
 
-        $showNotice = (int) ($config['is_notice'] ?? 0) === 1;
-        $homeData = $this->getHomeData($showNotice);
+        $homeData = $this->getHomeData();
         $index_array = [
-            'news1' => $homeData['news'][1] ?? [],
-            'news2' => $homeData['news'][2] ?? [],
-            'news3' => $homeData['news'][3] ?? [],
             'nav' => $homeData['nav'],
             'is_login' => $this->isFrontLogin() ? 1 : 0,
         ];
@@ -114,9 +110,9 @@ class Index extends \app\BaseController
         return is_dir($templatePath) && is_file($templatePath . '/index.html');
     }
 
-    private function getHomeData(bool $showNotice): array
+    private function getHomeData(): array
     {
-        $cacheKey = 'index_home_' . ($showNotice ? 'notice' : 'base');
+        $cacheKey = 'index_home_base';
         $cached = Cache::get($cacheKey);
         if (is_array($cached)) {
             return $cached;
@@ -124,18 +120,7 @@ class Index extends \app\BaseController
 
         $data = [
             'nav' => $this->getHomeNav(),
-            'news' => [
-                1 => [],
-                2 => [],
-                3 => [],
-            ],
         ];
-
-        if ($showNotice) {
-            foreach ([1, 2, 3] as $type) {
-                $data['news'][$type] = $this->getHomeNews($type);
-            }
-        }
 
         Cache::set($cacheKey, $data, self::HOME_CACHE_TTL);
         return $data;
@@ -150,25 +135,27 @@ class Index extends \app\BaseController
             ->select()
             ->toArray();
 
-        foreach ($items as &$item) {
+        $nav = [];
+        foreach ($items as $item) {
             $item['url'] = $this->safePublicUrl((string) ($item['url'] ?? ''));
             $item['is_target'] = (int) ($item['is_target'] ?? 0);
-        }
-        unset($item);
 
-        return $items;
+            if ($this->shouldHideHomeNav($item)) {
+                continue;
+            }
+
+            $nav[] = $item;
+        }
+
+        return $nav;
     }
 
-    private function getHomeNews(int $type): array
+    private function shouldHideHomeNav(array $item): bool
     {
-        return Db::name('ypay_news')
-            ->field('id,title,create_time,type')
-            ->where('type', $type)
-            ->where('status', 1)
-            ->order('id', 'desc')
-            ->limit(5)
-            ->select()
-            ->toArray();
+        $name = trim((string) ($item['name'] ?? ''));
+        $path = parse_url((string) ($item['url'] ?? ''), PHP_URL_PATH) ?: '';
+
+        return $name === '公告中心' || strcasecmp($path, '/News/Index') === 0;
     }
 
     private function safePublicUrl(string $url): string
