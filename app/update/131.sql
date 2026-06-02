@@ -1,0 +1,1 @@
+ALTER TABLE `ypay_order` ADD `return_num` INT(50) NULL DEFAULT '0' COMMENT '回调次数' AFTER `status`;

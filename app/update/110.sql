@@ -1,0 +1,1 @@
+ALTER TABLE `ypay_account` CHANGE `cloud_id` `cloud_id` VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '云端ID';

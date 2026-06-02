@@ -1,0 +1,140 @@
+ {include file="public/header" type="other"/}
+<style>
+	@media(max-width:760px) {
+		.layui-form-label {
+			float: unset;
+			display: unset;
+			padding: unset;
+			width: unset;
+			font-weight: unset;
+			line-height: unset;
+			text-align: unset;
+		}
+
+		.layui-input-block {
+			margin-left: unset;
+			min-height: unset;
+		}
+	}
+</style>
+	<form class="layui-form" action="">
+		<div class="mainBox">
+			<div class="main-container">
+			    <div class="layui-form-item">
+			        <label class="layui-form-label">
+						卡券类型
+					</label>
+					<div class="layui-input-block">
+			            <select name="cdkType" lay-filter="cdkType">
+ 				        	<option  value="1">余额充值卡</option>
+ 				        	<option  value="2">会员兑换卡</option>
+ 				        </select>
+ 				    </div>
+ 				</div>
+				<div class="layui-form-item" id="amount">
+					<label class="layui-form-label">
+						充值金额
+					</label>
+					<div class="layui-input-block">
+						<input type="text" class="layui-input layui-form-danger" name="amount" />
+					</div>
+				</div>
+				<div class="layui-form-item" id="vip" style="display:none;">
+					<label class="layui-form-label">
+						会员类型
+					</label>
+					<div class="layui-input-block">
+						<select name="vip">
+ 				    	    <?php foreach ($vip as $key => $value): ?>
+ 				    	        <option value="{$value['id']}">{$value['name']}({$value['viptime']}天)</option>
+ 				    	    <?php endforeach; ?>
+ 				        </select>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+					    自定义前缀
+					</label>
+					<div class="layui-input-block">
+						<input type="text" class="layui-input layui-form-danger" name="diyPrefix" placeholder="为空则不开启" />
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						生成数量
+					</label>
+					<div class="layui-input-block">
+						<input type="text" class="layui-input layui-form-danger" name="num"  value="1" />
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="bottom">
+			<div class="button-container">
+				<button type="submit" class="layui-btn layui-btn-normal layui-btn-sm" lay-submit="" lay-filter="save">
+
+					提交
+				</button>
+				<button type="reset" class="layui-btn layui-btn-primary layui-btn-sm">
+					<i class="layui-icon layui-icon-refresh"></i>
+					重置
+				</button>
+			</div>
+		</div>
+	</form>
+	{include file="public/footer"/}
+	<script>
+		layui.use(['form', 'jquery'], function() {
+			let form = layui.form;
+			let $ = layui.jquery;
+
+			form.on('submit(save)', function(data) {
+				
+				$.ajax({
+					data: JSON.stringify(data.field),
+					dataType: 'json',
+					contentType: 'application/json',
+					type: 'post',
+					success: function(res) {
+						//判断有没有权限
+						if (res && res.code == 999) {
+							layer.msg(res.msg, {
+								icon: 5,
+								time: 2000,
+							})
+							return false;
+						} else if (res.code == 200) {
+							layer.msg(res.msg, {
+								icon: 1,
+								time: 1000
+							}, function() {
+								parent.layer.close(parent.layer.getFrameIndex(window
+									.name)); //关闭当前页
+								parent.layui.table.reload("cdk");
+							});
+						} else {
+							layer.msg(res.msg, {
+								icon: 2,
+								time: 1000
+							});
+						}
+					}
+				})
+				return false;
+			});
+			
+			//筛选站点维护展示模板
+            form.on('select(cdkType)', function(data) {
+ 				if(data.value == '1'){
+ 				    $("#vip").hide();
+ 				    $("#amount").show();
+ 				}else{
+ 				    $("#vip").show();
+ 				    $("#amount").hide();
+ 				}
+
+ 			});
+		})
+	</script>
+</body>
+</html>

@@ -1,0 +1,404 @@
+ {include file="public/user_header" title="订单日志" /}
+  <style>
+     table tbody tr td:last-child{
+         background-color:white;
+     }
+  
+ </style>
+ <!-- 依 赖 样 式-->
+<link rel="stylesheet" href="https://lf9-cdn-tos.bytecdntp.com/cdn/expire-1-M/element-ui/2.15.7/theme-chalk/index.css" type="text/css" />
+<!-- Content -->
+            <div class="container-xxl flex-grow-1 container-p-y">
+
+              <div class="row">
+                <div class="col-md-12">
+                
+                  <div class="card">
+                    <!-- 订 单 日 志 -->
+                    <h5 class="card-header border-bottom">订 单 日 志</h5>
+                    <div class="card-datatable text-nowrap">
+                      <table class="datatables-basic table border-top">
+                        <thead>
+                          <tr>
+                            <th></th>
+                            <th>订单ID</th>
+                            <th>订单类型</th>
+                            <th>收款通道</th>
+                            <th>商品名称</th>
+                            <th>收款方式</th>
+                            <th>金额</th>
+                            <th>实付金额</th>
+                            <th>手续费</th>
+                            <th>订单时间</th>
+                            <th>状态</th>
+                            <th>回调信息</th>
+                            <th style="background-color:white;">操作</th>
+                          </tr>
+                        </thead>
+                      </table>
+                    </div>
+                    <!--/ 订 单 日 志 -->
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- / Content -->
+            
+{include file="public/user_footer" /}
+
+ <!-- / Page Js -->
+<script>
+    layui.use([ 'form'], function () {
+            var $ = layui.jquery;
+            var form = layui.form;
+            var dt_basic_table = $('.datatables-basic');
+            // DataTable
+            // --------------------------------------------------------------------
+            if (dt_basic_table.length) {
+              dt_basic_table.DataTable({
+                 ajax: '/Deal/Orderlog',
+                 deferRender: true,
+                 scrollX: true,
+                 columns: [
+                   { data: 'id' },
+                   { data: 'trade_no' },
+                   { data: 'pay_type' },
+                   { data: 'account_id' },
+                   { data: 'name'},
+                   { data: 'type' },
+                   { data: 'money' },
+                   { data: 'truemoney' },
+                   { data: 'feilvmoney' },
+                   { data: 'create_time' },
+                   { data: 'status' },
+                   { data: 'api_memo' },
+                   { data: 'id' },
+                 ],
+                 columnDefs: [
+                    {
+                        target: 0,
+                        visible: false,
+                        searchable: false,
+                    },
+                    {
+                      // Label
+                      targets: 1,
+                      render: function (data, type, full, meta) {
+                        return (
+                          '商户:' + full['trade_no'] +'<br/>'
+                          + '系统:' + full['out_trade_no']
+                        );
+                      }
+                    },
+                    {
+                      // Label
+                      targets: 2,
+                      render: function (data, type, full, meta) {
+                        var $pay_type = full['pay_type'];
+                        var $array = {
+                          1: { title: '本地订单', class: 'bg-label-primary' },
+                          2: { title: '转接订单', class: ' bg-label-dark' },
+                        };
+                        if (typeof $array[$pay_type] === 'undefined') {
+                          return data;
+                        }
+                        return (
+                          '<span class="badge rounded-pill ' +
+                          $array[$pay_type].class +
+                          '">' +
+                          $array[$pay_type].title +
+                          '</span>'
+                        );
+                      }
+                    },
+                    {
+                      // Label
+                      targets: 5,
+                      render: function (data, type, full, meta) {
+                        var $type_name = full['type_name'];
+
+                        return (
+                          $type_name +
+                          '&nbsp;<span class="btn btn-sm bg-label-dark">' + full['channel_name'] + '</span>'
+                        );
+                      }
+                    },
+                    {
+                      // Label
+                      targets: -4,
+                      render: function (data, type, full, meta) {
+                        var $end_time = full['end_time'];
+                         $end_time = ($end_time == null)? '-' : $end_time;
+                        return (
+                          '创建:' + full['create_time'] +'<br/>'
+                          + '支付:' + $end_time
+                        );
+                      }
+                    },
+                    {
+                      // Label
+                      targets: -3,
+                      render: function (data, type, full, meta) {
+                        var $status = full['status'];
+                        var $array = {
+                          1: { title: '已支付', class: 'bg-label-success' },
+                          0: { title: '未支付', class: 'bg-label-warning' },
+                        };
+                        if (typeof $array[$status] === 'undefined') {
+                          return data;
+                        }
+                        return (
+                          '<span class="badge rounded-pill ' +
+                          $array[$status].class +
+                          '">' +
+                          $array[$status].title +
+                          '</span>'
+                        );
+                      }
+                    },
+                    {
+                      // Label
+                      targets: -1,
+                      searchable: false,
+                      orderable: false,
+                      render: function (data, type, full, meta) {
+                        var $status = full['status'];
+                        var id = full['id'];
+                        let temp = '';
+                        {if condition="getConfig()['is_smOrder'] == 1"}
+                           temp = `<li><a class="dropdown-item" type="button" onclick="set_function(`+id+`,'reback')">补单</a></li>`;
+                        {/if}
+                        return `<div class="btn-group">
+                      <button type="button" onclick="details(`+id+`)" class="btn btn-primary">详情</button>
+                      <button
+                        type="button"
+                        class="btn btn-primary dropdown-toggle dropdown-toggle-split"
+                        data-bs-toggle="dropdown"
+                        
+                      >
+                      </button>
+                      <ul class="dropdown-menu">
+                        `
+                        +temp+
+                        `
+                        <li><a class="dropdown-item" type="button" onclick="set_function(`+id+`,'unpaid')">设置未支付</a></li>
+                      </ul>
+                    </div>`;
+                        
+                      }
+                    },
+                ],
+                 order: [[0, 'desc']],
+                 dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-center justify-content-md-end"f>>t<"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+                 displayLength: 10,
+                 lengthMenu: [10, 20, 50],
+                 scrollX:        true,
+                 deferRender: true,
+                 fixedColumns:   {
+                     left: 0,
+                     right: 1
+                 }
+        
+            });
+            }
+    });
+    
+          //详情信息获取
+          function details(id){
+            let data = {id:id};
+                  $.post('/Deal/getDetails', data, function (res) {
+                        if(res.code == 200){ 
+                          Swal.fire({
+                                title: "订单详情",
+                                html:`<div class="el-dialog__body" style="padding:unset">
+  <div data-v-1af4d1da="" class="margin-top el-descriptions">
+    <div class="el-descriptions__body">
+      <table class="el-descriptions__table is-bordered el-descriptions--mini">
+        <tbody>
+          <tr class="el-descriptions-row">
+            <th colspan="1" class="el-descriptions-item__cell el-descriptions-item__label is-bordered-label "><i
+                data-v-1af4d1da="" class="el-icon-user"></i> 系统订单号 </th>
+            <td colspan="1" class="el-descriptions-item__cell el-descriptions-item__content"> `+res.dataArray.out_trade_no+` </td>
+            <th colspan="1" class="el-descriptions-item__cell el-descriptions-item__label is-bordered-label "><i
+                data-v-1af4d1da="" class="el-icon-mobile-phone"></i> 商户订单号 </th>
+            <td colspan="1" class="el-descriptions-item__cell el-descriptions-item__content"> `+res.dataArray.trade_no+` </td>
+          </tr>
+        </tbody>
+        <tbody>
+          <tr class="el-descriptions-row">
+            <th colspan="1" class="el-descriptions-item__cell el-descriptions-item__label is-bordered-label "><i
+                data-v-1af4d1da="" class="el-icon-location-outline"></i> 订单金额 </th>
+            <td colspan="1" class="el-descriptions-item__cell el-descriptions-item__content"> `+res.dataArray.money+` </td>
+            <th colspan="1" class="el-descriptions-item__cell el-descriptions-item__label is-bordered-label "><i
+                data-v-1af4d1da="" class="el-icon-tickets"></i> 实付金额 </th>
+            <td colspan="1" class="el-descriptions-item__cell el-descriptions-item__content"> `+res.dataArray.truemoney+` </td>
+          </tr>
+        </tbody>
+        <tbody>
+          <tr class="el-descriptions-row">
+            <th colspan="1" class="el-descriptions-item__cell el-descriptions-item__label is-bordered-label "><i
+                data-v-1af4d1da="" class="el-icon-office-building"></i> 订单状态 </th>
+            <td colspan="1" class="el-descriptions-item__cell el-descriptions-item__content">`+res.dataArray.status+`</td>
+            <th colspan="1" class="el-descriptions-item__cell el-descriptions-item__label is-bordered-label "><i
+                data-v-1af4d1da="" class="el-icon-office-building"></i> 收款方式 </th>
+            <td colspan="1" class="el-descriptions-item__cell el-descriptions-item__content"><span data-v-1af4d1da="">
+              `+res.dataArray.type_name+`</span></td>
+          </tr>
+        </tbody>
+        <tbody>
+          <tr class="el-descriptions-row">
+            <th colspan="1" class="el-descriptions-item__cell el-descriptions-item__label is-bordered-label "><i
+                data-v-1af4d1da="" class="el-icon-office-building"></i> 收款渠道 </th>
+            <td colspan="1" class="el-descriptions-item__cell el-descriptions-item__content"><span
+                data-v-1af4d1da="">`+res.dataArray.channel_name+`</span></td>
+            <th colspan="1" class="el-descriptions-item__cell el-descriptions-item__label is-bordered-label "><i
+                data-v-1af4d1da="" class="el-icon-office-building"></i> 回调状态 </th>
+            <td colspan="1" class="el-descriptions-item__cell el-descriptions-item__content"><span
+                data-v-1af4d1da="">`+res.dataArray.api_memo+`</span></td>
+          </tr>
+        </tbody>
+        <tbody>
+          <tr class="el-descriptions-row">
+            <th colspan="1" class="el-descriptions-item__cell el-descriptions-item__label is-bordered-label "><i
+                data-v-1af4d1da="" class="el-icon-office-building"></i> 订单创建时间 </th>
+            <td colspan="1" class="el-descriptions-item__cell el-descriptions-item__content"><span
+                data-v-1af4d1da="">`+res.dataArray.create_time+`</span></td>
+            <th colspan="1" class="el-descriptions-item__cell el-descriptions-item__label is-bordered-label "><i
+                data-v-1af4d1da="" class="el-icon-office-building"></i> 订单支付时间 </th>
+            <td colspan="1" class="el-descriptions-item__cell el-descriptions-item__content"><span
+                data-v-1af4d1da="">`+res.dataArray.end_time+`</span></td>
+          </tr>
+        </tbody>
+        <tbody>
+          <tr class="el-descriptions-row">
+            <th colspan="1" class="el-descriptions-item__cell el-descriptions-item__label is-bordered-label "><i
+                data-v-1af4d1da="" class="el-icon-office-building"></i> 异步回调地址 </th>
+            <td colspan="1" class="el-descriptions-item__cell el-descriptions-item__content"><span
+                data-v-1af4d1da="">`+res.dataArray.notify_url+`</span></td>
+            <th colspan="1" class="el-descriptions-item__cell el-descriptions-item__label is-bordered-label "><i
+                data-v-1af4d1da="" class="el-icon-office-building"></i> 同步回调地址 </th>
+            <td colspan="1" class="el-descriptions-item__cell el-descriptions-item__content"><span
+                data-v-1af4d1da="">`+res.dataArray.return_url+`</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>`,
+                                showCloseButton: true,
+                                showConfirmButton:false,
+                              }); 
+
+                        }else{
+                            Swal.fire({
+                                title: res.msg,
+                                    icon: 'error',
+                                    customClass: {
+                                      confirmButton: 'btn btn-primary'
+                                    }
+                                });
+                        }
+                        return false;
+                })
+		    
+    }
+
+    //其他功能设置请求
+    function set_function(id,type) {
+      var text;
+      if(type == "reback")
+      {
+        text = "确定要处理此订单吗?确认处理后将进行补单，届时该订单将变更为已支付和进行回调,该通道相应的金额也会计入,已知晓请确认!";
+      }else{
+        text = "确定将改订单设置未完成嘛?";
+      }
+        Swal.fire({
+            text: text,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '确 定',
+            cancelButtonText:'取消',
+            customClass: {
+              confirmButton: 'btn btn-primary me-2',
+              cancelButton: 'btn btn-label-secondary'
+            },
+            buttonsStyling: false
+          }).then(function (result) {
+            if (result.value) {
+              $.get("/Deal/set_function", {
+                id: id,type:type
+            }, function (res) {
+                
+                if (res.code == 200) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: res.msg,
+                        customClass: {
+                          confirmButton: 'btn btn-primary'
+                        }
+                     }).then(function (result) {
+                         if(result.value){
+                            location.reload();
+                         }
+                     });
+                } else {
+                    Swal.fire({
+                        title: res.msg,
+                        icon: 'error',
+                        customClass: {
+                          confirmButton: 'btn btn-primary'
+                        }
+                    });
+                }
+            }, 'json');
+            }
+          });
+    }
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+    waitForElementToLoad();
+});
+
+function waitForElementToLoad() {
+    const targetNode = document.getElementById('DataTables_Table_0_wrapper');
+    if (targetNode) {
+        setupMutationObserver(targetNode);
+    } else {
+        // 轮询检查元素是否加载完成
+        setTimeout(waitForElementToLoad, 100);
+    }
+}
+
+function setupMutationObserver(targetNode) {
+    // 创建一个 MutationObserver 实例
+    const observer = new MutationObserver(function(mutationsList, observer) {
+        for (let mutation of mutationsList) {
+            if (mutation.type === 'childList') {
+                // 选择所有表格的 tbody 中的 tr 元素
+                const rows = document.querySelectorAll('table tbody tr');
+                // 初始 z-index 值为行数
+                let zIndex = rows.length; 
+                // 遍历所有行
+                rows.forEach((row, index) => {
+                    // 选择当前行中的所有 td 元素
+                    const cells = row.querySelectorAll('td');
+                    // 检查是否有 td 元素
+                    if (cells.length > 0) {
+                        // 选择最后一个 td 元素
+                        const lastCell = cells[cells.length - 1];
+                        // 为最后一个 td 元素设置 z-index
+                        lastCell.style.zIndex = zIndex;
+                        // 递减 z-index 的值
+                        zIndex--;
+                    }
+                });
+            }
+        }
+    });
+    // 配置观察选项
+    const config = { childList: true, subtree: true };
+    // 开始观察目标节点
+    observer.observe(targetNode, config);
+}
+</script>

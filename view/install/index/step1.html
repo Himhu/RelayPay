@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>安装环境检测</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f6f9fc 0%, #dfe6e9 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            padding: 15px;
+        }
+        .main-container {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+            width: 600px;
+            max-width: 95%;
+            position: relative;
+            overflow: hidden;
+        }
+        .main-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #4481eb, #04befe);
+        }
+        .title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            text-align: center;
+            color: #2c3e50;
+        }
+        .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            margin: 8px 0;
+            border-radius: 8px;
+            background-color: #f8fafc;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+        .item:hover {
+            background-color: #fff;
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .label {
+            font-size: 14px;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+        .value {
+            font-size: 14px;
+            color: #34495e;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .check-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            font-size: 12px;
+        }
+        .check-icon-success {
+            background-color: rgba(0, 184, 148, 0.1);
+            color: #00b894;
+        }
+        .check-icon-error {
+            background-color: rgba(255, 118, 117, 0.1);
+            color: #ff7675;
+        }
+        .inner-table {
+            border-collapse: separate;
+            border-spacing: 4px;
+        }
+        .inner-table td {
+            padding: 6px 10px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        .btn-container {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+        .btn {
+            flex: 1;
+            background: linear-gradient(90deg, #4481eb, #04befe);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(68, 129, 235, 0.25);
+        }
+        #prev-step {
+            background: linear-gradient(90deg, #a8c0ff, #3f2b96);
+        }
+        @media (max-width: 480px) {
+            .main-container {
+                padding: 20px 15px;
+            }
+            .title {
+                font-size: 20px;
+                margin-bottom: 20px;
+            }
+            .item {
+                padding: 10px;
+                margin: 6px 0;
+            }
+            .btn-container {
+                flex-direction: column;
+            }
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="title">安装环境检测</div>
+        <div class="item">
+            <div class="label">PHP 版本</div>
+            <div class="value">
+                {if  condition="$checkEnv['php'] >= 8.0"}
+                {$checkEnv.php}<i class="check-icon check-icon-success">&#10004;</i>
+                {else}
+                {$checkEnv.php}<i class="check-icon check-icon-error">&#10060;</i>
+                {/if}
+            </div>
+        </div>
+        <div class="item">
+            <div class="label">mysqli 模块</div>
+            <div class="value">
+                {if  condition="$checkEnv['mysqli'] == 1 "}
+                已安装<i class="check-icon check-icon-success">&#10004;</i>
+                {else}
+                未安装<i class="check-icon check-icon-error">&#10060;</i>
+                {/if}
+            </div>
+        </div>
+        <div class="item">
+            <div class="label">curl 扩展</div>
+            <div class="value">
+                {if  condition="$checkEnv['curl'] == 1 "}
+                已启用<i class="check-icon check-icon-success">&#10004;</i>
+                {else}
+                未启用<i class="check-icon check-icon-error">&#10060;</i>
+                {/if}
+            </div>
+        </div>
+        <div class="item">
+            <div class="label">fileinfo 扩展</div>
+            <div class="value">
+                {if  condition="$checkEnv['fileinfo'] == 1 "}
+                已启用<i class="check-icon check-icon-success">&#10004;</i>
+                {else}
+                未启用<i class="check-icon check-icon-error">&#10060;</i>
+                {/if}
+            </div>
+        </div>
+        <div class="item">
+            <div class="label">目录权限</div>
+            <div class="value">
+                <table class="inner-table">
+                    <tbody>
+                        {volist name='checkfile' id='vo'}
+                        <tr>
+                            <td>{$vo[3]}</td>
+                            <td><i class="check-icon">
+                                {if $vo[1] == 'layui-icon-ok-circle'}
+                                &#10004;
+                                {else}
+                                &#10060;
+                                {/if}
+                            </i></td>
+                            <td><i class="check-icon">
+                                {if $vo[2] == 'layui-icon-ok-circle'}
+                                &#10004;
+                                {else}
+                                &#10060;
+                                {/if}
+                            </i></td>
+                        </tr>
+                        {/volist}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="btn-container">
+            <button class="btn" id="prev-step">上一步</button>
+            <button class="btn" id="next-step">下一步</button>
+        </div>
+    </div>
+    <script type="text/javascript">
+        document.getElementById('prev-step').addEventListener('click', function() {
+            window.history.go(-1);
+        });
+        document.getElementById('next-step').addEventListener('click', function() {
+            fetch('/install.php/index/step1', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    php: '{if $checkEnv['php'] >= 8.0}true{else}false{/if}',
+                    mysqli: '{if $checkEnv['mysqli'] == 1}true{else}false{/if}',
+                    curl: '{if $checkEnv['curl'] == 1}true{else}false{/if}',
+                    fileinfo: '{if $checkEnv['fileinfo'] == 1}true{else}false{/if}'
+                })
+            })
+        .then(response => response.json())
+        .then(data => {
+                if (data.code === 200) {
+                    window.location.href = data.url;
+                } else {
+                    alert(data.msg);
+                }
+            })
+        .catch(error => {
+                console.error('Error:', error);
+                alert('请求失败，请检查环境是否部署完成或检查网络');
+            });
+        });
+    </script>
+</body>
+</html>

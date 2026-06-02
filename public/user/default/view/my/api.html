@@ -1,0 +1,525 @@
+{include file="public/user_header" title="API管理" /}
+<!-- 依 赖 样 式-->
+<link rel="stylesheet" href="https://lf9-cdn-tos.bytecdntp.com/cdn/expire-1-M/element-ui/2.15.7/theme-chalk/index.css"
+  type="text/css" />
+<link rel="stylesheet" href="/user/default/static/assets/css/api.css" type="text/css" />
+<style>
+  @media (max-width: 768px) {
+    .grid-cols-3 {
+      grid-template-columns: unset !important;
+    }
+
+    .key {
+      width: 65%;
+    }
+  }
+
+     .el-radio-button.el-radio-button--mini.is-active.el-radio-button__inner  { 
+            background-color: #366ef4; 
+            color: #FFF; 
+        } 
+     .el-radio-button.el-radio-button--mini.el-radio-button__inner  { 
+            color: #606266; 
+            background-color: #FFF; 
+            border-color: #FFF; 
+            box-shadow: -1px 0 0 0 #DCDFE6; 
+        } 
+
+</style>
+<div class="container-xxl flex-grow-1 container-p-y">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="row">
+
+        <div class="col-md-6 col-12 mb-md-0 mb-4">
+          <div class="card">
+            <h5 class="card-header">商户信息</h5>
+            <div class="card-body">
+              {if condition="getConfig()['is_pay_api'] eq 1" }
+              <div class="bg-gray-50 rounded-lg p-4" style="margin-bottom: 15px;">
+                <div d class="text-sm text-gray-600 mb-2 flex items-center"><i
+                    class="el-icon-connection text-blue-500 mr-2"></i><span>线路选择</span></div>
+                <div role="radiogroup" class="el-radio-group">
+                  {volist name='urlArr' id='vo'}
+                  <label role="radio" tabindex="0" class="el-radio-button el-radio-button--mini" aria-checked="true"
+                    onclick="toggleActive(this)"><input type="radio" tabindex="-1" autocomplete="off"
+                      class="el-radio-button__orig-radio" value="{$vo.url}" onclick="updateUrls(this.value)"><span
+                      class="el-radio-button__inner"> {$vo.name} <!----></span></label>
+                  {/volist}
+                </div>
+                <div class="mt-2 text-xs text-gray-500"><i class="el-icon-info mr-1"></i> 多条线路可以提供更好的访问体验，建议优先选择响应最快的线路
+                </div>
+              </div>
+              {/if}
+              <div class="flex flex-col space-y-4"><!---->
+                <div class="flex items-start bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-4 text-white">
+                  <div class="flex-1">
+                    <div class="text-xs opacity-80 mb-1">商户ID</div>
+                    <div class="font-mono text-lg font-medium copy-hover group cursor-pointer" id="user_id"> {$user.id}
+                      <span id="copy_id" class="text-muted cursor-pointer copy" data-bs-toggle="tooltip"
+                        data-bs-offset="0,8" data-bs-placement="top" data-bs-custom-class="tooltip-primary"
+                        data-clipboard-text="{$user.id}" title="复 制"><i class="bx bx-copy"
+                          style="color:white;"></i></span>
+                    </div>
+                  </div>
+                  <div class="bg-white/20 rounded-full p-2"><span class="badge bg-label-info rounded-circle p-2">
+                      <i class="bx bx-user bx-sm"></i>
+                    </span></div>
+                </div>
+                <div
+                  class="flex items-start bg-gradient-to-r from-orange-500 to-red-500 rounded-lg p-4 text-white relative group">
+                  <div class="flex-1 key">
+                    <div class="text-xs opacity-80 mb-1 flex items-center"><span>商户密钥</span></div>
+                    <div class="font-mono text-lg font-medium copy-hover cursor-pointer">
+                      <span id="user_key">{$user.user_key}</span> <span id="copy_key"
+                        class="text-muted cursor-pointer me-2 copy" data-bs-toggle="tooltip" data-bs-offset="0,8"
+                        data-bs-placement="top" data-bs-custom-class="tooltip-primary"
+                        data-clipboard-text="{$user.user_key}" title="复 制"><i class="bx bx-copy"
+                          style="color:white;"></i></span>
+                    </div>
+                  </div>
+                  <div class="bg-white/20 rounded-full p-2"><span class="badge bg-label-danger rounded-circle p-2">
+                      <i class='bx bx-dialpad-alt bx-sm'></i>
+                    </span></div>
+                </div>
+                <div
+                  class="flex items-start bg-gradient-to-r from-pink to-fuchsia  rounded-lg p-4 text-white relative group">
+                  <div class="flex-1 key">
+                    <div class="text-xs opacity-80 mb-1 flex items-center"><span>软件通讯密钥</span></div>
+                    <div class="font-mono text-lg font-medium copy-hover cursor-pointer">
+                      <span id="user_appkey">{$user.appkey}</span> <span id="copy_appkey"
+                        class="text-muted cursor-pointer me-2 copy" data-bs-toggle="tooltip" data-bs-offset="0,8"
+                        data-bs-placement="top" data-bs-custom-class="tooltip-primary"
+                        data-clipboard-text="{$user.appkey}" title="复 制"><i class="bx bx-copy"
+                          style="color:white;"></i></span>
+                    </div>
+                  </div>
+                  <div class="bg-white/20 rounded-full p-2"><span class="badge bg-label-pink rounded-circle p-2">
+                      <i class='bx bx-dialpad-alt bx-sm'></i>
+                    </span></div>
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                  <div
+                    class="operation-card bg-white border rounded-lg p-3 cursor-pointer transition-all duration-300 relative group">
+                    <div class="operation-content flex items-center space-x-2" id="GeneratingKey">
+                      <div class="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center"><i
+                          class='bx bx-refresh' style='color:#ef4444'></i></div>
+                      <div class="flex-1">
+                        <div class="text-sm font-medium text-gray-700">重置商户密钥</div>
+                        <div class="text-xs text-gray-400">更新商户密钥</div>
+                      </div>
+                    </div>
+                    <div
+                      class="absolute inset-0 bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg">
+                    </div>
+                  </div>
+                  <div
+                    class="operation-card bg-white border rounded-lg p-3 cursor-pointer transition-all duration-300 relative group">
+                    <div class="operation-content flex items-center space-x-2" id="GeneratingAppKey">
+                      <div class="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center"><i
+                          class='bx bx-refresh' style='color:#ef4444'></i></div>
+                      <div class="flex-1">
+                        <div class="text-sm font-medium text-gray-700">重置通讯密钥</div>
+                        <div class="text-xs text-gray-400">更新软件通讯密钥</div>
+                      </div>
+                    </div>
+                    <div
+                      class="absolute inset-0 bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg">
+                    </div>
+                  </div>
+                  <div onclick="details()"
+                    class="operation-card bg-white border rounded-lg p-3 cursor-pointer transition-all duration-300 relative group">
+                    <div class="operation-content flex items-center space-x-2 ">
+                      <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center"><i
+                          class='bx bxs-copy-alt' style='color:#3b82f6'></i></div>
+                      <div class="flex-1">
+                        <div class="text-sm font-medium text-gray-700">复制信息</div>
+                        <div class="text-xs text-gray-400">一键复制</div>
+                      </div>
+                    </div>
+                    <div
+                      class="absolute inset-0 bg-blue-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg">
+                    </div>
+                  </div>
+                  <div onclick="scanCode()"
+                    class="operation-card bg-white border rounded-lg p-3 cursor-pointer transition-all duration-300 relative group">
+                    <div class="operation-content flex items-center space-x-2 ">
+                      <div class="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center"><i
+                          class='bx bx-image' style='color:rgba(16,185,129)'></i></div>
+                      <div class="flex-1">
+                        <div class="text-sm font-medium text-gray-700">二维码</div>
+                        <div class="text-xs text-gray-400">扫码获取</div>
+                      </div>
+                    </div>
+                    <div
+                      class="absolute inset-0 bg-blue-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-12">
+          <div class="card">
+
+            <h5 class="card-header">支付API</h5>
+            <div class="card-body">
+              <div class="flex flex-col space-y-4">
+                <div class="flex items-start bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-4 text-white">
+                  <div class="flex-1">
+                    <div class="text-xs opacity-80 mb-2">接口说明</div>
+                    <div class="text-sm leading-relaxed opacity-90">
+                      本系统提供标准支付接口，支持其他系统对接调用。您可以将以下接口集成到您的系统中，实现支付功能。 </div>
+                    <div class="flex items-center mt-2 text-xs opacity-80"><i class='bx bx-info-circle'
+                        style='color:#ffffff;margin-right: 5px;'></i><span>调用前请确保已完成商户配置，并妥善保管密钥信息</span>
+                    </div>
+                  </div>
+                  <div class="bg-white/20 rounded-full p-2"><span class="badge bg-label-info rounded-circle p-2">
+                      <i class='bx bx-message-dots'></i>
+                    </span></div>
+                </div>
+                <div class="bg-white border rounded-lg overflow-hidden">
+                  <div class="bg-green-50 px-4 py-3 border-b flex items-center justify-between">
+                    <div class="flex items-center space-x-2"><i class='bx bxs-badge-check'
+                        style='color:#10a010'></i><span class="font-medium text-green-700">易支付V1接口</span><span
+                        class="el-tag el-tag--success el-tag--mini el-tag--plain">推荐</span></div>
+                    <div class="text-xs text-green-600">标准协议</div>
+                  </div>
+                  <div class="p-4 space-y-3">
+                    <div class="flex items-center space-x-2 text-xs text-gray-500"><i class='bx bx-check'
+                        style='color:#10a010'></i><span>支持同步/异步通知</span><i class='bx bx-check'
+                        style='color:#10a010'></i><span>支持PC/移动端支付</span><i class='bx bx-check'
+                        style='color:#10a010'></i><span>提供完整支付状态</span></div>
+                    <div class="copy-box group">
+                      <div>
+                        <div class="text-xs text-gray-400 mb-1">接口地址</div>
+                        <div class="font-mono" id="interfaceUrl">{$url}</div>
+                      </div><span id="copy_url" class="copy" data-bs-toggle="tooltip" data-bs-offset="0,8"
+                        data-bs-placement="top" data-bs-custom-class="tooltip-primary" data-clipboard-text="{$url}"
+                        title="复 制"><i class='bx bxs-copy-alt'></i></span>
+                    </div>
+                    <div class="copy-box group">
+                      <div>
+                        <div class="text-xs text-gray-400 mb-1">Submit提交</div>
+                        <div class="font-mono" id="submitUrl">{$url}submit.php</div>
+                        <div class="text-xs text-gray-400 mt-1">适用于表单提交方式，支持自动跳转</div>
+                      </div><span id="copy_url_submit" class="copy" data-bs-toggle="tooltip" data-bs-offset="0,8"
+                        data-bs-placement="top" data-bs-custom-class="tooltip-primary"
+                        data-clipboard-text="{$url}submit.php" title="复 制"><i class='bx bxs-copy-alt'></i></span>
+                    </div>
+                    <div class="copy-box group">
+                      <div>
+                        <div class="text-xs text-gray-400 mb-1">MAPI提交</div>
+                        <div class="font-mono" id="mapiUrl">{$url}mapi.php</div>
+                        <div class="text-xs text-gray-400 mt-1">适用于API调用方式，返回JSON格式数据</div>
+                      </div><span id="copy_url_mapi" class="copy" data-bs-toggle="tooltip" data-bs-offset="0,8"
+                        data-bs-placement="top" data-bs-custom-class="tooltip-primary"
+                        data-clipboard-text="{$url}mapi.php" title="复 制"><i class='bx bxs-copy-alt'></i></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{include file="public/user_footer" /}
+<!-- Page Js -->
+
+<script>
+
+  layui.use(['form'], function () {
+    var $ = layui.jquery;
+    var form = layui.form;
+
+    // 提取公共的确认对话框配置 
+    const commonConfirmConfig = {
+      title: '你真的要重新生成KEY吗?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: '确 定',
+      cancelButtonText: '取 消',
+      customClass: {
+        confirmButton: 'btn btn-primary me-3',
+        cancelButton: 'btn btn-label-secondary'
+      },
+      buttonsStyling: false
+    };
+
+    // 提取公共的成功提示框配置 
+    const commonSuccessConfig = {
+      icon: 'success',
+      title: '生 成 成 功',
+      customClass: {
+        confirmButton: 'btn btn-success'
+      }
+    };
+
+    // 提取公共的错误提示框配置 
+    const commonErrorConfig = {
+      icon: 'error',
+      customClass: {
+        confirmButton: 'btn btn-danger'
+      }
+    };
+
+    // 处理重新生成密钥的函数 
+    function handleGenerateKey(buttonId, targetElementId, apiUrl) {
+      $(buttonId).click(function () {
+        Swal.fire(commonConfirmConfig).then(function (result) {
+          if (result.value) {
+            $.get(apiUrl, function (result) {
+              if (result.code == '1') {
+                commonSuccessConfig.text = "生成成功,新密钥：" + result.key;
+                Swal.fire(commonSuccessConfig);
+                $(targetElementId).html(result.key);
+                $(`#copy_${targetElementId.split('_')[1]}`).attr('data-clipboard-text', result.key);
+              } else {
+                commonErrorConfig.title = result.msg;
+                Swal.fire(commonErrorConfig);
+              }
+            });
+          }
+        });
+      });
+    }
+
+    // 调用函数处理不同的按钮点击事件 
+    handleGenerateKey('#GeneratingKey', '#user_key', '/My/GeneratingKey');
+    handleGenerateKey('#GeneratingAppKey', '#user_appkey', '/My/goAPPKey');
+
+    // 初始化clipboard.js  
+    new ClipboardJS('.clipboard');
+
+    //Copy Api Info
+    $("[id^='copy']").click(function () {
+      clipboard = new ClipboardJS('.copy');
+      clipboard.on('success', function (e) {
+        Swal.fire({
+          icon: 'success',
+          title: '复 制 成 功',
+          customClass: {
+            confirmButton: 'btn btn-success'
+          }
+        });
+      });
+
+      clipboard.on('error', function (e) {
+        Swal.fire({
+          icon: 'error',
+          title: '复制失败,请手动复制',
+          customClass: {
+            confirmButton: 'btn btn-danger'
+          }
+        });
+      });
+    });
+
+
+
+
+    var dt_basic_table = $('.datatables-basic');
+
+    // DataTable
+    // --------------------------------------------------------------------
+    if (dt_basic_table.length) {
+      dt_basic = dt_basic_table.DataTable({
+        ajax: '/My/loginlog',
+        columns: [
+          { data: 'uid' },
+          { data: 'url' },
+          { data: 'desc' },
+          { data: 'ip' },
+          { data: 'create_time' },
+        ],
+        order: [[0, 'desc']],
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-center justify-content-md-end"f>>t<"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+        displayLength: 10,
+        lengthMenu: [10, 20, 50],
+        scrollX: true,
+
+      });
+    }
+  });
+
+  //选择复制弹窗详情
+  function details() {
+    Swal.fire({
+      title: "复制需要的对接信息",
+      html: `<button type="button" class="btn btn-primary copy" onclick="getCopyInfo('website')" style="margin-bottom:10px;">平台对接</button><br/>
+                                <button type="button" class="btn btn-secondary copy" onclick="getCopyInfo('encryption')">软件对接加密信息</button>
+                                      `,
+      showCloseButton: true,
+      showConfirmButton: false,
+    });
+
+  }
+
+  // 复制密钥参数信息 
+  function getCopyInfo(type) {
+    // 获取基础信息 
+    const interfaceUrl = $('#interfaceUrl').text().replace(/\/$/, '');
+    const id = $('#user_id').text();
+    const userKey = $('#user_key').text();
+    const userAppkey = $('#user_appkey').text();
+
+    // 准备复制内容 
+    const prepareData = () => {
+      if (type === 'encryption') {
+        const data = JSON.stringify({
+          site: interfaceUrl,
+          pid: id,
+          key: userAppkey
+        });
+        return btoa(unescape(encodeURIComponent(data)));
+      } else {
+        return `Url: ${interfaceUrl} - ID: ${id} - Key: ${userKey}`;
+      }
+    };
+
+    // 初始化剪贴板 
+    const initializeClipboard = (copyText) => {
+      const clipboard = new ClipboardJS('.copy', {
+        text: () => copyText
+      });
+
+      // 设置事件监听 
+      const setupEvents = () => {
+        clipboard.on('success', () => {
+          Swal.fire({
+            icon: 'success',
+            title: '复 制 成 功',
+            customClass: {
+              confirmButton: 'btn btn-success'
+            }
+          });
+        });
+
+        clipboard.on('error', () => {
+          Swal.fire({
+            icon: 'error',
+            title: '复制失败,请手动复制',
+            customClass: {
+              confirmButton: 'btn btn-danger'
+            }
+          });
+        });
+      };
+
+      return setupEvents();
+    };
+
+    // 执行流程 
+    const copyText = prepareData();
+    initializeClipboard(copyText);
+  }
+  //获取二维码
+  function scanCode() {
+    let interfaceUrl = $("#interfaceUrl").text();
+    // 检查链接是否以 / 结尾，如果是则去掉
+    if (interfaceUrl.endsWith('/')) {
+      interfaceUrl = interfaceUrl.slice(0, -1);
+    }
+    let id = $("#user_id").text();
+    let key = $("#user_appkey").text();
+    let data = { id: id, key: key, url: interfaceUrl };
+    $.post('/My/getApiQrcode', data, function (res) {
+      if (res.code == 200) {
+        Swal.fire({
+          title: "商户二维码",
+          html: `
+                                  <img style="margin:auto;" src="`+ res.qrcode + `" >
+                                  <div  class="text-gray-500 text-sm pt-4">
+                                    <div  class="flex items-center justify-center">
+                                      <i  class="el-icon-warning-outline text-orange-500 mr-1"></i>
+                                      <span >扫描二维码获取商户信息</span>
+                                    </div>
+                                    <div class="text-red-500 text-xs mt-2 flex items-center justify-center">
+                                      <i class="el-icon-lock mr-1"></i>
+                                      <span>此二维码涉及商户信息，请勿泄露</span>
+                                    </div>
+                                  </div>`,
+          showCloseButton: true,
+          showConfirmButton: false,
+        });
+
+      } else {
+        Swal.fire({
+          title: res.msg,
+          icon: 'error',
+          customClass: {
+            confirmButton: 'btn btn-primary'
+          }
+        });
+      }
+      return false;
+    })
+
+  }
+
+  function toggleActive(clickedLabel) {
+    // 获取所有的 label 元素
+    var labels = document.querySelectorAll('.el-radio-button.el-radio-button--mini');
+    // 遍历 label 元素，移除 is-active 类并恢复默认样式
+    for (var i = 0; i < labels.length; i++) {
+      labels[i].classList.remove('is-active');
+      var span = labels[i].querySelector('.el-radio-button__inner');
+      // 移除默认点击样式
+      span.style.color = '#606266';
+      span.style.backgroundColor = '#FFF';
+      span.style.borderColor = '#FFF';
+      span.style.boxShadow = '-1px 0 0 0 #DCDFE6';
+    }
+    // 给被点击的 label 元素添加 is-active 类
+    clickedLabel.classList.add('is-active');
+    var clickedSpan = clickedLabel.querySelector('.el-radio-button__inner');
+    clickedSpan.style.backgroundColor = '#366ef4';
+    clickedSpan.style.color = '#FFF';
+  }
+
+  function updateUrls(selectedUrl) {
+    // 先清除之前的内容
+    var interfaceUrlDiv = document.getElementById('interfaceUrl');
+    interfaceUrlDiv.textContent = '';
+    var copyUrlSpan = document.getElementById('copy_url');
+    copyUrlSpan.setAttribute('data-clipboard-text', '');
+
+    var submitUrlDiv = document.getElementById('submitUrl');
+    submitUrlDiv.textContent = '';
+    var copyUrlSubmitSpan = document.getElementById('copy_url_submit');
+    copyUrlSubmitSpan.setAttribute('data-clipboard-text', '');
+
+    var mapiUrlDiv = document.getElementById('mapiUrl');
+    mapiUrlDiv.textContent = '';
+    var copyUrlMapiSpan = document.getElementById('copy_url_mapi');
+    copyUrlMapiSpan.setAttribute('data-clipboard-text', '');
+
+
+    // 更新接口地址
+    interfaceUrlDiv.textContent = selectedUrl;
+    copyUrlSpan.setAttribute('data-clipboard-text', selectedUrl);
+
+    // 更新 Submit 提交地址
+    submitUrlDiv.textContent = selectedUrl + "submit.php";
+    copyUrlSubmitSpan.setAttribute('data-clipboard-text', selectedUrl + "submit.php");
+
+    // 更新 MAPI 提交地址
+    mapiUrlDiv.textContent = selectedUrl + "mapi.php";
+    copyUrlMapiSpan.setAttribute('data-clipboard-text', selectedUrl + "mapi.php");
+  }
+  // 首次加载时，确保第一个元素有 is-active 类
+  window.onload = function () {
+    var firstLabel = document.querySelector('.el-radio-button.el-radio-button--mini.is-active');
+    if (!firstLabel) {
+      var labels = document.querySelectorAll('.el-radio-button.el-radio-button--mini');
+      if (labels.length > 0) {
+        labels[0].classList.add('is-active');
+      }
+    }
+  };
+
+</script>

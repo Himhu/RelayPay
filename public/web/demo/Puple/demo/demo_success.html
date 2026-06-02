@@ -1,0 +1,406 @@
+<html>
+	<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<meta name="applicable-device" content="pc,mobile">
+	<link href="/favicon.ico" rel="shortcut icon"/>
+	<title>体验支付成功-{:getConfig()['sitename']}</title>
+	<script src="/static/index/js/index/jquery.min.js"></script>
+<link rel="stylesheet" href="/static/index/css/bootstrap.min.css"/>
+<link rel="stylesheet" href="/static/index/css/demo.css"/>
+<link rel="stylesheet" href="/static/index/css/m_reset.css"/>
+<style>
+:root {
+	--primary-color: #8b5cf6;
+	--primary-light: #a78bfa;
+	--primary-dark: #7c3aed;
+	--gray-50: #fafafa;
+	--gray-100: #f4f4f5;
+	--gray-200: #e4e4e7;
+	--gray-300: #d4d4d8;
+	--gray-600: #52525b;
+	--gray-700: #3f3f46;
+	--gray-900: #18181b;
+	--success-color: #10b981;
+	--success-light: #34d399;
+}
+
+body {
+	background: linear-gradient(135deg, #f6f7f9 0%, #ffffff 100%);
+	min-height: 100vh;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+	margin: 0;
+	padding: 0;
+	color: var(--gray-900);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.container {
+	max-width: 680px;
+	margin: 2rem auto;
+	padding: 0 1rem;
+}
+
+.content {
+	background: white;
+	border-radius: 32px;
+	box-shadow: 0 12px 40px rgba(0,0,0,0.08),
+				0 20px 80px rgba(139, 92, 246, 0.12);
+	padding: 3rem;
+	margin-top: 1rem;
+}
+
+.logo-container {
+	text-align: center;
+	padding: 0.5rem 0 2rem;
+	filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+}
+
+.logo-container img {
+	max-width: 200px;
+	height: auto;
+	transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.logo-container img:hover {
+	transform: scale(1.08) translateY(-5px);
+	filter: drop-shadow(0 8px 16px rgba(139, 92, 246, 0.2));
+}
+
+.success-message {
+	text-align: center;
+	margin: 0;
+	animation: fadeInUp 0.6s ease-out;
+	padding: 1rem;
+}
+
+.success-icon {
+	font-size: 5rem;
+	color: var(--success-color);
+	margin-bottom: 1.5rem;
+	display: inline-block;
+	animation: scaleIn 0.5s ease-out;
+	background: rgba(16, 185, 129, 0.1);
+	width: 120px;
+	height: 120px;
+	line-height: 120px;
+	border-radius: 60px;
+	text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+	position: relative;
+	transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.success-icon:hover {
+	transform: scale(1.1) rotate(360deg);
+	background: rgba(16, 185, 129, 0.15);
+	box-shadow: 0 0 0 8px rgba(16, 185, 129, 0.1);
+}
+
+.success-icon::after {
+	content: '';
+	position: absolute;
+	top: -8px;
+	left: -8px;
+	right: -8px;
+	bottom: -8px;
+	border-radius: 50%;
+	border: 2px solid var(--success-light);
+	animation: pulse 2s infinite;
+}
+
+.success-title {
+	font-size: 2.5rem;
+	font-weight: 600;
+	color: var(--success-color);
+	margin-bottom: 1rem;
+	text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+	transition: all 0.3s ease;
+}
+
+.success-title:hover {
+	transform: translateY(-3px);
+	text-shadow: 0 4px 8px rgba(16, 185, 129, 0.2);
+}
+
+.success-subtitle {
+	font-size: 1.5rem;
+	color: var(--gray-600);
+	margin-bottom: 2rem;
+	line-height: 1.4;
+	transition: all 0.3s ease;
+}
+
+.success-subtitle:hover {
+	color: var(--gray-900);
+	transform: translateY(-2px);
+}
+
+.back-home {
+	display: inline-block;
+	padding: 1rem 2.5rem;
+	background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+	color: white;
+	text-decoration: none;
+	border-radius: 14px;
+	font-size: 1.125rem;
+	font-weight: 500;
+	transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+	margin-top: 1rem;
+	box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+	position: relative;
+	overflow: hidden;
+}
+
+.back-home:hover {
+	transform: translateY(-3px) scale(1.02);
+	box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
+	background: linear-gradient(135deg, var(--primary-light), var(--primary-color));
+	color: white;
+	text-decoration: none;
+}
+
+.back-home::after {
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 300%;
+	height: 300%;
+	background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 60%);
+	transform: translate(-50%, -50%) scale(0);
+	transition: transform 0.6s ease-out;
+}
+
+.back-home:hover::after {
+	transform: translate(-50%, -50%) scale(1);
+}
+
+@keyframes pulse {
+	0% {
+		transform: scale(1);
+		opacity: 0.5;
+	}
+	50% {
+		transform: scale(1.1);
+		opacity: 0.2;
+	}
+	100% {
+		transform: scale(1);
+		opacity: 0.5;
+	}
+}
+
+.steps {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin: 3rem 0;
+	padding: 0;
+	list-style: none;
+}
+
+.steps li {
+	flex: 1;
+	text-align: center;
+	position: relative;
+	padding: 0 1rem;
+}
+
+.steps li::before {
+	content: '';
+	position: absolute;
+	top: -2rem;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 2.5rem;
+	height: 2.5rem;
+	background: var(--gray-100);
+	border-radius: 50%;
+	border: 2px solid var(--gray-200);
+	transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+	z-index: 1;
+}
+
+.steps li::after {
+	content: '';
+	position: absolute;
+	top: -1.25rem;
+	left: calc(50% + 1.25rem);
+	width: calc(100% - 2.5rem);
+	height: 2px;
+	background: var(--gray-200);
+}
+
+.steps li:last-child::after {
+	display: none;
+}
+
+.steps li.active::before {
+	background: var(--success-color);
+	border-color: var(--success-light);
+	box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+}
+
+.steps li.completed::before {
+	background: var(--success-light);
+	border-color: var(--success-color);
+}
+
+.steps li.completed::after {
+	background: var(--success-light);
+}
+
+.footer {
+	text-align: center;
+	margin-top: 3rem;
+	padding: 2rem 0;
+	color: var(--gray-600);
+	font-size: 0.875rem;
+}
+
+.footer a {
+	color: var(--primary-color);
+	text-decoration: none;
+	transition: color 0.3s ease;
+}
+
+.footer a:hover {
+	color: var(--primary-dark);
+}
+
+@keyframes fadeInUp {
+	from {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes scaleIn {
+	from {
+		transform: scale(0);
+	}
+	to {
+		transform: scale(1);
+	}
+}
+
+@media (max-width: 480px) {
+	.container {
+		margin: 1rem auto;
+		padding: 0 0.75rem;
+	}
+	
+	.content {
+		padding: 2rem;
+		border-radius: 28px;
+	}
+
+	.logo-container {
+		padding: 0.5rem 0 1.5rem;
+	}
+
+	.logo-container img {
+		max-width: 180px;
+	}
+
+	.success-title {
+		font-size: 1.75rem;
+	}
+
+	.success-subtitle {
+		font-size: 1.125rem;
+	}
+
+	.steps {
+		flex-direction: column;
+		gap: 2rem;
+	}
+
+	.steps li {
+		width: 100%;
+		padding: 0;
+	}
+
+	.steps li::after {
+		width: 2px;
+		height: 2rem;
+		left: 50%;
+		top: calc(100% + 0.5rem);
+	}
+}
+
+.nav-links {
+	position: fixed;
+	top: 2rem;
+	right: 2rem;
+	display: flex;
+	gap: 1rem;
+	z-index: 100;
+}
+
+.nav-link {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.75rem 1.5rem;
+	background: rgba(255, 255, 255, 0.9);
+	border: 1px solid var(--gray-200);
+	border-radius: 12px;
+	color: var(--gray-700);
+	font-size: 1rem;
+	font-weight: 500;
+	text-decoration: none;
+	transition: all 0.3s ease;
+	backdrop-filter: blur(8px);
+	box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.nav-link:hover {
+	background: white;
+	color: var(--primary-color);
+	border-color: var(--primary-light);
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+	text-decoration: none;
+}
+</style>
+	</head>
+	<body>
+
+	<div class="nav-links">
+		<a href="/User/Reg" target="_blank" class="nav-link">商户申请</a>
+		<a href="/" target="_blank" class="nav-link">返回首页</a>
+	</div>
+
+	<div class="container">
+	   <div class="row">
+		<div class="col-lg-12 col-sx-12">
+			<div class="head">
+
+</div>
+				  <div class="content">
+				<div class="logo-container">
+					<img src="{:getConfig()['logo']}" alt="{:getConfig()['sitename']}"/>
+				</div>
+				<div class="success-message">
+					<div class="success-icon">✓</div>
+					<div class="success-title">支付成功！</div>
+					<div class="success-subtitle">感谢您使用{:getConfig()['sitename']}</div>
+					<a href="/" class="back-home">返回首页</a>
+				</div>
+			</div>
+			   <div class="footer">
+<p> <span > © Copyright <script>
+	document.write(new Date().getFullYear());
+  </script>&nbsp;<a href="/">{:getConfig()['sitename']}</a> | 工信部备案：<a target="_blank" href="http://www.beian.miit.gov.cn" class="">{:getConfig()['icp']}</a></span></p>
+</div>    </div>
+
+	</div>
+	</div>
+	</body>
+	</html>

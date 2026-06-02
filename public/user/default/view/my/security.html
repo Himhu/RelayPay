@@ -1,0 +1,443 @@
+ {include file="public/user_header" title="安全设置" /}
+<!-- Content -->
+        
+          <div class="container-xxl flex-grow-1 container-p-y">
+
+<div class="row">
+  <div class="col-md-12">
+    <ul class="nav nav-pills flex-column flex-md-row mb-3">
+                    <li class="nav-item">
+                      <a class="nav-link" href="/My/UserPro"><i class="bx bx-user me-1"></i> 账 户 详 情</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link active" href="javascript:void(0);"><i class="bx bx-lock-alt me-1"></i>安 全 设 置</a></li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="/My/Notifications"
+                        ><i class="bx bx-bell me-1"></i> 通 知 设 置</a
+                      >
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="/My/Connections"
+                        ><i class="bx bx-link-alt me-1"></i>账 号 绑 定</a
+                      >
+                    </li>
+                    {if condition="getConfig()['isRealName'] eq 1"}
+                    <li class="nav-item">
+                      <a class="nav-link" href="/My/Real_name"
+                        ><i class='bx bx-id-card me-1'></i>实 名 认 证</a
+                      >
+                    </li>
+                    {/if}
+                  </ul>
+    <!-- Change Password -->
+    <div class="card mb-4">
+      <h5 class="card-header">修 改 密 码</h5>
+      <div class="card-body">
+        <form class="layui-form" id="formBasForm" lay-filter="formBasForm">
+          <div class="row">
+            <div class="mb-3 col-md-6 form-password-toggle">
+              <label class="form-label">新 密 码</label>
+              <div class="input-group input-group-merge">
+                <input class="form-control"  type="password"  name="newpwd" placeholder="请输入新密码" />
+                <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
+              </div>
+            </div>
+
+            <div class="mb-3 col-md-6 form-password-toggle">
+              <label class="form-label">确 认 新 密 码</label>
+              <div class="input-group input-group-merge">
+                <input class="form-control" type="password" name="renewpwd"  placeholder="请确认您输入的新密码" />
+                <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
+              </div>
+            </div>
+            <div class="col-12 mb-4">
+              <p class="fw-semibold mt-2">设 置 推 荐:</p>
+              <ul class="ps-3 mb-0">
+                <li class="mb-1">
+                  最少 6 个字符 - 越多越好
+                </li>
+                <li class="mb-1">至少一个小写字符</li>
+                <li>至少一个数字、符号或空白字符</li>
+              </ul>
+            </div>
+            <div class="col-12 mt-1">
+              <button type="submit" class="btn btn-primary me-2" lay-filter="formBasSubmit" lay-submit>保 存</button>
+              <button type="reset" class="btn btn-secondary">重 置</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!--/ Change Password -->
+<?php if (getConfig()['isSecurity'] == 1): ?>
+    <div class="card mb-4">
+                      <div class="card">
+                        <h5 class="card-header">安 全 效 验</h5>
+                        <div class="card-body">
+                           
+                                    <div class="d-flex mb-3">
+                                        <div class="flex-shrink-0 me-3" style="width:40px;height:40px;">
+                                          <?php if(getConfig()['securityIcon'] == ''): ?>
+                                          <svg t="1696561352591" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5811" width="40" height="40"><path d="M214.101333 512c0-32.512 5.546667-63.701333 15.36-92.928L57.173333 290.218667A491.861333 491.861333 0 0 0 4.693333 512c0 79.701333 18.858667 154.88 52.394667 221.610667l172.202667-129.066667A290.56 290.56 0 0 1 214.101333 512" fill="#FBBC05" p-id="5812"></path><path d="M516.693333 216.192c72.106667 0 137.258667 25.002667 188.458667 65.962667L854.101333 136.533333C763.349333 59.178667 646.997333 11.392 516.693333 11.392c-202.325333 0-376.234667 113.28-459.52 278.826667l172.373334 128.853333c39.68-118.016 152.832-202.88 287.146666-202.88" fill="#EA4335" p-id="5813"></path><path d="M516.693333 807.808c-134.357333 0-247.509333-84.864-287.232-202.88l-172.288 128.853333c83.242667 165.546667 257.152 278.826667 459.52 278.826667 124.842667 0 244.053333-43.392 333.568-124.757333l-163.584-123.818667c-46.122667 28.458667-104.234667 43.776-170.026666 43.776" fill="#34A853" p-id="5814"></path><path d="M1005.397333 512c0-29.568-4.693333-61.44-11.648-91.008H516.650667V614.4h274.602666c-13.696 65.962667-51.072 116.650667-104.533333 149.632l163.541333 123.818667c93.994667-85.418667 155.136-212.650667 155.136-375.850667" fill="#4285F4" p-id="5815"></path></svg>
+                                          <?php else: ?>
+                                            <img src="{:getConfig()['securityIcon']}" style="width:40px;height:40px;">
+                                          <?php endif;?>
+                                        </div>
+                                        <div class="flex-grow-1 row">
+                                          <div class="col-8 col-sm-7 mb-sm-0 mb-2">
+                                            <h6 class="mb-0">{:getConfig()['securityName']}安全验证</h6>
+                                             <?php if (!empty($user['googlekey'])): ?>
+                                                <small class="text-muted">已 绑 定</small>
+                                            <?php else: ?>
+                                                <small class="text-muted">未 绑 定</small>
+                                            <?php endif; ?>
+                                          </div>
+                                          <div class="col-4 col-sm-5 text-end">
+                                            <?php if (!empty($user['googlekey'])): ?>
+                                                <button type="button"   class="btn btn-icon btn-label-danger" 
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#uBind_google"
+                                                
+                                                >
+                                                  <i class="bx bx-trash-alt"></i>
+                                                </button>
+                                            <?php else: ?>
+                                                <button id="google" onclick="operate('bind','google')"  class="btn btn-icon btn-label-secondary"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#bind_google"
+                                                    >
+                                                        <i class="bx bx-link-alt"></i>
+                                                    </button>
+                                            <?php endif; ?>
+                                          </div>
+                                        </div>
+                                    </div>
+                          
+                        </div>
+                      </div>
+                    </div>
+<?php endif; ?>
+
+    <!-- 登 录 日 志 -->
+    <div class="card mb-4">
+      <h5 class="card-header border-bottom">登 录 日 志</h5>
+      <div class="card-datatable text-nowrap">
+        <table class="table border-top datatables-basic">
+          <thead>
+            <tr>
+                <th>商户ID</th>
+                <th>操作界面</th>
+                <th>登录详情</th>
+                <th>登录IP</th>
+                <th>登录时间</th>
+            </tr>
+          </thead>
+        </table>
+      </div>
+    </div>
+    <!--/ Recent Devices -->
+
+  </div>
+</div>
+
+
+
+          </div>
+<!-- GoogleAuth -->
+<div class="modal fade" id="bind_google" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-simple">
+        <div class="modal-content p-3 p-md-5">
+            <div class="modal-body">
+                <button id="" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="text-center mb-2">
+                  <h3 class="mb-0" id="google_title">绑定{:getConfig()['securityName']}验证器</h3>
+                </div>
+                <h5 class="mb-2 pt-1 text-break">相关介绍</h5>
+                <p class="mb-4">
+                  绑定{:getConfig()['securityName']}验证器之后可以有效保护通道/账户信息.
+                </p>
+                <div class="text-center">
+                  <img src="/static/index/images/status/loading.gif" alt="QR Code" id="google_img" width="140" />
+                </div>
+                <div class="alert alert-warning alert-dismissible my-3" role="alert">
+                  <p class="mb-0">{:getConfig()['securityBindTips']}</p>
+                </div>
+                <div class="mb-4">
+                    <input
+                      type="input"
+                      class="form-control"
+                      name="code"
+                      id="bindCode"
+                      placeholder="输入你的验证码"
+                    />
+                </div>
+                <div class="col-12 text-end">
+                    <button type="button" id="google_submit"  class="btn btn-primary">
+                      <span class="align-middle">确 定</span
+                      >
+                    </button>
+                </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<div class="modal fade" id="uBind_google" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-simple">
+        <div class="modal-content p-3 p-md-5">
+            <div class="modal-body">
+                <button id="" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="text-center mb-2">
+                  <h3 class="mb-0" id="wxpusher_title">解绑{:getConfig()['securityName']}验证器</h3>
+                </div>
+                <h5 class="mb-2 pt-1 text-break">相关介绍</h5>
+                <p class="mb-4">
+                  解绑{:getConfig()['securityName']}验证器之后您将失去对通道/账户信息的保护.
+                </p>
+                <div class="mb-4">
+                    <input
+                      type="input"
+                      class="form-control"
+                      name="code"
+                      id="uBindCode"
+                      placeholder="输入你的验证码"
+                    />
+                </div>
+                <div class="col-12 text-end">
+                    <button type="button" id="uBing"  class="btn btn-primary">
+                      <span class="align-middle">确 定</span
+                      >
+                    </button>
+                </div>
+        </div>
+    </div>
+</div>
+</div>
+<!--/ GoogleAuth -->
+          <!-- / Content -->
+{if condition="(getConfig()['isSecurity'] == 1 && getConfig()['isSecurityForce'] == 1 && $user['googlekey'] == '')"}
+<div class="web_notice" style="position: fixed;top: 0;left: 0;width: 100%;height: 100%;background: rgba(0,0,0,0.3);z-index: 99999;">
+<div style="position: fixed;top: 50%;left: 50%;width: 350px;background: #FFF;transform: translate(-50%, -50%);border-radius: 40px;padding: 50px 40px;">
+<h3 style="font-weight: bold;text-align: center;font-size: 30px;">{:getConfig()['securityPopTitle']}</h3>
+<div style="font-size: 16px;margin-top: 26px;line-height: 30px;color: #999;"><br/>
+<font color="purple">{:getConfig()['securityPopContent']}
+</div>
+<a style="display: block;background: #98a3ff;color: #FFF;text-align: center;font-weight: bold;font-size: 19px;line-height: 60px;margin: 0 auto;margin-top: 45px;border-radius: 32px;width: 80%;" onclick="javascript:document.querySelector('.web_notice').remove()">好的</a>
+</div>
+</div>
+{/if}
+{include file="public/user_footer" /}
+
+<!-- Page Js -->
+
+    <script>
+        
+        layui.use([ 'form'], function () {
+            var $ = layui.jquery;
+            var form = layui.form;
+            const formChangePass = document.querySelector('#formBasForm');
+
+            // Form validation for Submit
+            if (formChangePass) {
+              const fv = FormValidation.formValidation(formChangePass, {
+                fields: {
+                  newpwd: {
+                    validators: {
+                      notEmpty: {
+                        message: '请 输 入 您 的 新 密 码'
+                      },
+                      stringLength: {
+                        min: 6,
+                        message: '密 码 最 少 需 要 6 位'
+                      }
+                    }
+                  },
+                  renewpwd: {
+                    validators: {
+                      notEmpty: {
+                        message: '请 再 次 输 入 您 的 新 密 码'
+                      },
+                      identical: {
+                        compare: function () {
+                          return formChangePass.querySelector('[name="newpwd"]').value;
+                        },
+                        message: '两 次 密 码 输 入 不 相 同, 请 检 查'
+                      },
+                      stringLength: {
+                        min: 6,
+                        message: '密 码 最 少 需 要 6 位'
+                      }
+                    }
+                  }
+                },
+                plugins: {
+                  trigger: new FormValidation.plugins.Trigger(),
+                  bootstrap5: new FormValidation.plugins.Bootstrap5({
+                    eleValidClass: '',
+                    rowSelector: '.col-md-6'
+                  }),
+                  submitButton: new FormValidation.plugins.SubmitButton(),
+                  // Submit the form when all fields are valid
+                  // defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+                  autoFocus: new FormValidation.plugins.AutoFocus()
+                },
+                init: instance => {
+                  instance.on('plugins.message.placed', function (e) {
+                    if (e.element.parentElement.classList.contains('input-group')) {
+                      e.element.parentElement.insertAdjacentElement('afterend', e.messageElement);
+                    }
+                  });
+                }
+              });
+             fv.on('core.form.valid', function() {
+                form.on('submit(formBasSubmit)', function (obj) {
+                    $.post('/My/UpdatePwd', obj.field, function (res) {
+                        //layer.close(loadIndex);
+                        if (res.code === 200) {
+                            Swal.fire({
+                                title: '成功',
+                                text: res.msg,
+                                icon: 'success',
+                                customClass: {
+                                  confirmButton: 'btn btn-primary'
+                                 }
+                            }).then((value) => {
+                                location.replace('/User/Login');
+                            });
+                            
+                        } else {
+                             Swal.fire({
+                                title: '错误',
+                                text: res.msg,
+                                icon: 'error',
+                                customClass: {
+                                  confirmButton: 'btn btn-primary'
+                                 }
+                            });
+                        }
+                    }, 'json');
+                    return false;
+                });
+             });
+            }
+            
+            
+
+  var dt_basic_table = $('.datatables-basic');
+
+  // DataTable
+  // --------------------------------------------------------------------
+if (dt_basic_table.length) {
+    dt_basic = dt_basic_table.DataTable({
+      ajax: '/My/loginlog',
+      columns: [
+        { data: 'uid' },
+        { data: 'url' },
+        { data: 'desc' },
+        { data: 'ip' },
+        { data: 'create_time' },
+      ],
+      order: [[0, 'desc']],
+      dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-center justify-content-md-end"f>>t<"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+      displayLength: 10,
+      lengthMenu: [10, 20, 50],
+      scrollX: true,
+
+    });
+  }
+        });
+        
+    //定义 operate:1-bind 2-edit
+    //temp - 1:google 
+    function operate(operate,temp){
+        if(operate == 'bind'){
+            switch(temp) {
+                case 'google':
+                    getGoogleAuthQrCode(operate);
+                    break;
+            } 
+        }
+    }
+    
+    //获取谷歌二维码
+    function getGoogleAuthQrCode(operate){
+        var t1;
+		$.get('/My/getGoogleAuthQrCode', function (result) {
+            if (result.code == '200') {
+        		$("#google_img").attr("src", result.msg );
+            }else{
+                Swal.fire({
+                    icon: 'error',
+                    title: result.msg,
+                    customClass: {
+                      confirmButton: 'btn btn-danger'
+                    }
+                });
+            }
+        });
+    }
+    
+    //绑定谷歌验证信息
+	$("#google_submit").click(function() {
+        var code = $("#bindCode").val();
+        $.ajax({
+            url: '/My/bindGoogleAuth',      //指向URL名称
+            type: 'POST',                    //页面传值类型
+            data: {"code": code},           //提交数据，以字典的形式
+            success: function (e) {          //提交数据成功后的处理函数，e是返回的值
+                if (e.code == 200) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: e.msg,
+                        customClass: {
+                            confirmButton: 'btn btn-success'
+                        }
+                 });
+                 setTimeout(function () {
+                            location.reload();
+                        }, 2000);
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: e.msg,
+                        customClass: {
+                          confirmButton: 'btn btn-danger'
+                        }
+                    });
+                }
+            },
+        });
+	});
+	
+	//解绑谷歌验证信息
+	$("#uBing").click(function() {
+        var code = $("#uBindCode").val();
+        $.ajax({
+            url: '/My/uBindGoogleAuth',      //指向URL名称
+            type: 'POST',                    //页面传值类型
+            data: {"code": code},           //提交数据，以字典的形式
+            success: function (e) {          //提交数据成功后的处理函数，e是返回的值
+                if (e.code == 200) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: e.msg,
+                        customClass: {
+                            confirmButton: 'btn btn-success'
+                        }
+                 });
+                 setTimeout(function () {
+                            location.reload();
+                        }, 2000);
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: e.msg,
+                        customClass: {
+                          confirmButton: 'btn btn-danger'
+                        }
+                    });
+                }
+            },
+        });
+	});
+	
+    </script>

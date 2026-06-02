@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{:getConfig()['sitename']} · 星空物语</title>
+    <meta name="keywords" content="动漫风,创意看板,自适应官网" />
+    <meta name="description" content="一款以动漫星海为灵感的多端自适应首页，点亮每一次灵感冒险。" />
+    <link rel="icon" type="image/png" href="{:getConfig()['favicon']}" />
+    <link rel="stylesheet" href="/web/home/{$resource}/css/style.css" />
+  </head>
+  <body class="anime-body">
+    <div class="starfield" aria-hidden="true"></div>
+    <header class="site-header">
+      <div class="brand">
+        <div class="brand-mark">
+          <span>☆</span>
+        </div>
+        <div class="brand-meta">
+          <p class="brand-eyebrow">Celestial Studio</p>
+          <p class="brand-name">{:getConfig()['sitename']}</p>
+        </div>
+      </div>
+      <button class="nav-toggle" aria-label="展开菜单">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="nav-links">
+        <a href="#world">世界观</a>
+        <a href="#matrix">灵感矩阵</a>
+        <a href="#crew">伙伴计划</a>
+        <a href="#logbook">最新动态</a>
+      </nav>
+      <div class="header-cta">
+        <a class="btn ghost" href="/web/doc/index">文档</a>
+        <a class="btn solid" href="/user/index">立即体验</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" id="world">
+        <div class="hero-text">
+          <p class="hero-eyebrow">浮空城的今日情报</p>
+          <h1>
+            漫游灵感星海，<br />
+            让每一次创作都自带特效
+          </h1>
+          <p class="hero-copy">
+            我们以动漫分镜为灵感，将动态组件、运营排期与多端面板融合成一张梦幻星图。系统根据场景智能推荐展示方式，桌面、平板与手机都能同步保持细腻体验。
+          </p>
+          <div class="hero-actions">
+            <a class="btn solid" href="/user">开启旅程</a>
+            <a class="btn outline" href="#matrix">预览场景</a>
+          </div>
+          <div class="hero-tags">
+            <span>云端联机</span>
+            <span>多语言文本</span>
+            <span>秒级同步</span>
+          </div>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <div class="hero-orb orb-main"></div>
+          <div class="hero-orb orb-secondary"></div>
+          <div class="floating-card card-one">
+            <p class="card-title">晨曦值守</p>
+            <p class="card-value">89%</p>
+            <p class="card-desc">指挥中枢运行良好</p>
+          </div>
+          <div class="floating-card card-two">
+            <p class="card-title">星轨任务</p>
+            <p class="card-value">23</p>
+            <p class="card-desc">待你亲自点亮的章节</p>
+          </div>
+          <div class="floating-card card-three">
+            <p class="card-title">灵核温度</p>
+            <p class="card-value">24℃</p>
+            <p class="card-desc">系统保持舒适能量</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="feature-section" id="matrix">
+        <div class="section-header">
+          <p class="section-eyebrow">灵感矩阵</p>
+          <h2>模块化剧情，随心编排</h2>
+          <p>
+            以卡片化思维管理站点，拖拽即可重组章节内容。每一次发布都自动匹配最合适的设备布局，让访客在不同屏幕都能看到相同的华丽演出。
+          </p>
+        </div>
+        <div class="feature-grid">
+          <article class="feature-card">
+            <h3>星辉引擎</h3>
+            <p>通过时间轴指令同步看板、公告与互动组件，一键呈现流畅演绎。</p>
+            <ul>
+              <li>跨端动画队列</li>
+              <li>可视化排程</li>
+              <li>秒级撤回与恢复</li>
+            </ul>
+          </article>
+          <article class="feature-card">
+            <h3>灵纹编辑器</h3>
+            <p>内置渐层、霓虹、星粒等动漫风样式，搭配 Markdown/自定义插槽即可即时成稿。</p>
+            <ul>
+              <li>AI 文案草图</li>
+              <li>组件配色锁定</li>
+              <li>版本对比</li>
+            </ul>
+          </article>
+          <article class="feature-card">
+            <h3>时序守护</h3>
+            <p>智能监测访客高峰，自动调节动画密度，同时输出可读的性能报告。</p>
+            <ul>
+              <li>云端缓存切换</li>
+              <li>多活节点</li>
+              <li>一键导出报告</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="scene-gallery">
+        <div class="scene-card large">
+          <p class="scene-eyebrow">全景仪表</p>
+          <h3>巡航视角，全局掌控</h3>
+          <p>
+            主控台采用环形仪表与星纹背景，展示实时数据、序列任务与角色状态。用户可自定义色板，让品牌与动漫风格完美融合。
+          </p>
+        </div>
+        <div class="scene-card compact">
+          <p class="scene-eyebrow">移动面板</p>
+          <h3>指尖轻触，光点即达</h3>
+          <p>
+            自适应栅格让手机端也能保留动态流光与立体卡片，随时浏览、审批或发布新品章节。
+          </p>
+        </div>
+        <div class="scene-card compact">
+          <p class="scene-eyebrow">多语言</p>
+          <h3>角色配音即插即用</h3>
+          <p>独立语料仓与字幕轨道，让全球粉丝同步沉浸在同一片星海。</p>
+        </div>
+      </section>
+
+      <section class="crew-section" id="crew">
+        <div class="section-header">
+          <p class="section-eyebrow">伙伴计划</p>
+          <h2>与多身份协作，像制作一季动画</h2>
+          <p>
+            将成员分配到导演、作画、音频等小组，各自拥有专属看板与标记色。评论区还支持 emoji
+            与便条，沟通更具氛围感。
+          </p>
+        </div>
+        <div class="crew-grid">
+          <div class="crew-card">
+            <div class="crew-avatar">导演</div>
+            <h3>主线统筹</h3>
+            <p>实时调整世界观设定，统一出品节奏。</p>
+          </div>
+          <div class="crew-card">
+            <div class="crew-avatar">作画</div>
+            <h3>视觉工坊</h3>
+            <p>上传插画、SVG 特效，立即预览在各终端的表现。</p>
+          </div>
+          <div class="crew-card">
+            <div class="crew-avatar">音轨</div>
+            <h3>声效空间</h3>
+            <p>以图层方式管理配乐/音效，确保氛围统一。</p>
+          </div>
+          <div class="crew-card">
+            <div class="crew-avatar">巡航</div>
+            <h3>安全与风控</h3>
+            <p>全天候巡查异常波动，提供建议策略。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="logbook" id="logbook">
+        <div class="section-header">
+          <p class="section-eyebrow">最新动态</p>
+          <h2>舰长日志</h2>
+        </div>
+        <div class="timeline">
+          <article>
+            <p class="timeline-date">本周</p>
+            <h3>「星落」视觉套件上线</h3>
+            <p>新增 12 套霓虹面板与 6 种光效滤镜，桌面与移动端同步支持。</p>
+          </article>
+          <article>
+            <p class="timeline-date">上周</p>
+            <h3>全景性能监控升级</h3>
+            <p>温度面板加入预警动画，帮助团队即时确认节点状态。</p>
+          </article>
+          <article>
+            <p class="timeline-date">近期</p>
+            <h3>灵感矩阵开放接口</h3>
+            <p>可通过 API 编排自定义剧情，扩展第三方工具与工作流。</p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>© {:date('Y')} {:getConfig()['sitename']} · 星空物语计划</p>
+      <div class="footer-links">
+        <a href="/news/index">更新</a>
+        <a href="/web/doc/index">指南</a>
+        <a href="/user/index">控制台</a>
+      </div>
+    </footer>
+
+    <script src="/web/home/{$resource}/js/main.js" defer></script>
+  </body>
+</html>

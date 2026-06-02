@@ -1,0 +1,1 @@
+INSERT INTO `admin_config` (`id`, `config_name`, `config_value`) VALUES (NULL, 'daily_limit', '10');

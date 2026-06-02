@@ -1,0 +1,1 @@
+ALTER TABLE `ypay_userbasic` CHANGE `yuyin_tips` `is_voice_tips` INT(1) NULL DEFAULT '0' COMMENT '是否开启语音提示';

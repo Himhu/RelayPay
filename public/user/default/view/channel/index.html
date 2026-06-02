@@ -1,0 +1,2152 @@
+ {include file="public/user_header" title="通道列表" /}
+ <style>
+     table tbody tr td:last-child{
+         background-color:white;
+     }
+     .layui-upload-file{
+         display: none;
+     }
+     .pay_url{
+      background-color: rgba(243,244,246);
+      padding: 10px 0;
+     }
+
+ </style>
+  <!-- 依 赖 样 式-->
+    <link rel="stylesheet" href="/static/component/layui/css/layui.css" type="text/css"/>
+    <link rel="stylesheet" href="/user/default/static/assets/vendor/libs/sweetalert2/sweetalert2.css" />
+<!-- Content -->
+            <div class="container-xxl flex-grow-1 container-p-y">
+             {if condition="(getConfig()['td_notice'] != null || getConfig()['td_notice'] != '')"}
+                <div class="col-md-12" style="padding-bottom: 20px;">
+                  <div class="card">
+                    <div class="card-body">
+                    {:getConfig()['td_notice']}
+                    </div>
+                  </div>
+                </div>
+                {/if}
+              <div class="row">
+                <div class="col-md-12">
+                
+                  <div class="card">
+                    <!-- 通 道 列 表 -->
+                    <h5 class="card-header border-bottom">
+                        <span style="float:left;">通 道 列 表</span> 
+                    <button id="add" type="button" style="float:right;" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#addChannel">
+                        <i class="bx bx-plus me-sm-1"></i> <span>新 增</span>
+                    </button>
+                    </h5>
+                    <div class="card-datatable text-nowrap">
+                      <table class="datatables-basic table border-top">
+                        <thead>
+                          <tr>
+                            <th>通道ID</th>
+                            <th>通道类型</th>
+                            <th>通道模式</th>
+                            <th>账号标识</th>
+                            <th>在线状态</th>
+                            <th>收款开关</th>
+                            <th>今日统计</th>
+                            <th>昨日统计</th>
+                            <th>收款总统计</th>
+                            <th>创建时间</th>
+                            <th>在线时长</th>
+                            <th>账号备注</th>
+                            <th style="background-color:white;">操作</th>
+                          </tr>
+                        </thead>
+                      </table>
+                    </div>
+                    <!--/ 通 道 列 表 -->
+                    
+                    <!--  添 加 通 道 -->
+                    <div class="modal fade" id="addChannel" tabindex="-1" aria-hidden="true">
+                       <div class="modal-dialog modal-dialog-centered1 modal-simple">
+                        <div class="modal-content p-3 p-md-5">
+                            <div class="modal-body">
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <div class="text-center">
+                                  <h3 class="mb-2">新 增 通 道</h3>
+                                  <p>在此添加你想要添加的通道吧.</p>
+                                </div>
+                                <form id="channel_form" class="row g-3" onsubmit="return false">
+                                    <div class="col-12">
+                                      <label class="form-label">通 道 类 型</label>
+                                      <select
+                                        id="type"
+                                        name="type"
+                                        class="form-select"
+                                      >
+                                      {volist name="payment" id="vo"}
+                                            <option value="{$vo.type}">{$vo.name}</option>
+                                        {/volist}
+                                      </select>
+                                    </div>
+                                    <div class="col-12">
+                                      <label class="form-label">通 道 模 式</label>
+                                      <select
+                                        lay-filter="code" 
+                                        name="code" 
+                                        id="code"
+                                        class="form-select"
+                                      >
+                                        {volist name="channel" id="vo"}
+                                            <option value="{$vo.code}">{$vo.name}</option>
+                                        {/volist}
+                                      </select>
+                                    </div>
+                                    <div class="col-12" id="qr_Type">
+                                      <label class="form-label">二维码类型</label>
+                                      <select
+                                        lay-filter="qr_type" 
+                                        name="qr_type" 
+                                        id="qr_type"
+                                        class="form-select"
+                                      >
+                                      <option value='personOrMerchant'>个人/经营码</option>
+                                      <option value='appreciate'>赞赏码</option>
+                                      </select>
+                                    </div>
+                                    <div class="col-12" id="kaleurl" style="position: relative;">
+                                      <label class="form-label">二 维 码 信 息</label>
+                                      <input
+                                        type="text"
+                                        name="qr_url" 
+                                        class="form-control"
+                                        placeholder="如无法识别请修剪收款码多余边边"
+                                      />
+                                      <button type="button" class="btn btn-primary file-btn-upload" style="position: absolute;right: 5px;bottom: 0;" >上传图片</button>
+                                    </div>
+                                    <div class="col-12" id="kalenick">
+                                      <label class="form-label">昵称/店铺名</label>
+                                      <input
+                                        type="text"
+                                        name="wxname"
+                                        class="form-control"
+                                        placeholder="昵称/店铺名"
+                                      />
+                                    </div>
+                                    <div class="col-12" id="usdt">
+                                      <label class="form-label">USDT-TRC20地址</label>
+                                      <input
+                                        type="text"
+                                        name="usdt"
+                                        class="form-control"
+                                        placeholder="USDT-TRC20地址"
+                                      />
+                                    </div>
+                                    <div class="col-12" id="qq">
+                                      <label class="form-label">QQ号码</label>
+                                      <input
+                                        type="text"
+                                        name="qq"
+                                        class="form-control"
+                                        placeholder=""
+                                      />
+                                    </div>
+                                    <div class="col-12" id='zfbpid'>
+                                      <label class="form-label" id="pid_title">支付宝PID</label>
+                                      <input
+                                        type="text"
+                                        name="zfb_pid" 
+                                        id="zfb_pid"
+                                        class="form-control"
+                                        placeholder="请输入支付宝PID"
+                                      />
+                                    </div>
+                                    <div class="col-12" id='zfbapppid'>
+                                      <label class="form-label" id="appid_title">应用APPID</label>
+                                      <input
+                                        type="text"
+                                        name="zfbapppid" 
+                                        id="zfbappid"
+                                        class="form-control"
+                                        placeholder="请输入支付宝应用APPID"
+                                      />
+                                    </div>
+                                    <div class="col-12" id="pkey">
+                                      <label class="form-label">支付宝公钥</label>
+                                      <textarea class="layui-textarea" name="cookie" placeholder="请输入支付宝公钥"></textarea>
+                                    </div>
+                                    <div class="col-12" id="akey">
+                                      <label class="form-label">应用私钥</label>
+                                      <textarea class="layui-textarea" name="aliappkey" placeholder="请输入应用私钥"></textarea>
+                                    </div>
+                                    <div class="col-12" id="remark">
+                                      <label class="form-label" id="remark_title">登录信息</label>
+                                      <input
+                                        type="text"
+                                        name="remark"
+                                        class="form-control"
+                                        placeholder="请输入登录信息"
+                                      />
+                                    </div>
+                                    <div class="col-12" id="wzq_Type">
+                                      <label class="form-label">登 录 类 型</label>
+                                      <select
+                                        name="wzq_type"
+                                        id="wzq_type"
+                                        class="form-select"
+                                      >
+                                        <option value="local">本地</option>
+                                        <option value="cloud">云端</option>
+                                      </select>
+                                    </div>
+                                    <div class="col-12" id="cloud_Type">
+                                      <label class="form-label">云 端 类 型</label>
+                                      <select
+                                        name="cloud_type"
+                                        id="cloud_type"
+                                        class="form-select"
+                                      >
+                                            <?php foreach ($cloudType as $key => $value):?>
+                                                    <option value="{$value.id}">{$value.name}</option>
+                                             <?php endforeach; ?>
+                                      </select>
+                                    </div>
+                                    <div class="col-12" id="diyu">
+                                      <label class="form-label">地 域 选 择</label>
+                                      <select
+                                        name="diyu"
+                                        id = "diyus"
+                                        class="form-select"
+                                      >
+                                        {volist name="xy" id="vo"}
+                                            <option value="{$vo.id}">{$vo.name}</option>
+                                        {/volist}
+                                      </select>
+                                    </div>
+                                    <div class="col-12" id="cloud_login_type" style="display:none;">
+                                      <label class="form-label">登 录 类 型</label>
+                                      <select
+                                        name="cloud_login_type"
+                                        class="form-select"
+                                      >
+                                        {volist name="cloud_login_type" id="vo"}
+                                            <option value="{$vo.id}">{$vo.name}</option>
+                                        {/volist}
+                                      </select>
+                                    </div>
+                                    <div class="col-12">
+                                      <label class="form-label">备注信息</label>
+                                      <input
+                                        type="text"
+                                        name="memo"
+                                        class="form-control"
+                                        placeholder="备注信息"
+                                      />
+                                    </div>
+                                    <div class="col-12 text-center">
+                                      <button type="submit" id="channel_Submit" class="btn btn-primary me-sm-3 me-1">提 交</button>
+                                      <button
+                                        type="reset"
+                                        class="btn btn-label-secondary"
+                                      >
+                                        重 置
+                                      </button>
+                                    </div>
+                             </form>
+                            </div>
+                  </div>
+                </div>
+              </div>
+                    <!--/  添 加 通 道 -->
+                    
+                    <!--  通 道 更 新 -->
+                    <div class="modal fade" id="upChannel" tabindex="-1" aria-hidden="true">
+                       <div class="modal-dialog modal-dialog-centered1 modal-simple">
+                        <div class="modal-content p-3 p-md-5">
+                            <div class="modal-body">
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <div class="text-center">
+                                  <h3 class="mb-2">更 新 通 道</h3>
+                                  <p>在此更新你的通道吧..</p>
+                                </div>
+                                <form id="channel_form" class="row g-3" onsubmit="return false">
+                                    <div>
+                                        <label >当前状态:&nbsp;<span style="color:red" name="status" id="status">等待操作中</span></label>
+                                    </div>
+                                    <div >
+                                        <label>二维码信息:</label>
+                                        <div class="text-center">
+                                            <img id='src' src="/static/index/images/status/loading.gif" width="150" height="150" alt="请重新获取" />
+                                            <div id="wenben"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label>账号信息:&nbsp;<span style="color:red" name="account" id="account"></span></label>
+                                    </div>
+                                    <div class="col-12 text-center">
+                                      <button type="submit" id="update_Submit" class="btn btn-primary me-sm-3 me-1">确 定</button>
+                                      <button
+                                        type="reset"
+                                        class="btn btn-label-secondary"
+                                      >
+                                        重 置
+                                      </button>
+                                    </div>
+                             </form>
+                            </div>
+                  </div>
+                </div>
+              </div>
+                    <!--/  通 道 更 新 -->
+                    
+                     <!-- 当面付 / 商家账单 / APP自挂 / 拉卡拉 通 道 修 改 -->
+                    <div class="modal fade" id="editAliPay" tabindex="-1" aria-hidden="true">
+                       <div class="modal-dialog modal-dialog-centered1 modal-simple">
+                        <div class="modal-content p-3 p-md-5">
+                            <div class="modal-body">
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <div class="text-center">
+                                  <h3 class="mb-2">修 改 通 道</h3>
+                                  <p>编辑你的通道信息.</p>
+                                </div>
+                                <form id="editFrom" class="row g-3" onsubmit="return false">
+                                    <input id="editId" name="id" style="display:none;">
+                                    <input id="editCode" name="code" style="display:none;">
+                                    <div class="col-12" id="edit_qr_Type" style="display:none;">
+                                      <label class="form-label">二维码类型</label>
+                                      <select
+                                        lay-filter="qr_type" 
+                                        name="qr_type" 
+                                        id="edit_aliQr_type"
+                                        class="form-select"
+                                      >
+                                      <option value='agt'>协议</option>
+                                      <option value='pic'>二维码</option>
+                                      </select>
+                                    </div>
+                                    <div class="col-12" id="edit_aliEwm" style="position: relative;display:none;">
+                                      <label class="form-label">二 维 码 信 息</label>
+                                      <input
+                                        type="text"
+                                        name="qr_url" 
+                                        class="form-control"
+                                        placeholder="如无法识别请修剪收款码多余边边"
+                                      />
+                                      <button type="button" class="btn btn-primary file-btn-upload" style="position: absolute;right: 5px;bottom: 0;" >上传图片</button>
+                                    </div>
+                                    <div class="col-12" id="editPid" style="display:none;">
+                                      <label class="form-label" id="editPid_title">支付宝PID</label>
+                                      <input
+                                        type="text"
+                                        name="pid" 
+                                        class="form-control"
+                                        placeholder="必须输入支付宝PID"
+                                      />
+                                    </div>
+                                    <div class="col-12" id="editAppId">
+                                      <label class="form-label" id="editAppId_title">应用APPID</label>
+                                      <input
+                                        type="text"
+                                        name="appId" 
+                                        class="form-control"
+                                        placeholder="必须输入支付宝的应用APPID"
+                                      />
+                                    </div>
+                                    <div class="col-12" id="editPublicKey">
+                                      <label class="form-label">支付宝公钥</label>
+                                      <textarea class="layui-textarea" name="publicKey" placeholder="请输入支付宝公钥"></textarea>
+                                    </div>
+                                    <div class="col-12" id="editPrivateKey">
+                                      <label class="form-label">应用私钥</label>
+                                      <textarea class="layui-textarea" name="privateKey" placeholder="请输入支付宝公钥"></textarea>
+                                    </div>
+                                     <div class="col-12" id="editRemark" style="display:none;">
+                                      <label class="form-label" id="editRemark_title">登录信息</label>
+                                      <input
+                                        type="text"
+                                        name="remark"
+                                        class="form-control"
+                                        placeholder="请输入登录信息"
+                                      />
+                                    </div>
+                                    <div class="col-12">
+                                      <label class="form-label">备注信息</label>
+                                      <input
+                                        type="text"
+                                        name="memo"
+                                        class="form-control"
+                                        placeholder="备注信息"
+                                      />
+                                    </div>
+                                    <div class="col-12 text-center">
+                                      <button type="submit" id="editAliPaySubmit" class="btn btn-primary me-sm-3 me-1">提 交</button>
+                                      <button
+                                        type="reset"
+                                        class="btn btn-label-secondary"
+                                      >
+                                        重 置
+                                      </button>
+                                    </div>
+                             </form>
+                            </div>
+                  </div>
+                </div>
+              </div>
+                    <!--/  当面付 / 商家账单 / APP自挂 / 拉卡拉 通 道 修 改-->
+                    
+                     <!-- 微 信 通 道 修 改 -->
+                    <div class="modal fade" id="editWxPay" tabindex="-1" aria-hidden="true">
+                       <div class="modal-dialog modal-dialog-centered1 modal-simple">
+                        <div class="modal-content p-3 p-md-5">
+                            <div class="modal-body">
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <div class="text-center">
+                                  <h3 class="mb-2">修 改 通 道</h3>
+                                  <p>编辑你的通道信息.</p>
+                                </div>
+                                <form id="editWxFrom" class="row g-3" onsubmit="return false">
+                                    <input id="editWxPayId" name="id" style="display:none;">
+                                    <input id="editWxPayCode" name="code" style="display:none;">
+                                    <div class="col-12" id="qr_Type">
+                                      <label class="form-label">二维码类型</label>
+                                      <select
+                                        lay-filter="qr_type" 
+                                        name="qr_type" 
+                                        id="qr_type"
+                                        class="form-select"
+                                      >
+                                      <option value='personOrMerchant'>个人/经营码</option>
+                                      <option value='appreciate'>赞赏码</option>
+                                      </select>
+                                    </div>
+                                    <div class="col-12" id="ewm" style="position: relative;">
+                                      <label class="form-label">二 维 码 信 息</label>
+                                      <input
+                                        type="text"
+                                        name="qr_url" 
+                                        class="form-control"
+                                        placeholder="如无法识别请修剪收款码多余边边"
+                                      />
+                                      <button type="button" class="btn btn-primary file-btn-upload" style="position: absolute;right: 5px;bottom: 0;" >上传图片</button>
+                                    </div>
+                                    <div class="col-12" id="wxName">
+                                      <label class="form-label">昵称/店铺名</label>
+                                      <input
+                                        type="text"
+                                        name="wxname"
+                                        class="form-control"
+                                        placeholder="昵称/店铺名"
+                                      />
+                                    </div>
+                                    <div class="col-12">
+                                      <label class="form-label">备注信息</label>
+                                      <input
+                                        type="text"
+                                        name="memo"
+                                        class="form-control"
+                                        placeholder="备注信息"
+                                      />
+                                    </div>
+                                    <div class="col-12 text-center">
+                                      <button type="submit" id="editWxPaySubmit" class="btn btn-primary me-sm-3 me-1">提 交</button>
+                                      <button
+                                        type="reset"
+                                        class="btn btn-label-secondary"
+                                      >
+                                        重 置
+                                      </button>
+                                    </div>
+                             </form>
+                            </div>
+                  </div>
+                </div>
+              </div>
+                    <!--/  微 信 通 道 修 改-->
+
+                       <!-- USDT 通 道 修 改 -->
+                       <div class="modal fade" id="editUsdt" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered1 modal-simple">
+                         <div class="modal-content p-3 p-md-5">
+                             <div class="modal-body">
+                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                 <div class="text-center">
+                                   <h3 class="mb-2">修 改 通 道</h3>
+                                   <p>编辑你的通道信息.</p>
+                                 </div>
+                                 <form id="editUsdtFrom" class="row g-3" onsubmit="return false">
+                                     <input id="editUsdtId" name="id" style="display:none;">
+                                     <input id="editUsdtCode" name="code" style="display:none;">
+                                     <div class="col-12" id="usdt_address">
+                                       <label class="form-label">USDT-TRC20地址</label>
+                                       <input
+                                         type="text"
+                                         name="wxname"
+                                         class="form-control"
+                                         placeholder="USDT-TRC20地址"
+                                       />
+                                     </div>
+                                     <div class="col-12">
+                                       <label class="form-label">备注信息</label>
+                                       <input
+                                         type="text"
+                                         name="memo"
+                                         class="form-control"
+                                         placeholder="备注信息"
+                                       />
+                                     </div>
+                                     <div class="col-12 text-center">
+                                       <button type="submit" id="editUsdtSubmit" class="btn btn-primary me-sm-3 me-1">提 交</button>
+                                       <button
+                                         type="reset"
+                                         class="btn btn-label-secondary"
+                                       >
+                                         重 置
+                                       </button>
+                                     </div>
+                              </form>
+                             </div>
+                   </div>
+                 </div>
+               </div>
+                     <!--/  USDT 通 道 修 改-->
+                    
+                     <!-- 微 信 云端 地 域 切 换 -->
+                    <div class="modal fade" id="switchCloud" tabindex="-1" aria-hidden="true">
+                       <div class="modal-dialog modal-dialog-centered1 modal-simple">
+                        <div class="modal-content p-3 p-md-5">
+                            <div class="modal-body">
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <div class="text-center">
+                                  <h3 class="mb-2">修 改 云 端</h3>
+                                  <p>切换你的云端地域.</p>
+                                </div>
+                                <form id="switchFrom" class="row g-3" onsubmit="return false">
+                                    <input id="switchId" name="id" style="display:none;">
+                                    <input id="switchCode" name="code" style="display:none;">
+                                    <div class="col-12" id="switch">
+                                      <label class="form-label">云 端 类 型</label>
+                                      <select
+                                        name="cloud_type"
+                                        id="switchType"
+                                        class="form-select"
+                                      >
+                                          <?php foreach ($cloudType as $key => $value): ?>
+                                              <option value="{$value.id}">{$value.name}</option>
+                                          <?php endforeach; ?>
+                                      </select>
+                                    </div>
+                                    <div class="col-12" >
+                                      <label class="form-label">地 域 选 择</label>
+                                      <select
+                                        name="diyu"
+                                        id = "switchDiyu"
+                                        class="form-select"
+                                      >
+                                        {volist name="xy" id="vo"}
+                                            <option value="{$vo.id}">{$vo.name}</option>
+                                        {/volist}
+                                      </select>
+                                    </div>
+                                    <div class="col-12">
+                                      <label class="form-label">备注信息</label>
+                                      <input
+                                        type="text"
+                                        name="memo"
+                                        class="form-control"
+                                        placeholder="备注信息"
+                                      />
+                                    </div>
+                                    <div class="col-12 text-center">
+                                      <button type="submit" id="switchCloudSubmit" class="btn btn-primary me-sm-3 me-1">提 交</button>
+                                      <button
+                                        type="reset"
+                                        class="btn btn-label-secondary"
+                                      >
+                                        重 置
+                                      </button>
+                                    </div>
+                             </form>
+                            </div>
+                  </div>
+                </div>
+              </div>
+                    <!-- 微 信 云端 地 域 切 换 -->
+                    
+                    <!-- 测 试 支 付 发 起 -->
+                    <div class="modal fade" id="testPay" tabindex="-1" aria-hidden="true">
+                       <div class="modal-dialog modal-dialog-centered modal-simple modal-upgrade-plan">
+                        <div class="modal-content p-3 p-md-5">
+                            <div class="modal-body">
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <div class="text-center">
+                                  <h3 class="mb-2">测试支付</h3>
+                                  <p id="testPayTitle">测试支付</p>
+                                </div>
+                                <form id="testPayFrom" class="row g-3" onsubmit="return false">
+                                    <input id="testId" name="id" style="display:none;">
+                                    <div class="col-12">
+                                      <label class="form-label">测试金额</label>
+                                      <input
+                                        type="text"
+                                        name="money"
+                                        value="1"
+                                        class="form-control"
+                                        placeholder="测试金额"
+                                      />
+                                    </div>
+                                    <div class="col-12 text-center">
+                                      <button type="submit" id="testPaySubmit" class="btn btn-primary me-sm-3 me-1">提 交</button>
+                                      <button
+                                        type="reset"
+                                        class="btn btn-label-secondary"
+                                      >
+                                        重 置
+                                      </button>
+                                    </div>
+                             </form>
+                            </div>
+                  </div>
+                </div>
+              </div>
+                    <!-- 测 试 支 付 发 起 -->
+                    
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- / Content -->
+            
+{include file="public/user_footer" /}
+ <!-- / Page Js -->
+<script>
+    function copyTextToClipboard(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            return navigator.clipboard.writeText(text);
+        }
+        return new Promise(function (resolve, reject) {
+            try {
+                var textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.focus();
+                textarea.select();
+                var successful = document.execCommand('copy');
+                document.body.removeChild(textarea);
+                successful ? resolve() : reject();
+            } catch (err) {
+                reject(err);
+            }
+        });
+    }
+
+    layui.use([ 'form','upload','admin','element'], function () {
+            var $ = layui.jquery;
+            var form = layui.form;
+            var upload = layui.upload;
+            function bindTestPayCopyButton(payUrl) {
+                $(document).off('click', '#copy_url').on('click', '#copy_url', function () {
+                    copyTextToClipboard(payUrl)
+                        .then(function () {
+                            layer.msg('复制成功', {icon: 1, time: 2000});
+                        })
+                        .catch(function () {
+                            layer.msg('复制失败,请手动复制', {icon: 2, time: 2000});
+                        });
+                });
+            }
+            var admin = layui.admin;
+            var element = layui.element;
+            
+            
+            
+            //添加通道响应
+            $('#add').click(function(){
+                //获取当前第一个通道
+                var code =  $('#code').val();
+                channel_select(code);
+                $('input[type="text"]').val('');
+            });
+            
+            //点击弹窗之外杀死定时器
+            $('#upChannel').click(function(e){
+                //点击关闭按钮之后替换数据且3秒之后执行清除定时器
+                if ($(e.target).closest(".btn-close").length == 1) {
+                    $("#status").html("等待操作中");
+                    $("#src").attr("src",'/static/index/images/status/loading.gif');
+                    setTimeout(function(){
+                        for (let i = 0; i < 100000; i++) {
+                            clearInterval(i)
+                        } 
+                    },1000);
+    		        
+            	}
+            	//如果点击非操作界面关闭则清除定时器与替换数据
+    	        if ($(e.target).closest(".modal-content").length == 0) {
+    		        for (let i = 0; i < 100000; i++) {
+                        clearInterval(i)
+                    }
+                    $("#status").html("等待操作中");
+                    $("#src").attr("src",'/static/index/images/status/loading.gif');
+            	}
+             });
+             
+            //二维码类型切换
+            $('#edit_aliQr_type').change(() => {
+              var qr_type = $('#edit_aliQr_type').val();
+              if(qr_type == "pic"){
+                $("#edit_aliEwm").show();
+              }else if(qr_type == "agt"){
+                $("#edit_aliEwm").hide();
+              }
+            });
+
+                        //二维码类型切换
+          $('#qr_type').change(() => {
+              var qr_type = $('#qr_type').val();
+              if(qr_type == "pic"){
+                $("#kaleurl").show();
+              }else if(qr_type == "agt"){
+                $("#kaleurl").hide();
+              }
+            });
+
+            //微转Q类型筛选
+            $('#wzq_type').change(() => {
+    
+                if($('#wzq_type').val() == "cloud"){
+                    $("#diyu").show();
+                      var postdata ={
+                        id: 1,
+                        type:2
+                }
+                //获取QQ云端地域
+                $.getJSON("/Channel/getCloud_type",postdata,function(data){
+                    if (data.code) {
+                        var list= data.cloud_type;
+                        var nr= '';
+                        if(list){
+                
+                            for(var i = 0; i < list.length; i++) {
+                                nr += "<option value='" + list[i].id + "'>" + list[i].name + "</option>"
+                            };
+                        }
+                        $("#diyus").html(nr);
+                    }
+                },true);
+                }else{
+                    $("#diyu").hide();
+                }
+            });
+            
+            //云端模式筛选
+            $('#cloud_type').change(() => {
+				var postdata ={
+                    id: $('#cloud_type').val(),
+                    type:1
+                }
+                $.getJSON("/Channel/getCloud_type",postdata,function(data){
+                    if (data.code) {
+                            var list= data.cloud_type;
+                            var nr= '';
+                            if(list){
+              
+                                for(var i = 0; i < list.length; i++) {
+                                    nr += "<option value='" + list[i].id + "'>" + list[i].name + "</option>"
+                                };
+                            }
+                            $("#diyus").html(nr);
+                            form.render('select');
+                    }
+                },true);
+                       
+            if($('#cloud_type').val() == 2){
+                $("#kaleurl").show();
+            }else if($('#code').val() != 'wxpay_cloudzs'){
+                $("#kaleurl").hide();
+            }
+            
+            if($('#cloud_type').val() == 3){
+                $("#cloud_login_type").show();
+            }else{
+                $("#cloud_login_type").hide();
+            }
+            
+            
+            
+            });
+            
+            //云端模式筛选
+            $('#switchType').change(() => {
+				var postdata ={
+                    id: $('#switchType').val(),
+                    type:1
+                }
+                $.getJSON("/Channel/getCloud_type",postdata,function(data){
+                    if (data.code) {
+                            var list= data.cloud_type;
+                            var nr= '';
+                            if(list){
+              
+                                for(var i = 0; i < list.length; i++) {
+                                    nr += "<option value='" + list[i].id + "'>" + list[i].name + "</option>"
+                                };
+                            }
+                            $("#switchDiyu").html(nr);
+                            form.render('select');
+                    }
+                },true);
+            });
+            
+            //通道筛选
+            $('#type').change(() => {
+				var postdata ={
+                    id: $('#type').val()
+                }
+                $.getJSON("/Channel/type",postdata,function(data){
+                    if (data.code) {
+                            var list= data.channel;
+                            var nr= '';
+                            if(list){
+                                for(var i = 0; i < list.length; i++) {
+                                        nr += "<option value='" + list[i].code + "'>" + list[i].name + "</option>"
+                                };
+                            }
+                            $("#code").html(nr);
+                            form.render('select');
+                            //获取当前第一个通道
+                            var code =  $('#code').val();
+                            channel_select(code); 
+                    }
+                },true);
+            });
+		    
+		    //模式筛选
+            $('#code').change(() => {
+				//获取当前第一个通道
+                var code =  $('#code').val();
+                
+                channel_select(code);    
+		    });
+		    
+		    //添加通道
+		    $('#channel_Submit').click(function(){
+		        let data = {};
+		        let value = $('#channel_form').serializeArray();
+                $.each(value, function (index, item) {
+                    data[item.name] = item.value;
+                });
+                $.post('/Channel/addchannel', data, function (res) {
+                                if (200 == res.code) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: res.msg,
+                                        customClass: {
+                                          confirmButton: 'btn btn-primary'
+                                        }
+                                    }).then(function (result) {
+                                        if(result.value){
+                                            reload();
+                                            $(".btn-close").trigger("click");
+                                            
+                                        }
+                                    });
+                                    }else if(res.code == 202){
+                                      Swal.fire({
+                                        title: res.msg,
+                                        icon: 'error',
+                                        showCancelButton: true,
+                                        confirmButtonText: '确认',
+                                        cancelButtonText: '前往购买套餐',
+                                        customClass: {
+                                            confirmButton: 'btn btn-primary me-3',
+                                            cancelButton: 'btn btn-success'
+                                        },
+                                        buttonsStyling: false,
+                                        reverseButtons: true
+                                      }).then((result) => {
+                                          if (result.dismiss === Swal.DismissReason.cancel) {
+                                              // 根据底部逻辑设置正确的菜单索引
+                                              const targetPath = '/Deal/Vip';
+                                              const isRealName = {if condition="getConfig()['isRealName'] eq 1"}1{else}0{/if}; // 同步PHP配置
+
+                                              // 根据配置判断菜单索引（保持与底部nav数组一致）
+                                              let navIndex = 7; // 默认值（两种情况Vip索引都是7）
+
+                                              // 设置sessionStorage以激活对应菜单
+                                              sessionStorage.setItem('nav_index', navIndex);
+                                              sessionStorage.setItem('nav_item', navIndex); // 根据实际结构调整
+
+                                              // 跳转并强制刷新
+                                              window.location.href = `${targetPath}`;
+                                          }
+                                      });
+                                    } else {
+                                        Swal.fire({
+                                            title: res.msg,
+                                            icon: 'error',
+                                            customClass: {
+                                              confirmButton: 'btn btn-primary'
+                                            }
+                                        });
+                                    }
+                            }, 'json');
+                            return false;
+		    });
+		    
+		    
+		    //切换云端地域
+		    $('#switchCloudSubmit').click(function(){
+		        let data = {};
+		        let value = $('#switchFrom').serializeArray();
+                $.each(value, function (index, item) {
+                    data[item.name] = item.value;
+                });
+                $.post('/Channel/switchCloud', data, function (res) {
+                                if (200 == res.code) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: res.msg,
+                                        customClass: {
+                                          confirmButton: 'btn btn-primary'
+                                        }
+                                    }).then(function (result) {
+                                        if(result.value){
+                                            reload();
+                                            $(".btn-close").trigger("click");
+                                            
+                                        }
+                                    });
+                                    } else {
+                                        Swal.fire({
+                                            title: res.msg,
+                                            icon: 'error',
+                                            customClass: {
+                                              confirmButton: 'btn btn-primary'
+                                            }
+                                        });
+                                    }
+                            }, 'json');
+                            return false;
+		    });
+		    
+   
+
+		    //测试支付
+		    $('#testPaySubmit').click(function(){
+		        let data = {};
+		        let value = $('#testPayFrom').serializeArray();
+                $.each(value, function (index, item) {
+                    data[item.name] = item.value;
+                });
+                $.post('/Channel/testPay', data, function (res) {
+                        if(res.code == 200){
+                          var orderlst = setInterval(function () { order(res.out_trade_no); }, 1000);
+                          var payAmount = res.pay_amount ? res.pay_amount : data.money;
+                          var amountTip = '';
+                          if(payAmount){
+                              amountTip = '<div class="actual-pay-tip" style="margin-top:10px;color:#f56c6c;font-size:14px;">本次实际支付金额：<span style="font-weight:600;font-size:18px;">￥' + payAmount + '</span></div>';
+                          }
+
+                          Swal.fire({
+                                title: "支付测试",
+                                html:'<div class="testpay-qrcode">'+
+                                  '<img src="'+ res.code_url +'" ></div>'+ amountTip +
+                                  '<div name="pay_url" class="pay_url">支付地址(点击前往):<br/><a style="color:#696cff;" href="'+ res.pay_url +'" target="_black">'+ res.pay_url +'</a></div>'+
+                                  '<button style="margin-top:15px;width: 100%;" id="copy_url" class="btn btn-primary copy" data-clipboard-text="'+ res.pay_url +'">复制</button>',
+                                showCloseButton: true,
+                                showConfirmButton:false,
+                              });
+                          bindTestPayCopyButton(res.pay_url);
+                              
+                              //如果点击了关闭就清除定时器
+                              $('.swal2-close').click(function(){
+                                setTimeout(function(){
+                                  for (let i = 0; i < 100000; i++) {
+                                      clearInterval(i)
+                                  } 
+                                },1000);
+                              });
+                                                order(res.out_trade_no);
+	updateQrOk = 0;
+	updateQrNo = 0;
+                                                function order(out_trade_no){
+        $.get("/Pay/ConSole",{TradeNo: out_trade_no},function(result){
+			//成功
+     		if(result.code == '200' && updateQrOk==0){
+				updateQrOk==1;
+ 				//回调页面
+         		window.clearInterval(orderlst);
+				layer.msg('支付成功，正在跳转中...',{icon: 1,time:2000});
+				window.location.href=result.url;
+     		}
+         	//订单已经超时
+     		if(result.code == '201' && updateQrNo==0){
+				updateQrNo==1;
+     			window.clearInterval(orderlst);
+     			layer.confirm(result.msg, {
+     			  icon: 2,
+     			  title: '支付失败',
+   				  btn: ['确认'] //按钮
+   				}, function(){
+
+                    // 执行跳转
+                    window.location.reload();
+   				});
+         	}
+			
+     	},"JSON");
+	}
+
+
+                        }else{
+                            Swal.fire({
+                                title: res.msg,
+                                    icon: 'error',
+                                    customClass: {
+                                      confirmButton: 'btn btn-primary'
+                                    }
+                                });
+                        }
+                        return false;
+                })
+		    });
+
+            
+
+		    //修改支付宝当面付/商家账单通道
+		    $('#editAliPaySubmit').click(function(){
+		        let data = {};
+		        let value = $('#editFrom').serializeArray();
+                $.each(value, function (index, item) {
+                    data[item.name] = item.value;
+                });
+                $.post('/Channel/editAliPay', data, function (res) {
+                                if (200 == res.code) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: res.msg,
+                                        customClass: {
+                                          confirmButton: 'btn btn-primary'
+                                        }
+                                    }).then(function (result) {
+                                        if(result.value){
+                                            reload();
+                                            $(".btn-close").trigger("click");
+                                            
+                                        }
+                                    });
+                                    } else {
+                                        Swal.fire({
+                                            title: res.msg,
+                                            icon: 'error',
+                                            customClass: {
+                                              confirmButton: 'btn btn-primary'
+                                            }
+                                        });
+                                    }
+                            }, 'json');
+                            return false;
+		    });
+		    
+		    //修改微信APP挂机/自挂/店员通道
+		    $('#editWxPaySubmit').click(function(){
+		        let data = {};
+		        let value = $('#editWxFrom').serializeArray();
+                $.each(value, function (index, item) {
+                    data[item.name] = item.value;
+                });
+                $.post('/Channel/editWxPay', data, function (res) {
+                                if (200 == res.code) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: res.msg,
+                                        customClass: {
+                                          confirmButton: 'btn btn-primary'
+                                        }
+                                    }).then(function (result) {
+                                        if(result.value){
+                                            reload();
+                                            $(".btn-close").trigger("click");
+                                            
+                                        }
+                                    });
+                                    } else {
+                                        Swal.fire({
+                                            title: res.msg,
+                                            icon: 'error',
+                                            customClass: {
+                                              confirmButton: 'btn btn-primary'
+                                            }
+                                        });
+                                    }
+                            }, 'json');
+                            return false;
+		    });
+	
+
+         //修改USDT通道
+		    $('#editUsdtSubmit').click(function(){
+		        let data = {};
+		        let value = $('#editUsdtFrom').serializeArray();
+                $.each(value, function (index, item) {
+                    data[item.name] = item.value;
+                });
+                $.post('/Channel/editUsdt', data, function (res) {
+                                if (200 == res.code) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: res.msg,
+                                        customClass: {
+                                          confirmButton: 'btn btn-primary'
+                                        }
+                                    }).then(function (result) {
+                                        if(result.value){
+                                            reload();
+                                            $(".btn-close").trigger("click");
+                                            
+                                        }
+                                    });
+                                    } else {
+                                        Swal.fire({
+                                            title: res.msg,
+                                            icon: 'error',
+                                            customClass: {
+                                              confirmButton: 'btn btn-primary'
+                                            }
+                                        });
+                                    }
+                            }, 'json');
+                            return false;
+		    });
+	
+            //通道更新
+            $('#update_Submit').click(function(){
+                var status = $('#status').text();
+                if(status == '账号登录成功!'){
+                    Swal.fire({
+                        icon: 'success',
+                        title: '更新成功',
+                        customClass: {
+                          confirmButton: 'btn btn-primary'
+                        }
+                     }).then(function (result) {
+                         if(result.value){
+                             reload();
+                             $("#status").html('等待操作中');
+                             $(".btn-close").trigger("click");
+                         }
+                     });
+                }else{
+                    Swal.fire({
+                        title: '账户未更新',
+                        icon: 'error',
+                        customClass: {
+                          confirmButton: 'btn btn-primary'
+                        }
+                    });
+                }
+                
+            });
+            
+            //上传图片
+            var uploadInst = upload.render({
+                            elem: '.file-btn-upload'
+                            ,url: '/channel/upload'
+                            ,size: {:getConfig()['imageSize']} //限制文件大小，单位 KB
+                            //,accept: 'file'
+                            ,method: 'get'
+                            ,fileAccept: 'image/*'
+                            ,exts: "jpg|png|jpeg"
+                            ,data: { //额外参数
+                              a: 1
+                              ,channel_code: function(){
+                                    var code =  $('#code').val();
+                                    if(code == null || code == '' || code == 'wxpay_cloud'){
+                                        code =  $('#editWxPayCode').val();
+                                    }
+                                    return code;
+                              },qr_type: function(){
+                                    var qr_type =  $('#qr_type').val();
+                                    return qr_type;
+                              }
+                              ,b: function(){
+                                return 2
+                              }
+                            }
+                            ,done: function(res, index){
+                            
+                              //如果上传失败
+                              if(res.code > 0){
+                                //上传失败
+                                Swal.fire({
+                                        icon: 'error',
+                                        title: res.msg,
+                                        customClass: {
+                                          confirmButton: 'btn btn-primary'
+                                        }
+                                    })
+                              }
+                              $('input[name = "qr_url"]').val(res.data.src);
+                              
+                              //上传成功
+                               Swal.fire({
+                                    icon: 'success',
+                                    title: res.msg,
+                                    customClass: {
+                                      confirmButton: 'btn btn-primary'
+                                    }
+                                })
+                            }
+                            ,error: function(index, upload){
+                                console.log(1111);
+                                return false;
+                              this.item.html('重选上传');
+                              
+                              //演示失败状态，并实现重传
+                              var demoText = $('#demoText');
+                              demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-mini demo-reload">重试</a>');
+                              demoText.find('.demo-reload').on('click', function(){
+                                uploadInst.upload();
+                              });
+                              
+                              element.progress('demo', '0%');
+                            }
+                            ,progress: function(n, elem, res, index){
+                              console.log(n + '%', elem, res, index); //获取进度百分比
+                              element.progress('demo', n + '%'); //可配合 layui 进度条元素使用
+                            }
+                          });
+    });
+    var dt_basic_table = $('.datatables-basic');
+     // DataTable
+            // --------------------------------------------------------------------
+    if (dt_basic_table.length) {
+             var table =  dt_basic_table.DataTable({
+                 ajax: '/Channel/Index',
+                 columns: [
+                   { data: 'id' },
+                   { data: 'type_name' },
+                   { data: 'code_name' },
+                   { data: 'zfb_pid' },
+                   { data: 'status' },
+                   { data: 'is_status' },
+                   { data: 'today_yes_money'},
+                   { data: 'yesterday_yes_money' },
+                   { data: 'succcount'},
+                   { data: 'create_time' },
+                   { data: 'online_time' },
+                   { data: 'memo' },
+                   { data: 'id' },
+                 ],
+                 columnDefs: [
+                    {
+                      // Label
+                      targets: 2,
+                      render: function (data, type, full, meta) {
+                        var $type = full['code'];
+                        var $code_name = full['code_name'];
+                        var $cloud_name = full['cloud_name'];
+                        
+                        var $array = {
+                          wxpay_cloud: { title: $code_name , cloud: $cloud_name ,class: 'bg-label-success' },
+                          wxpay_cloudzs: { title: $code_name , cloud: $cloud_name , class: ' bg-label-success' },
+                          wxpay_skd: {title: $code_name , cloud: $cloud_name , class: 'bg-label-success' },
+                          qqpay_cloud: { title: $code_name , cloud: $cloud_name , class: ' bg-label-danger' },
+                          qqpay_wzq: { title: $code_name , cloud: $cloud_name , class: ' bg-label-danger' },
+                        };
+                        if (typeof $array[$type] === 'undefined') {
+                          return data;
+                        }else if($cloud_name == "云端已失效"){
+                            $array[$type].class = 'bg-label-secondary';
+                        }
+                        return (
+                          $array[$type].title + 
+                          '&nbsp;-&nbsp;<span class="badge rounded-pill ' +
+                          $array[$type].class +
+                          '">' +
+                          $array[$type].cloud + 
+                          '</span>'
+                        );
+                      }
+                    },
+                    {
+                      // Label
+                      targets: 3,
+                      render: function (data, type, full, meta) {
+                        var $code = full['code'];
+                        var $type = full['type'];
+                        if($type == 'wxpay'){
+                            if($code == 'wxpay_dy'){
+                                return  full['wxname'];
+                            }else if($code == 'lkl_wxpay'){
+                                return  full['zfb_pid'];
+                            }else if($code == 'qqpay_wzq'){
+                                return full['qq'];
+                            }
+                            return full['wx_guid'];
+                        }else if($type == 'alipay'){
+                            if($code == 'alipay_dmf'){
+                                return full['wxname'];
+                            }else{
+                                return full['zfb_pid'];
+                            }
+                        }else if($type == 'qqpay'){
+                            return full['qq'];
+                        }else if($type == 'usdt'){
+                            return full['wxname'];
+                        }
+                      }
+                    },
+                    {
+                      // Label
+                      targets: 4,
+                      render: function (data, type, full, meta) {
+                        var $status = full['status'];
+                        var $array = {
+                            0: { title: '离线', class: 'bg-label-danger' },
+                            1: { title: '在线', class: 'bg-label-success' },
+                        };
+                        return (
+                          '<span class="badge rounded-pill ' +
+                          $array[$status].class +
+                          '">' +
+                          $array[$status].title +
+                          '</span>'
+                        );
+                      }
+                    },
+                    {
+                      // Label
+                      targets: 5,
+                      render: function (data, type, full, meta) {
+                        var is_status = full['is_status'];
+                        var id = full['id'];
+                        var checked = '';
+                        if(is_status == 1){
+                            checked = 'checked';
+                        }
+                        return (
+                          '<label class="switch">'+
+                            '<input type="checkbox" id="up_status_'+ id +'" name="'+ id +'" class="switch-input" '+ checked +'/>'+
+                            '<span class="switch-toggle-slider">'+
+                              '<span class="switch-on">'+
+                                '<i class="bx bx-check"></i>'+
+                              '</span>'+
+                              '<span class="switch-off">'+
+                               '<i class="bx bx-x"></i>'+
+                              '</span>'+
+                            '</span>'+
+                          '</label>'
+                        );
+                      }
+                    },{
+                      // Label
+                      targets: 6,
+                      render: function (data, type, full, meta) {
+                        return (
+                          '<span class="badge rounded-pill bg-label-success">成交金额:' +
+                            full['today_yes_money'] +
+                          '</span>&nbsp;<span class="badge rounded-pill bg-label-danger">未成交金额:' +
+                            full['today_no_money']+ '</span><br/><hr/><span class="badge rounded-pill bg-label-success">成交订单:'+ full['today_yes_order'] +
+                              '</span>&nbsp;<span class="badge rounded-pill bg-label-danger">未成交订单:' + full['today_no_order'] +
+                                '</span>&nbsp;<span class="badge rounded-pill bg-label-info">成交率'+ full['today_yes'] +'%</span>'
+                        );
+                      }
+                    },{
+                      // Label
+                      targets: 7,
+                      render: function (data, type, full, meta) {
+                        return (
+                          '<span class="badge rounded-pill bg-label-success">成交金额:' +
+                            full['yesterday_yes_money'] +
+                          '</span>&nbsp;<span class="badge rounded-pill bg-label-danger">未成交金额:' +
+                            full['yesterday_no_money']+ '</span><br/><hr/><span class="badge rounded-pill bg-label-success">成交订单:'+ full['yesterday_yes_order'] +
+                              '</span>&nbsp;<span class="badge rounded-pill bg-label-danger">未成交订单:' + full['yesterday_no_order'] +
+                                '</span>&nbsp;<span class="badge rounded-pill bg-label-info">成交率'+ full['yesterday_yes'] +'%</span>'
+                        );
+                      }
+                    },{
+                      // Label
+                      targets: 8,
+                      render: function (data, type, full, meta) {
+                        return (
+                          '<span class="badge rounded-pill bg-label-success">成交金额:' +
+                            full['all_yes_money'] +
+                          '</span>&nbsp;<span class="badge rounded-pill bg-label-danger">未成交金额:' +
+                            full['all_no_money']+ '</span><br/><hr/><span class="badge rounded-pill bg-label-success">成交订单:'+ full['all_yes_order'] +
+                              '</span>&nbsp;<span class="badge rounded-pill bg-label-danger">未成交订单:' + full['all_no_order'] +
+                                '</span>&nbsp;<span class="badge rounded-pill bg-label-info">成交率'+ full['all_yes'] +'%</span>'
+                        );
+                      }
+                    },
+                    {
+                      // Label
+                      targets: -1,
+                      searchable: false,
+                      orderable: false,
+                      render: function (data, type, full, meta) {
+                        var id = full['id'];
+                        var code = full['code'];
+                        var type = full['type'];
+                        var arr = [id,"'" + type + "'","'" + code + "'","'" + full['qq'] + "'"];
+                        if(code == 'lkl_wxpay' || code == 'lkl_alipay'){
+                            var editArr = [id,"'" + code + "'","'" + full['zfb_pid'] + "'","'" + full['wxname'] + "'","'" + full['cookie'] + "'","'" + full['qr_url'] + "'","'" + full['remark'] + "'","'" + full['memo'] + "'"];
+                        }else if(code == 'dougong_wxpay' || code == 'dougong_alipay' || code == "lebrush_alipay" || code == "lebrush_wxpay"){
+                            var editArr = [id,"'" + code + "'","'" + full['zfb_pid'] + "'","'" + full['wxname'] + "'","'" + full['cookie'] + "'","'" + full['qr_url'] + "'","'" + full['remark'] + "'","'" + full['memo'] + "'"];
+                        }else if(type == 'wxpay'){
+                            var editArr = [id,"'" + code + "'","'" + full['wxname'] + "'","'" + full['qr_url'] + "'","'" + full['memo'] + "'"];
+                        }else if(type == 'alipay'){
+                            var editArr = [id,"'" + code + "'","'" + full['zfb_pid'] + "'","'" + full['wxname'] + "'","'" + full['cookie'] + "'","'" + full['qr_url'] + "'","'" + full['qr_type'] + "'","'" + full['remark'] + "'","'" + full['memo'] + "'"];
+                        }else if(type == 'usdt'){
+                            var editArr = [id,"'" + code + "'","'" + full['wxname'] + "'","'" + full['memo'] + "'"];
+                        }else{
+                            var editArr = [id,"'" + code + "'","'" + full['wxname'] + "'","'" + full['qr_url'] + "'","'" + full['memo'] + "'"];
+                        }
+                        
+                        var testPay = [id,"'" + full['code_name'] + "'"];
+                        
+                        var test = '';
+                        
+                        var switchCloud = '';
+                        
+                        {if condition="getConfig()['is_channelPay'] == 1"}
+                            test = '<button type="button" data-bs-toggle="modal" data-bs-target="#testPay" onclick="test('+testPay+')" class="btn rounded-pill btn-sm btn-label-github">测试</button>';
+                        {/if}
+                        var del = '<button type="button" onclick="del('+id+')" class="btn rounded-pill btn-sm btn-google-plus">删除</button>';
+                        if(code == "alipay_software"){
+                          return (
+                                test +
+                                '&nbsp;<button type="button" data-bs-toggle="modal" data-bs-target="#editAliPay" onclick="editAliPay('+editArr+')" class="btn rounded-pill btn-sm btn-info">修改</button>&nbsp;'+
+                                del
+                            ); 
+                        }else if(code == 'qqpay_cloud'){
+                            return (
+                                test +
+                                '&nbsp;<button type="button" data-bs-toggle="modal" data-bs-target="#switchCloud" onclick="switchCloud('+editArr+')" class="btn rounded-pill btn-sm btn-facebook">切换</button>&nbsp;'+
+                                '<button type="button" data-bs-toggle="modal" data-bs-target="#upChannel" onclick="update('+arr+')" class="btn rounded-pill btn-sm btn-twitter">更新</button>&nbsp;'+
+                                del
+                            ); 
+                        }else if(code == 'qqpay_wzq'){
+                            if(full['vcloudurl'] != null && full['vcloudurl'] != ''){
+                                switchCloud = '<button type="button" data-bs-toggle="modal" data-bs-target="#switchCloud" onclick="switchCloud('+editArr+')" class="btn rounded-pill btn-sm btn-facebook">切换</button>&nbsp;'
+                            }
+                            return (
+                                test +
+                                '&nbsp;' + switchCloud + '&nbsp;'+
+                                '<button type="button" data-bs-toggle="modal" data-bs-target="#upChannel" onclick="update('+arr+')" class="btn rounded-pill btn-sm btn-twitter">更新</button>&nbsp;'+
+                                del
+                            ); 
+                        }else if(code == "wxpay_dy" ){
+                            return (
+                                test +
+                                '&nbsp;<button type="button" data-bs-toggle="modal" data-bs-target="#editWxPay" onclick="editWxPay('+editArr+')" class="btn rounded-pill btn-sm btn-info">修改</button>&nbsp;'+
+                                '<button type="button" data-bs-toggle="modal" data-bs-target="#upChannel" onclick="update('+arr+')" class="btn rounded-pill btn-sm btn-secondary">绑定</button>&nbsp;'+
+                                del
+                            ); 
+                        }else if(code == "wxpay_software" ){
+                            return (
+                                test +
+                                '&nbsp;<button type="button" data-bs-toggle="modal" data-bs-target="#editWxPay" onclick="editWxPay('+editArr+')" class="btn rounded-pill btn-sm btn-info">修改</button>&nbsp;'+
+                                del
+                            ); 
+                        }else if(code =="usdt"){
+                          return (
+                                test +
+                                '&nbsp;<button type="button" data-bs-toggle="modal" data-bs-target="#editUsdt" onclick="editUsdt('+editArr+')" class="btn rounded-pill btn-sm btn-info">修改</button>&nbsp;'+
+                                del
+                            ); 
+                        }else if(code == "alipay_dmf" || code == "alipay_mck" || code == "lkl_wxpay" || code == "lkl_alipay"|| code == "dougong_wxpay" || code == "dougong_alipay" || code == "lebrush_alipay" || code == "lebrush_wxpay"){
+                            return (
+                                test +
+                                '&nbsp;<button type="button" data-bs-toggle="modal" data-bs-target="#editAliPay" onclick="editAliPay('+editArr+')" class="btn rounded-pill btn-sm btn-info">修改</button>&nbsp;'+
+                                del
+                            );
+                        }else if(code == "wxpay_cloud"){
+                            return (
+                                test +
+                                '&nbsp;<button type="button" data-bs-toggle="modal" data-bs-target="#switchCloud" onclick="switchCloud('+editArr+')" class="btn rounded-pill btn-sm btn-facebook">切换</button>&nbsp;'+
+                                '<button type="button" data-bs-toggle="modal" data-bs-target="#upChannel" onclick="update('+arr+')" class="btn rounded-pill btn-sm btn-twitter">更新</button>&nbsp;'+
+                                del
+                            );
+                        }else if(code == "wxpay_skd"){
+                            return (
+                                test +
+                                '&nbsp;<button type="button" data-bs-toggle="modal" data-bs-target="#switchCloud" onclick="switchCloud('+editArr+')" class="btn rounded-pill btn-sm btn-facebook">切换</button>&nbsp;'+
+                                '<button type="button" data-bs-toggle="modal" data-bs-target="#upChannel" onclick="update('+arr+')" class="btn rounded-pill btn-sm btn-twitter">更新</button>&nbsp;'+
+                                del
+                            );
+                        }else if(code == "wxpay_cloudzs"){
+                            return (
+                                test +
+                                '&nbsp;<button type="button" data-bs-toggle="modal" data-bs-target="#editWxPay" onclick="editWxPay('+editArr+')" class="btn rounded-pill btn-sm btn-info">修改</button>&nbsp;'+
+                                '<button type="button" data-bs-toggle="modal" data-bs-target="#switchCloud" onclick="switchCloud('+editArr+')" class="btn rounded-pill btn-sm btn-facebook">切换</button>&nbsp;'+
+                                '<button type="button" data-bs-toggle="modal" data-bs-target="#upChannel" onclick="update('+arr+')" class="btn rounded-pill btn-sm btn-twitter">更新</button>&nbsp;'+
+                                del
+                            );
+                        }else if(code == "qqpay_software"){
+                          return (
+                                test + '&nbsp;' +
+                                del
+                            );
+                        }else{
+                           return (
+                               test +
+                                '&nbsp;<button type="button" data-bs-toggle="modal" data-bs-target="#upChannel" onclick="update('+arr+')" class="btn rounded-pill btn-sm btn-twitter">更新</button>&nbsp;'+
+                                del
+                            ); 
+                        }
+                        
+                      }
+                    },
+                ],
+                 order: [[0, 'desc']],
+                 dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-center justify-content-md-end"f>>t<"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+                 displayLength: 10,
+                 lengthMenu: [10, 20, 50],
+                 scrollX:        true,
+                 deferRender: true,
+                 fixedColumns:   {
+                     left: 0,
+                     right: 1
+                 }
+            });
+            }
+    //刷新表单
+    function reload(){
+        table.ajax.reload();
+        // window.location.reload();
+    }
+    //模式筛选
+    function channel_select(code){
+        $("#kaleurl").hide();
+        $("#kalenick").hide();
+        $("#qq").hide();
+        $("#diyu").hide();
+        $("#cloud_Type").hide();
+        $("#qr_Type").hide();
+        $("#wzq_Type").hide();
+        $("#zfbpid").hide();
+        $("#akey").hide();
+        $("#pkey").hide();
+        $("#remark").hide();
+        $("#usdt").hide();
+        $("#cloud_login_type").hide();
+        //zfbapppid
+        $("#zfbapppid").hide();
+        $("#pid_title").html('支付宝PID');
+        $("#appid_title").html('应用APPID');
+        $("#zfb_pid").attr('placeholder','请输入支付宝PID');
+        $("#zfbappid").attr('placeholder','请输入支付宝应用APPID');
+        $("#pkey").html('<label class="form-label">支付宝公钥</label><textarea class="layui-textarea" name="cookie" placeholder="请输入支付宝公钥"></textarea>');
+        $("#akey").html('<label class="form-label">应用私钥</label><textarea class="layui-textarea" name="aliappkey" placeholder="请输入应用私钥"></textarea>');
+        $("#remark_title").html('登录信息');
+        $('input[name="remark"]').attr("placeholder",'请输入登录信息');
+        if(code == 'wxpay_dy'){
+            $("#kaleurl").show();
+            $("#kalenick").show(); 
+        }else if(code == 'usdt'){
+            $("#usdt").show();
+        }else if(code == 'wxpay_software'){
+            $("#qr_Type").show();
+            $("#kaleurl").show();
+            var nr= '';
+            nr += "<option value='personOrMerchant'>个人/经营码</option>";
+            nr += "<option value='appreciate'>赞赏码</option>"
+            $("#qr_type").html(nr);
+        }else if(code == 'alipay_software'){
+            $("#qr_Type").show();
+            $("#zfbpid").show();
+            $("#pid_title").html('支付宝PID');
+            $("#zfb_pid").attr('placeholder','请输入支付宝PID');
+            var nr= '';
+            nr += "<option value='agt'>协议</option>";
+            nr += "<option value='pic'>二维码</option>"
+            $("#qr_type").html(nr);
+        }else if(code == 'wxpay_skd'){
+            var postdata ={
+                    id: $('#cloud_type').val(),
+                    type:1
+            }
+            //获取微信云端地域
+            $.getJSON("/Channel/getCloud_type",postdata,function(data){
+                if (data.code) {
+                    var list= data.cloud_type;
+                    var nr= '';
+                    if(list){
+            
+                        for(var i = 0; i < list.length; i++) {
+                            nr += "<option value='" + list[i].id + "'>" + list[i].name + "</option>"
+                        };
+                    }
+                    $("#diyus").html(nr);
+                }
+            },true);
+            $("#diyu").show();
+            $("#cloud_Type").show();
+         if($('#cloud_type').val() == 2){
+                $("#kaleurl").show();
+            }else if($('#code').val() != 'wxpay_cloudzs'){
+                $("#kaleurl").hide();
+            }
+            
+            if($('#cloud_type').val() == 3){
+                $("#cloud_login_type").show();
+            }else{
+                $("#cloud_login_type").hide();
+            }
+        }else if( code == 'wxpay_cloudzs'){
+            var postdata ={
+                    id: $('#cloud_type').val(),
+                    type:1
+            }
+            //获取赞赏云端地域
+            $.getJSON("/Channel/getCloud_type",postdata,function(data){
+                if (data.code) {
+                    var list= data.cloud_type;
+                    var nr= '';
+                    if(list){
+            
+                        for(var i = 0; i < list.length; i++) {
+                            nr += "<option value='" + list[i].id + "'>" + list[i].name + "</option>"
+                        };
+                    }
+                    $("#diyus").html(nr);
+                }
+            },true);
+            $("#kaleurl").show();
+            $("#diyu").show();
+            $("#cloud_Type").show();
+            
+            if($('#cloud_type').val() == 3){
+                $("#cloud_login_type").show();
+            }else{
+                $("#cloud_login_type").hide();
+            }
+        }else if(code == 'wxpay_cloud' || code == 'wxpay_ipad' || code == 'wxpay_jym_cloud'){
+            var postdata ={
+                    id: $('#cloud_type').val(),
+                    type:1
+            }
+            //获取微信云端地域
+            $.getJSON("/Channel/getCloud_type",postdata,function(data){
+                if (data.code) {
+                    var list= data.cloud_type;
+                    var nr= '';
+                    if(list){
+            
+                        for(var i = 0; i < list.length; i++) {
+                            nr += "<option value='" + list[i].id + "'>" + list[i].name + "</option>"
+                        };
+                    }
+                    $("#diyus").html(nr);
+                }
+            },true);
+            $("#diyu").show();
+            $("#cloud_Type").show();
+            if($('#cloud_type').val() == 2){
+                $("#kaleurl").show();
+            }else{
+                $("#kaleurl").hide();
+            }
+            
+            if($('#cloud_type').val() == 3){
+                $("#cloud_login_type").show();
+            }else{
+                $("#cloud_login_type").hide();
+            }
+        }else if(code == 'alipay_dmf'){
+            $("#zfbapppid").show();
+            $("#akey").show();
+            $("#pkey").show();
+        }
+        else if(code == 'alipay_mck'){
+            $("#zfbpid").show();
+            $("#akey").show();
+            $("#pkey").show();
+            $("#zfbapppid").show();
+        }else if(code == 'qqpay_mg' || code == 'qqpay_software'){
+            $("#qq").show();
+        }else if(code == 'qqpay_cloud' || code == 'qqpay_wzq'){
+            $("#qq").show();
+            if($("#wzq_type").val() == "local" && code == 'qqpay_wzq'){
+                $("#wzq_Type").show();
+            }else{
+                $("#diyu").show();
+                var postdata ={
+                        id: 1,
+                        type:2
+                }
+                //获取QQ云端地域
+                $.getJSON("/Channel/getCloud_type",postdata,function(data){
+                    if (data.code) {
+                        var list= data.cloud_type;
+                        var nr= '';
+                        if(list){
+                
+                            for(var i = 0; i < list.length; i++) {
+                                nr += "<option value='" + list[i].id + "'>" + list[i].name + "</option>"
+                            };
+                        }
+                        $("#diyus").html(nr);
+                    }
+                },true);
+            }
+            
+        }else if(code == 'lkl_wxpay' || code == 'lkl_alipay'){
+            $("#zfbpid").show();
+            $("#akey").show();
+            $("#pkey").hide();
+            $("#zfbapppid").show();
+            $("#remark").show();
+            $("#pid_title").html('商户编码');
+            $("#zfb_pid").attr('placeholder','请输入商户编码');
+            $("#appid_title").html('商户编号');
+            $("#zfbappid").attr('placeholder','请输入商户编号');
+            $("#akey").html('<label class="form-label">商户名称</label><input type="text" name="aliappkey" class="form-control" placeholder="请输入商户名称"/>');
+        }else if(code == 'lebrush_wxpay' || code == 'lebrush_alipay'){
+            $("#zfbpid").show();
+            $("#zfbapppid").show();
+            $("#pid_title").html('门店编号');
+            $("#zfb_pid").attr('placeholder','请输入门店编号');
+            $("#appid_title").html('门店key');
+            $("#zfbappid").attr('placeholder','门店key');
+        }else if(code == 'dougong_alipay'){
+            $("#zfbpid").show();
+            $("#akey").show();
+            $("#pkey").show();
+            $("#zfbapppid").show();
+            $("#pid_title").html('商户号');
+            $("#zfb_pid").attr('placeholder','请输入商户号');
+            $("#appid_title").html('汇付斗拱产品号');
+            $("#zfbappid").attr('placeholder','请输入汇付斗拱产品号');
+            $("#pkey").html('<label class="form-label">汇付公钥</label><textarea class="layui-textarea" name="cookie" placeholder="请输入汇付公钥"></textarea>');
+            $("#akey").html('<label class="form-label">商户私钥</label><textarea class="layui-textarea" name="aliappkey" placeholder="请输入商户私钥"></textarea>');
+        }else if(code == 'dougong_wxpay'){
+            $("#zfbpid").show();
+            $("#akey").show();
+            $("#pkey").show();
+            $("#remark").show();
+            $("#zfbapppid").show();
+            $("#pid_title").html('商户号');
+            $("#zfb_pid").attr('placeholder','请输入商户号');
+            $("#appid_title").html('汇付斗拱产品号');
+            $("#zfbappid").attr('placeholder','请输入汇付斗拱产品号');
+            $("#pkey").html('<label class="form-label">汇付公钥</label><textarea class="layui-textarea" name="cookie" placeholder="请输入汇付公钥"></textarea>');
+            $("#akey").html('<label class="form-label">商户私钥</label><textarea class="layui-textarea" name="aliappkey" placeholder="请输入商户私钥"></textarea>');
+            $("#remark_title").html('半托管项目号');
+            $('input[name="remark"]').attr("placeholder",'请输入半托管项目号');
+        }
+    }
+    
+    //更改收款状态
+    $(document).on('click', 'input[type="checkbox"][id^="up_status"]', function() {
+      const id = $(this).attr("name");
+      const status = $(this).is(':checked') ? 1 : 0;
+    
+      $.post("/Channel/SaveStatus", { id, status }, function (res) {
+        if (res.code == 1) {
+          handleSuccess(res.msg, reload);
+        } else {
+          handleError(res.msg);
+        }
+      }, 'json');
+    });
+
+    function handleSuccess(msg, callback) {
+      Swal.fire({
+        icon: 'success',
+        title: msg,
+        customClass: {
+          confirmButton: 'btn btn-primary'
+        }
+      }).then(function (result) {
+        if (result.value && typeof callback === 'function') {
+          callback();
+        }
+      });
+    }
+
+    function handleError(msg) {
+      Swal.fire({
+        title: msg,
+        icon: 'error',
+        customClass: {
+          confirmButton: 'btn btn-primary'
+        }
+      });
+    }
+    
+    //更新通道
+    function update(id,type,code,qq) {
+            var t1;
+            $("#src").attr("src","/static/index/images/status/loading.gif");
+            if (code == "wxpay_dy")
+            {
+                var url = "{:getConfig()['diy_clerkqr']}";
+                if (url == null || url == "")
+                {
+                    url = "/static/index/images/status/loading.gif";
+                }
+                $("#status").html("店员绑定中...");
+                $("#src").attr("src",url);
+                $("#account").html("店员监控请联系站长添加好友以及店员");
+                return false;
+            }
+                        
+                        
+            $.post('/Channel/GetQrlistQrcode', { id: id }, function (updata) {
+                            
+                            if (updata.code === 1) {
+                                function LoginStatus(id) {
+                                    $.ajax({
+                                        type:'post',
+                                        url:'/Channel/GetChannelLoginStatus',
+                                        data:{id:id},
+                                        dataType:'json',
+                                        success:function(res){
+                                            if (res.code == 1)
+                                            {
+                                                clearInterval(t1);
+                                                $("#status").html(res.msg);
+                                                $("#account").html(res.nick);
+                                                $("#src").attr("src", "/static/index/images/status/pay_ok.png");
+                                            }else if(res.code == 404){
+                                                clearInterval(t1);
+                                                $("#status").html(res.msg);
+                                                $("#account").html(res.nick);
+                                                $("#src").attr("src", "/static/index/images/status/qrcode_timeout.png");
+                                            }else if(res.code == -4){
+                                                // 弹出输入框让用户输入验证码
+                                                var verificationCode = prompt("请输入验证码");
+                                                if (verificationCode) {
+                                                    // 提交验证码到对应接口
+                                                    $.ajax({
+                                                        type: 'post',
+                                                        url: '/Channel/SubmitVerificationCode',
+                                                        data: { code: verificationCode ,id:id ,data:res.data.data},
+                                                        dataType: 'json',
+                                                        success: function (subRes) {
+                                                            // 根据提交验证码后的响应进行后续处理，这里简单示例显示消息
+                                                            $("#status").html(subRes.msg);
+                                                        },
+                                                        error: function () {
+                                                            $("#status").html("提交验证码失败");
+                                                        }
+                                                    });
+                                                }
+                                            }
+                                            else
+                                            {
+                                                $("#status").html(res.msg);
+                                            }
+                                        }
+                                    });
+                                }
+                                //获取成功
+
+                                if (type == "wxpay")
+                                {
+                                    if(updata.qr_url == null || updata.qr_url == ''){
+                                       var url = '/static/index/images/status/loading.gif';
+                                    }else{
+                                        if(updata.is_base64 != null && updata.is_base64 == 0){
+                                            var url = updata.qr_url;
+                                        }else{
+                                            var url = "data:image/png;base64," + updata.qr_url;
+                                        }
+                                        
+                                    }
+                                    
+                                    $("#src").attr("src", url);
+                                    $("#account").html('请使用手机对着手机扫或电脑配合手机扫码，不可使用截图扫码');
+                                    //获取后启动定时器
+                                    t1 = setInterval(function () { LoginStatus(id) }, 3000);
+                                    return false;
+                                }
+                                if (type == "alipay") {
+                                    var url =updata.qr_url;
+                                    $("#src").attr("src", url);
+                                    $("#account").html('请使用手机对着手机扫或电脑配合手机扫码，不可使用截图扫码');
+                                    //获取后启动定时器
+                                    t1 = setInterval(function () { LoginStatus(id) }, 3000);
+                                    return false;
+                                }
+                                if (type == "qqpay") {
+                                    if(updata.qr_url == null || updata.qr_url == ''){
+                                       var url = '/static/index/images/status/loading.gif';
+                                    }else{
+                                        var url = "data:image/png;base64," + updata.qr_url;
+                                    }
+                                    $("#src").attr("src", url);
+                                    $("#account").html('请使用手机对着手机扫或电脑配合手机扫码，不可使用截图扫码');
+                                    //获取后启动定时器
+                                    t1 = setInterval(function () { LoginStatus(id) }, 3000);
+                                    return false;
+                                }
+
+
+                            } else {
+                                $("#src").attr("src", "/static/index/images/status/loading.gif");
+                                $("#account").html(updata.msg);
+                            }
+                        }, 'json');
+        }
+    
+    //切换微信/QQ云端地域
+    function switchCloud(id,code,wxName,qrUrl,memo){
+            if(code == 'qqpay_cloud' || code =='qqpay_wzq'){
+                $("#switch").hide();
+                var postdata ={
+                    id: 1,
+                    type:2
+                 }
+                //获取QQ云端地域
+                $.getJSON("/Channel/getCloud_type",postdata,function(data){
+                    if (data.code) {
+                        var list= data.cloud_type;
+                        var nr= '';
+                        if(list){
+                
+                            for(var i = 0; i < list.length; i++) {
+                                nr += "<option value='" + list[i].id + "'>" + list[i].name + "</option>"
+                            };
+                        }
+                        $("#switchDiyu").html(nr);
+                    }
+                },true);
+            }else{
+                if(code == 'wxpay_skd' || code == 'wxpay_cloudzs' ){
+                    var postdata ={
+                        id: 1,
+                        type:1
+                    }
+                    $("#switch").show();
+                }else{
+                    var postdata ={
+                        id: $('#switchType').val(),
+                        type:1
+                    }
+                    $("#switch").show();
+                }
+
+                //获取云端地域
+                $.getJSON("/Channel/getCloud_type",postdata,function(data){
+                    if (data.code) {
+                        var list= data.cloud_type;
+                        var nr= '';
+                        if(list){
+                
+                            for(var i = 0; i < list.length; i++) {
+                                nr += "<option value='" + list[i].id + "'>" + list[i].name + "</option>"
+                            };
+                        }
+                        $("#switchDiyu").html(nr);
+                    }
+                },true);
+
+            }
+            $('#wxName').show();
+            $('#switchId').val(id);
+            $('#switchCode').val(code);
+            $('input[name="memo"]').val(memo);
+    }
+    
+    //更新微信通道内容 通道ID,通道类型,微信名称,解码信息,备注
+    function editWxPay(id,code,wxName,qrUrl,memo){
+        if(code == 'wxpay_dy'){
+            $('#wxName').show();
+            $('#editWxPayId').val(id);
+            $('#editWxPayCode').val(code);
+            $('input[name="qr_url"]').val(qrUrl);
+            $('input[name="wxname"]').val(wxName);
+            $('input[name="memo"]').val(memo);
+        }else{
+            $('#wxName').hide();
+            $('#editWxPayId').val(id);
+            $('#editWxPayCode').val(code);
+            $('input[name="qr_url"]').val(qrUrl);
+            $('input[name="memo"]').val(memo);
+        }
+    }
+
+        //更新微信通道内容 通道ID,通道类型,微信名称,解码信息,备注
+        function editUsdt(id,code,wxName,memo){
+            $('#editUsdtId').val(id);
+            $('#editUsdtCode').val(code);
+            $('input[name="wxname"]').val(wxName);
+            $('input[name="memo"]').val(memo);
+    }
+    
+    //更新支付宝当面付/商家账单/APP/拉卡拉通道 通道ID,通道类型,PID,APPID,PublicKey,PrivateKey,登录信息,备注
+    function editAliPay(id,code,pid,appID,PublicKey,PrivateKey,remark,qr_type,memo){
+        $('#editRemark').hide();
+        $("#editPid_title").html('支付宝PID');
+        $("#editAppId_title").html('应用APPID');
+        $('input[name="pid"]').attr('placeholder','请输入支付宝PID');
+        $('input[name="appId').attr('placeholder','请输入支付宝应用APPID');
+        $("#editPublicKey").html('<label class="form-label">支付宝公钥</label><textarea class="layui-textarea" name="publicKey" placeholder="请输入支付宝公钥"></textarea>');
+        $("#editPrivateKey").html('<label class="form-label">应用私钥</label><textarea class="layui-textarea" name="privateKey" placeholder="请输入应用私钥"></textarea>');
+        if(code == 'alipay_mck'){
+            $('#editPid').show();
+            $('#editAppId').show();
+            $('#editPublicKey').show();
+            $('#editPrivateKey').show();
+            $('#editId').val(id);
+            $('#editCode').val(code);
+            $('input[name="pid"]').val(pid);
+            $('input[name="appId"]').val(appID);
+            $('textarea[name="publicKey"]').val(PublicKey);
+            $('textarea[name="privateKey"]').val(PrivateKey);
+            $('input[name="memo"]').val(memo);
+        }else if(code == 'alipay_software'){
+            $('#editPid').show();
+            $('#editAppId').hide();
+            $('#editPublicKey').hide();
+            $('#editPrivateKey').hide();
+            $('#edit_qr_Type').show();
+            $('#editId').val(id);
+            $('#editCode').val(code);
+            $('#edit_aliQr_type').val(qr_type);
+            $('#editPid_title').html('支付宝PID');
+            $('input[name="pid"]').attr('placeholder','请输入支付宝PID');
+            $('input[name="pid"]').val(pid);
+            $('input[name="memo"]').val(memo);
+        }else if(code == 'lkl_alipay' || code == 'lkl_wxpay'){
+            $('#editPid').show();
+            $('#editAppId').show();
+            $('#editPublicKey').hide();
+            $('#editPrivateKey').show();
+            $('#editRemark').show();
+            $('#editId').val(id);
+            $('#editCode').val(code);
+            $("#editPid_title").html('终端号');
+            $('input[name="pid"]').attr('placeholder','拉卡拉设备管理 - 设置里面查看');
+            $("#editAppId_title").html('设备号');
+            $('input[name="appId"]').attr('placeholder','拉卡拉设备管理 - 设置里面查看');
+            $("#editPrivateKey").html('<label class="form-label">商户名称</label><input type="text" name="privateKey" class="form-control" placeholder="请输入商户名称"/>');
+            $('#editRemark_title').html("登录信息");
+            $('input[name="remark"]').attr('placeholder','请输入登录信息');
+            $('input[name="pid"]').val(pid);
+            $('input[name="appId"]').val(appID);
+            $('input[name="publicKey"]').val(PublicKey);
+            $('input[name="privateKey"]').val(PrivateKey);
+            $('input[name="remark"]').val(remark);
+            $('input[name="memo"]').val(memo);
+        }else if(code == 'lebrush_wxpay' || code == 'lebrush_alipay'){
+            $('#editPid').show();
+            $('#editAppId').show();
+            $('#editPublicKey').hide();
+            $('#editPrivateKey').hide();
+            $('#editId').val(id);
+            $('#editCode').val(code);
+            $("#editPid_title").html('门店编号');
+            $('input[name="pid"]').attr('placeholder','请输入门店编号');
+            $("#editAppId_title").html('门店key');
+            $('input[name="appId"]').attr('placeholder','门店key');
+            $('input[name="pid"]').val(pid);
+            $('input[name="appId"]').val(appID);
+            $('input[name="memo"]').val(memo);
+        }else if(code == 'dougong_alipay'){
+            $('#editPid').show();
+            $('#editAppId').show();
+            $('#editPublicKey').show();
+            $('#editPrivateKey').show();
+            $('#editId').val(id);
+            $('#editCode').val(code);
+            $("#editPid_title").html('商户号');
+            $('input[name="pid"]').attr('placeholder','请输入商户号');
+            $("#editAppId_title").html('汇付斗拱产品号');
+            $('input[name="appId"]').attr('placeholder','请输入汇付斗拱产品号');
+            $("#editPublicKey").html('<label class="form-label">汇付公钥</label><textarea class="layui-textarea" name="publicKey" placeholder="请输入汇付公钥"></textarea>');
+            $("#editPrivateKey").html('<label class="form-label">商户私钥</label><textarea class="layui-textarea" name="privateKey" placeholder="请输入商户私钥"></textarea>');
+            $('input[name="pid"]').val(pid);
+            $('input[name="appId"]').val(appID);
+            $('textarea[name="publicKey"]').val(PublicKey);
+            $('textarea[name="privateKey"]').val(PrivateKey);
+            $('input[name="memo"]').val(memo);
+        }else if(code == 'dougong_wxpay'){
+            $('#editPid').show();
+            $('#editAppId').show();
+            $('#editPublicKey').show();
+            $('#editPrivateKey').show();
+            $('#editRemark').show();
+            $('#editId').val(id);
+            $('#editCode').val(code);
+            $("#editPid_title").html('商户号');
+            $('input[name="pid"]').attr('placeholder','请输入商户号');
+            $("#editAppId_title").html('汇付斗拱产品号');
+            $('input[name="appId"]').attr('placeholder','请输入汇付斗拱产品号');
+            $("#editPublicKey").html('<label class="form-label">汇付公钥</label><textarea class="layui-textarea" name="publicKey" placeholder="请输入汇付公钥"></textarea>');
+            $("#editPrivateKey").html('<label class="form-label">商户私钥</label><textarea class="layui-textarea" name="privateKey" placeholder="请输入商户私钥"></textarea>');
+            $('#editRemark_title').html("半托管项目号");
+            $('input[name="remark"]').attr('placeholder','请输入半托管项目号');
+            $('input[name="pid"]').val(pid);
+            $('input[name="appId"]').val(appID);
+            $('textarea[name="publicKey"]').val(PublicKey);
+            $('textarea[name="privateKey"]').val(PrivateKey);
+            $('input[name="remark"]').val(remark);
+            $('input[name="memo"]').val(memo);
+        }else{
+            $('#editPid').hide();
+            $('#editAppId').show();
+            $('#editPublicKey').show();
+            $('#editPrivateKey').show();
+            $('#editId').val(id);
+            $('#editCode').val(code);
+            $('input[name="appId"]').val(appID);
+            $('textarea[name="publicKey"]').val(PublicKey);
+            $('textarea[name="privateKey"]').val(PrivateKey);
+            $('input[name="memo"]').val(memo);
+        }
+    }
+    
+    //测试通道
+    function test(id,name) {
+        $('#testId').val(id);
+        $('#testPayTitle').html('测试通道 ' + '['+ name +']' +' ID:'+id);
+    }
+    
+    //删除通道
+    function del(id) {
+        Swal.fire({
+            text: '确定要删除吗?删除账号,账号相关的订单也会删除,可能造成您无法核对订单的情况,已知晓请确认删除!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '确 定',
+            cancelButtonText:'取消',
+            customClass: {
+              confirmButton: 'btn btn-primary me-2',
+              cancelButton: 'btn btn-label-secondary'
+            },
+            buttonsStyling: false
+          }).then(function (result) {
+            if (result.value) {
+              $.get("/Channel/DelChannel", {
+                id: id
+            }, function (res) {
+                
+                if (res.code == 1) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: res.msg,
+                        customClass: {
+                          confirmButton: 'btn btn-primary'
+                        }
+                     }).then(function (result) {
+                         if(result.value){
+                             location.reload();
+                         }
+                     });
+                } else {
+                    Swal.fire({
+                        title: res.msg,
+                        icon: 'error',
+                        customClass: {
+                          confirmButton: 'btn btn-primary'
+                        }
+                    });
+                }
+            }, 'json');
+            }
+          });
+            }
+    
+   
+</script>

@@ -1,0 +1,127 @@
+{include file="public/header" type="other"/}
+		<form class="layui-form" action="">
+			<div class="mainBox">
+				<div class="main-container">
+					<div class="layui-form-item">
+						<label class="layui-form-label">
+							用户ID
+						</label>
+						<div class="layui-input-block">
+							<input type="text" class="layui-input layui-form-danger" name="user_id"   disabled=""  
+								value="{$model['user_id']??""}" />
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">
+							站点名称
+						</label>
+						<div class="layui-input-block">
+							<input type="text" class="layui-input layui-form-danger"  name="sitename" 
+								value="{$model['sitename']??""}" {if condition="$model['delete_time'] neq ''"
+											} disabled {/if} />
+						</div>
+					</div>
+
+					<div class="layui-form-item">
+						<label class="layui-form-label">
+							站点地址
+						</label>
+						<div class="layui-input-block">
+							<input type="text" class="layui-input layui-form-danger" name="siteurl" 
+								value="{$model['siteurl']??""}" {if condition="$model['delete_time'] neq ''"
+											} disabled {/if}  />
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">
+							审核状态
+						</label>
+						<div class="layui-input-block">
+						    <select name="status" lay-filter='status' {if condition="$model['delete_time'] neq ''"
+											} disabled {/if} >
+						        <option value="0"  {if condition="$model['status'] eq 0"
+											} selected {/if}>待审核</option>
+						        <option value="1"  {if condition="$model['status'] eq 1"
+											} selected {/if}>审核通过</option>
+						        <option value="2"  {if condition="$model['status'] eq 2"
+											} selected {/if}>拒绝通过</option>
+											
+						    </select>
+						</div>
+					</div>
+					<div class="layui-form-item" id="reason" style="display:none;">
+						<label class="layui-form-label">
+							拒绝理由
+						</label>
+						<div class="layui-input-block">
+						    <textarea class="layui-textarea" name="reason">{$model['reason']??""}</textarea>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="bottom">
+				<div class="button-container">
+					<button type="submit" class="layui-btn layui-btn-normal layui-btn-sm" lay-submit=""
+						lay-filter="save">
+						提交
+					</button>
+					<button type="reset" class="layui-btn layui-btn-primary layui-btn-sm">
+						重置
+					</button>
+				</div>
+			</div>
+		</form>
+		{include file="public/footer"/}
+		<script>
+			layui.use(['form', 'jquery'], function() {
+				let form = layui.form;
+				let $ = layui.jquery;
+				
+				//选择拒绝审核展示拒绝理由
+				form.on('select(status)',function(data){
+				    if(data.value == 2){
+				        $('#reason').show(); 
+				    }else{
+				         $('#reason').hide(); 
+				    }
+				   
+				});
+                
+				form.on('submit(save)', function(data) {
+
+					$.ajax({
+						data: JSON.stringify(data.field),
+						dataType: 'json',
+						contentType: 'application/json',
+						type: 'post',
+						success: function(res) {
+							//判断有没有权限
+							if (res && res.code == 999) {
+								layer.msg(res.msg, {
+									icon: 5,
+									time: 2000,
+								})
+								return false;
+							} else if (res.code == 200) {
+								layer.msg(res.msg, {
+									icon: 1,
+									time: 1000
+								}, function() {
+									parent.layer.close(parent.layer.getFrameIndex(window
+										.name)); //关闭当前页
+									parent.layui.table.reload("domain");
+								});
+							} else {
+								layer.msg(res.msg, {
+									icon: 2,
+									time: 1000
+								});
+							}
+						}
+					})
+					return false;
+				});
+			})
+		</script>
+	</body>
+</html>

@@ -1,0 +1,21 @@
+{if condition="$config['captcha-type'] == '1'"}
+<div class="mb-3">
+  <label class="form-label">验 证 码</label>
+  <div class="input-group">
+    <input
+        type="text"
+        class="form-control"
+        name="ordinary_captcha"
+        placeholder="请 输 入 验 证 码"
+    />
+    <img id="codeimg" class="login-captcha"  alt="验证码" style="display:block;"/>
+  </div>
+</div>
+{elseif condition="$config['captcha-type'] == '2'"}
+<!-- 动态引入验证码JS示例 -->
+<script src="https://ssl.captcha.qq.com/TCaptcha.js"></script>
+<div class="mb-3" id='tencentCaptcha'><button type="button" class="TencentCaptcha btn btn-label-info w-100 mb-3" id="TencentCaptcha" -appid="{:$config['tencent_CaptchaAppId']}" data-cbfn="qq_captcha_callback" lay-filter="qq_captcha_callback" lay-submit><span c="spinner-grow spinner-grow-sm text-primary mr-2" role="status" aria-hidden="true"></span>&nbsp;点击按钮进行验证</button></div>
+{elseif condition="$config['captcha-type'] == '3' "}
+<script src="https://static.geetest.com/v4/gt4.js"></script>
+<div class="mb-3" id='geetest_captcha'></div>
+{/if}

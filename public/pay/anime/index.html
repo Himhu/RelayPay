@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>{:getConfig()['sitename']} · 星空通道</title>
+    <link rel="icon" type="image/png" href="{:getConfig()['favicon']}">
+    <link rel="stylesheet" href="/static/component/pear/css/pear.css" />
+    <link rel="stylesheet" href="/pay/anime/js/sweetalert2/sweetalert2.css" />
+    <link rel="stylesheet" href="/pay/anime/css/anime.css">
+</head>
+
+<body class="stellar-pay">
+    <div class="starsea" aria-hidden="true">
+        <span class="glow one"></span>
+        <span class="glow two"></span>
+    </div>
+
+    <main class="pay-stage">
+        <section class="panel hero-pane">
+            <div class="eyebrow">Celestial Console</div>
+            <div class="badge-row">
+                {if condition="$pay_array.order.type == 'alipay'"}
+                <span class="badge type-ali">ALP · 轨道</span>
+                {elseif condition="$pay_array.order.type == 'wxpay'"}
+                <span class="badge type-wx">WX · 轨道</span>
+                {elseif condition="$pay_array.order.type == 'qqpay'"}
+                <span class="badge type-qq">QQ · 轨道</span>
+                {elseif condition="$pay_array.order.type == 'usdt'"}
+                <span class="badge type-usdt">USDT · 通路</span>
+                {else}
+                <span class="badge type-ali">Channel</span>
+                {/if}
+                <span class="status-chip">
+                    <span class="status-dot"></span>
+                    等待确认
+                </span>
+            </div>
+            <h1>灵感航道已开启</h1>
+            <p>
+                {if condition="$pay_array.other_arr.hidden_sacnName != 1"}
+                当前项目：{$pay_array.order.name}。
+                {/if}
+                请在时限内完成操作，系统会实时同步状态。
+            </p>
+            <div class="meta-grid">
+                <div class="meta-card">
+                    <p>订单金额</p>
+                    <div class="amount-display">
+                        {if condition="$pay_array.order.type != 'usdt'"}<small>¥</small>{/if}
+                        <span>{$pay_array.order.truemoney}</span>
+                        {if condition="$pay_array.order.type == 'usdt'"}<small>USDT</small>{/if}
+                    </div>
+                </div>
+                <div class="meta-card">
+                    <p>创建时间</p>
+                    <strong>{$pay_array.order.create_time}</strong>
+                </div>
+                <div class="meta-card">
+                    <p>倒计时</p>
+                    <div class="countdown-text" id="divTime">二维码生成中...</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel qr-pane">
+            <div class="qr-wrapper" id="qrcode">
+                <div class="qr-placeholder"></div>
+            </div>
+            <p class="hint">如遇弹窗限制，请保留此页面并根据提示完成操作。</p>
+            <a id="startApp" class="btn-glow" style="display:none" target="_blank" rel="noopener">唤醒客户端</a>
+            <p id="startApp_text" class="hint" style="display:none">点击按钮即可打开对应 App，若失败请保持页面并扫码。</p>
+        </section>
+
+        <section class="panel detail-pane">
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <span class="label">订单编号</span>
+                    <strong id="billId">{$pay_array.order.out_trade_no}</strong>
+                    <button class="copy" data-clipboard-text="{$pay_array.order.out_trade_no}">复制</button>
+                </div>
+                <div class="detail-item">
+                    <span class="label">交易金额</span>
+                    <strong>{$pay_array.order.truemoney}{if condition="$pay_array.order.type == 'usdt'"} USDT{/if}</strong>
+                    <button class="copy" data-clipboard-text="{$pay_array.order.truemoney}">复制</button>
+                </div>
+                {if condition="$pay_array.other_arr.hidden_sacnName != 1"}
+                <div class="detail-item">
+                    <span class="label">项目描述</span>
+                    <strong>{$pay_array.order.name}</strong>
+                </div>
+                {/if}
+                <div class="detail-item">
+                    <span class="label">当前支付方式</span>
+                    {if condition="$pay_array.order.type == 'alipay'"}
+                    <strong>支付宝</strong>
+                    {elseif condition="$pay_array.order.type == 'wxpay'"}
+                    <strong>微信支付</strong>
+                    {elseif condition="$pay_array.order.type == 'qqpay'"}
+                    <strong>QQ钱包</strong>
+                    {elseif condition="$pay_array.order.type == 'usdt'"}
+                    <strong>USDT</strong>
+                    {else}
+                    <strong>其他</strong>
+                    {/if}
+                </div>
+            </div>
+            {if condition="$pay_array.other_arr.console_notity"}
+            <div class="console-note">
+                {:$pay_array.other_arr.console_notity}
+            </div>
+            {/if}
+        </section>
+
+        <section class="panel tips-pane">
+            <h3>操作指引</h3>
+            <ul>
+                {if condition="$pay_array.order.type == 'alipay'"}
+                <li>打开手机 Alipay，点击「扫一扫」或使用唤醒按钮直接进入。</li>
+                <li>确认金额与备注后再提交，切勿修改金额。</li>
+                {/if}
+                {if condition="$pay_array.order.type == 'wxpay'"}
+                <li>使用微信「扫一扫」完成操作，如在桌面端请通过浏览器打开。</li>
+                <li>若出现风控提示，请稍候或更换网络后重试。</li>
+                {/if}
+                {if condition="$pay_array.order.type == 'qqpay'"}
+                <li>请在 QQ 或浏览器内唤起 QQ 扫描，微信内打开会被拦截。</li>
+                <li>若无法唤醒，可复制备用链接粘贴到手机浏览器中访问。</li>
+                {/if}
+                {if condition="$pay_array.order.type == 'usdt'"}
+                <li>链类型：TRC20，请严格核对金额 <strong>{$pay_array.order.truemoney} USDT</strong>。</li>
+                <li>提交交易后请保持页面，系统会自动检测到账状态。</li>
+                {/if}
+                <li>如遇超时，可刷新订单或联系管理员确认状态。</li>
+            </ul>
+            {if condition="getConfig()['is_paypage_realname'] eq 1"}
+            <p class="auth-note">
+                {if condition="$pay_array.other_arr.is_realName eq 1"}
+                ✅ 商户已完成实名认证，可放心操作。
+                {else}
+                ⚠️ 商户暂未完成实名认证，请谨慎操作。
+                {/if}
+            </p>
+            {/if}
+        </section>
+    </main>
+
+    <script src="/static/index/js/jquery-3.2.1.min.js"></script>
+    <script src="/static/component/layer/layer.js"></script>
+    <script src="/pay/anime/js/sweetalert2/sweetalert2.js"></script>
+    <script src="/pay/anime/js/clipboard.js"></script>
+    <script>
+        {if condition="$pay_array.other_arr.is_voice_tips == 1"}
+        var voice = `//dict.youdao.com/dictvoice?audio=尊敬的用户,本次交易金额为` + {$pay_array.order.truemoney} + `元,请按提示完成&le=zh&keyfrom=speaker-target`;
+        new Audio(voice).play();
+        {/if}
+
+        var intDiff = parseInt('{$pay_array.ms}');
+        function timer(intDiff) {
+            var timerId = window.setInterval(function () {
+                var minute = 0, second = 0;
+                if (intDiff > 0) {
+                    minute = Math.floor(intDiff / 60);
+                    second = Math.floor(intDiff) - (minute * 60);
+                }
+                if (minute <= 9) minute = '0' + minute;
+                if (second <= 9) second = '0' + second;
+                if (minute <= 0 && second <= 0) {
+                    $("#divTime").html("二维码已失效");
+                    $("#qrcode").html('<div class="qr-status fail"><div class="icon">!</div><h3>二维码已过期</h3><p>请刷新订单重新生成</p></div>');
+                } else {
+                    $("#divTime").html("剩余 " + minute + ":" + second);
+                }
+                if (intDiff < 0) {
+                    clearInterval(timerId);
+                }
+                intDiff--;
+            }, 1000);
+        }
+        $(function () {
+            timer(intDiff);
+        });
+
+        var updateQrOk = 0;
+        var updateQrImg = 0;
+        var updateQrNo = 0;
+        var lastQrImg = '';
+
+        function order() {
+            $.get("/Pay/ConSole", { TradeNo: "{$pay_array.order.out_trade_no}" }, function (result) {
+                if (result.code == '200' && updateQrOk == 0) {
+                    updateQrOk = 1;
+                    $("#divTime").html("订单已完成");
+                    $("#qrcode").html('<div class="qr-status success"><div class="icon">✓</div><h3>交易已完成</h3><p>正在跳转，请稍候...</p></div>');
+                    window.clearInterval(orderlst);
+                    layer.msg('交易已完成，正在跳转...', { icon: 1 });
+                    window.location.href = result.url;
+                }
+                if (result.code == '100' && (updateQrImg == 0 || (result.qr_url && lastQrImg !== result.qr_url))) {
+                    updateQrImg = 1;
+                    lastQrImg = result.qr_url;
+                    $("#qrcode").html('<img id="qrcode_load" alt="二维码">');
+                    loadQrAsBase64(result.qr_url, "#qrcode_load");
+                    if ("{$pay_array.order.type}" == 'alipay' && !isMobilCheck()) {
+                        $("#startApp").attr("href", "{$pay_array.order.h5_qrurl|raw}");
+                        $("#startApp").text('唤醒 Alipay');
+                        $("#startApp").show();
+                        $("#startApp_text").show();
+                    }
+                    if ("{$pay_array.order.type}" == 'wxpay' && !isMobilCheck()) {
+                        if ("{$pay_array.other_arr.code}" == "qqpay_wzq") {
+                            $("#startApp").attr("href", "{$pay_array.order.h5_qrurl|raw}");
+                            $("#startApp").text('点击继续');
+                            $("#startApp").show();
+                            $("#startApp_text").show();
+                            $("#qrcode").html("<div class='qr-status'><div class='icon'>!</div><h3>请在浏览器内点击按钮完成</h3><p>务必在手机浏览器操作，勿在微信/QQ内打开。</p></div>");
+                        } else {
+                            $("#startApp").attr("href", "{$pay_array.order.h5_qrurl|raw}");
+                            $("#startApp").text('唤醒微信');
+                            $("#startApp").show();
+                            $("#startApp_text").show();
+                        }
+                    }
+                    if ("{$pay_array.order.type}" == 'qqpay' && !isMobilCheck()) {
+                        if ('{$pay_array.other_arr.code}' == 'qqpay_software' && '{$pay_array.other_arr.is_jump}' == '1') {
+                            $("#startApp").attr("href", "{$pay_array.order.h5_qrurl|raw}");
+                            $("#startApp").text('唤醒QQ');
+                            $("#startApp").show();
+                            $("#startApp_text").show();
+                        }
+                    }
+                }
+                if (result.code == '201' && updateQrNo == 0) {
+                    updateQrNo = 1;
+                    window.clearInterval(orderlst);
+                    layer.confirm(result.msg, {
+                        icon: 2,
+                        title: '交易失败',
+                        btn: ['确认']
+                    }, function () {
+                        var href = "{$pay_array.other_arr.timeout_url}";
+                        if (href && href.indexOf('http') !== 0 && href != '/') {
+                            href = "//" + href;
+                        }
+                        window.location.href = href;
+                    });
+                }
+            }, "JSON");
+        }
+
+        function loadQrAsBase64(url, selector) {
+            if (!url) {
+                return;
+            }
+            fetch(url, { cache: "no-store" })
+                .then(function (res) { return res.blob(); })
+                .then(function (blob) {
+                    var reader = new FileReader();
+                    reader.onload = function () {
+                        $(selector).attr("src", reader.result);
+                    };
+                    reader.readAsDataURL(blob);
+                })
+                .catch(function () {
+                    layer.msg('二维码加载失败，请刷新重试');
+                });
+        }
+        order();
+        var orderlst = window.setInterval(function () {
+            order();
+        }, 2000);
+
+        function isMobilCheck() {
+            var userAgentInfo = navigator.userAgent;
+            var Agents = new Array("Android", "iPhone", "SymbianOS", "Windows Phone", "iPad", "iPod");
+            var flag = true;
+            for (var v = 0; v < Agents.length; v++) {
+                if (userAgentInfo.indexOf(Agents[v]) > 0) {
+                    flag = false;
+                    break;
+                }
+            }
+            return flag;
+        }
+
+        function showGlobalAd() {
+            Swal.fire({
+                html: '{:getConfig()['reportTips']}',
+                showCancelButton: true,
+                confirmButtonText: '{:getConfig()['reportYes']}',
+                cancelButtonText: '{:getConfig()['reportNo']}',
+                customClass: {
+                    confirmButton: 'btn btn-primary me-3',
+                    cancelButton: 'btn btn-label-secondary'
+                },
+                buttonsStyling: false
+            }).then(function (result) {
+                if (result.value) {
+                    location.replace('{:getConfig()['reportUrl']}');
+                }
+            });
+        }
+        function jscode() {
+            var pay_type = '{$pay_array.order.type}';
+            var pay_code = '{$pay_array.other_arr.code}';
+            if (pay_type == 'alipay' && '{$pay_array.other_arr.is_jump}' == '1') {
+                layer.msg('正在唤醒 Alipay...', { shade: 0, time: 1000 });
+                window.location.href = '{$pay_array.order.h5_qrurl|raw}';
+            } else if (pay_type == 'qqpay' && pay_code != 'qqpay_software' && pay_code != 'qqpay_wzq' && '{$pay_array.other_arr.is_jump}' == '1') {
+                layer.msg('正在唤醒QQ...', { shade: 0, time: 1000 });
+                window.location.href = '{$pay_array.order.h5_qrurl|raw}';
+            }
+        }
+        if (window.navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)) {
+            setTimeout(jscode, 3000);
+        }
+
+        function is_weixin() {
+            var ua = navigator.userAgent.toLowerCase();
+            return ua.indexOf("micromessenger") > -1 || ua.indexOf("qq/") > -1;
+        }
+        var isWeixin = is_weixin();
+        var pay_code = '{$pay_array.other_arr.code}';
+        var isQQBrowser = navigator.userAgent.indexOf("QQBrowser") > -1;
+        if (isWeixin && pay_code == 'qqpay_wzq' && !isQQBrowser) {
+            $("html").html(`    <style>
+        body,html{width:100%;height:100%}
+        *{margin:0;padding:0}
+        body{background-color:#fff}
+        #browser img{
+            width:50px;
+        }
+        #browser{
+            margin: 0px 10px;
+            text-align:center;
+        }
+        #contens{
+            font-weight: bold;
+            color: #2466f4;
+            margin:-285px 0px 10px;
+            text-align:center;
+            font-size:20px;
+            margin-bottom: 125px;
+        }
+        .top-bar-guidance{font-size:15px;color:#fff;height:70%;line-height:1.8;padding-left:20px;padding-top:20px;background:url(/static/index/pay/jump/banner.png) center top/contain no-repeat}
+        .top-bar-guidance .icon-safari{width:25px;height:25px;vertical-align:middle;margin:0 .2em}
+        .app-download-tip{margin:0 auto;width:290px;text-align:center;font-size:15px;color:#2466f4;background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAcAQMAAACak0ePAAAABlBMVEUAAAAdYfh+GakkAAAAAXRSTlMAQObYZgAAAA5JREFUCNdjwA8acEkAAAy4AIE4hQq/AAAAAElFTkSuQmCC) left center/auto 15px repeat-x}
+        .app-download-tip .guidance-desc{background-color:#fff;padding:0 5px}
+        .app-download-tip .icon-sgd{width:25px;height:25px;vertical-align:middle;margin:0 .2em}
+        .app-download-btn{display:block;width:214px;height:40px;line-height:40px;margin:18px auto 0 auto;text-align:center;font-size:18px;color:#2466f4;border-radius:20px;border:.5px #2466f4 solid;text-decoration:none}
+    </style><div class="top-bar-guidance">
+    <p>点击右上角<img src="/static/index/pay/jump/3dian.png" class="icon-safari">在浏览器打开</p>
+    <p>苹果设备<img src="/static/index/pay/jump/iphone.png" class="icon-safari">安卓设备<img src="/static/index/pay/jump/android.png" class="icon-safari">↑↑↑</p>
+</div>
+
+<div id="contens">
+<p><br/><br/></p>
+<p>1. 本页不支持在微信或 QQ 内直接打开</p>
+<p><br/></p>
+<p>2. 请按提示在手机浏览器中打开</p>
+</div>
+
+<p><br/></p>
+<div class="app-download-tip">
+    <span class="guidance-desc">点击右上角<img src="/static/index/pay/jump/3dian.png" class="icon-sgd">进入浏览器打开</span>
+</div>
+`);
+        }
+
+        var clipboard = new ClipboardJS('.copy');
+        clipboard.on('success', function () {
+            layer.msg('已复制');
+        });
+        clipboard.on('error', function () {
+            layer.msg('复制失败，请手动选择文本');
+        });
+    </script>
+    <script src="https://gw.alipayobjects.com/as/g/h5-lib/alipayjsapi/3.1.1/alipayjsapi.inc.min.js"></script>
+</body>
+
+</html>

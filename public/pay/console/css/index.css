@@ -1,0 +1,127 @@
+body {
+    background: #f2f2f4;
+}
+
+body,
+html {
+    width: 100%;
+    height: 100%;
+}
+
+*,
+:after,
+:before {
+    box-sizing: border-box;
+}
+
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+img {
+    max-width: 100%;
+}
+
+#header {
+    height: 60px;
+    border-bottom: 2px solid #eee;
+    background-color: #fff;
+    text-align: center;
+    line-height: 60px;
+}
+
+#header h1 {
+    font-size: 20px;
+}
+
+#main {
+    overflow: hidden;
+    margin: 0 auto;
+    padding: 20px;
+    padding-top: 80px;
+    width: 992px;
+    max-width: 100%;
+}
+
+#main .left {
+    float: left;
+    width: 40%;
+    box-shadow: 0 0 60px #b5f1ff;
+}
+
+.left p {
+    margin: 10px auto;
+}
+
+.make {
+    padding-top: 15px;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 3px 3px 0 rgba(0, 0, 0, .05);
+    color: #666;
+    text-align: center;
+    transition: all .2s linear;
+}
+
+.make .qrcode {
+    margin: auto;
+}
+
+.make .money {
+    margin-bottom: 0;
+    color: #f44336;
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.info {
+    padding: 15px;
+    width: 100%;
+    border-radius: 0 0 10px 10px;
+    background: #32343d;
+    color: #f2f2f2;
+    text-align: center;
+    font-size: 14px;
+}
+
+#main .right {
+    float: right;
+    padding-top: 25px;
+    width: 60%;
+    color: #ccc;
+    text-align: center;
+}
+
+@media (max-width:768px) {
+    #main {
+        padding-top: 30px;
+    }
+
+    #main .left {
+        width: 100%;
+    }
+
+    #main .right {
+        display: none;
+    }
+}
+
+.account_box {
+    border: 1px dashed gainsboro;
+    border-radius: 20px;
+    padding: 20px 0;
+    margin: 20px 20px 0 20px;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+.zhuanzhang_box {
+    font-size: 16px;
+    margin: 20px 20px;
+    font-weight: bolder;
+    border: 1px dashed gainsboro;
+    padding: 20px 0;
+    border-radius: 20px;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}

@@ -1,0 +1,107 @@
+{include file="public/header" type='pear-container'/}
+<style>
+    .page-title {
+        font-size: 18px;
+        margin: 15px 37px;
+        line-height: 40px;
+        color: inherit;
+    }
+    .update_conter {
+        background: #f9f9f9;
+        border-radius: 4px;
+        padding: 20px;
+        margin: 15px 37px 0 37px;
+    }
+    .update_tips {
+        font-size: 14px;
+        color: #5f6368;
+        font-weight: 500;
+        margin-bottom: 12px;
+    }
+    .manual-actions{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+    }
+    .masked-link{
+        font-weight: 600;
+        color: #5c6bc0;
+        word-break: break-all;
+        overflow-wrap: anywhere;
+        display: inline-block;
+        max-width: 100%;
+    }
+</style>
+<div class="layui-row layui-col-space10">
+    <div class="layui-card">
+        <div class="layui-card-header">在线更新</div>
+        <div class="layui-card-body">
+            <div class="manual-update">
+                <h4 class="page-title" style="font-weight:300;">当前版本：{$ver}</h4>
+                <div class="update_conter">
+                    <p class="update_tips">当前已是最新版本，若有新版本发布请通过以下方式手动下载安装包。</p>
+                    <p>下载链接：<span class="masked-link">https://wwayc.lanzoub.com/b00w****</span></p>
+                    <div class="manual-actions">
+                        <button type="button" class="layui-btn layui-btn-primary layui-btn-sm" id="manual-copy-link">复制链接</button>
+                        <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" id="manual-open-link">前往下载</button>
+                    </div>
+                    <p style="margin-top:15px;">提取密码：<span class="masked-link">e9lj</span></p>
+                    <button type="button" class="layui-btn layui-btn-warm layui-btn-sm" id="manual-copy-pwd">复制密码</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{include file="public/footer"/}
+<script>
+layui.use(['layer', 'jquery'], function() {
+    var layer = layui.layer;
+    var $ = layui.jquery;
+    var downloadUrl = 'https://wwayc.lanzoub.com/b00wnajzqh';
+    var downloadPwd = 'e***j';
+
+    function copyText(text){
+        if(navigator.clipboard){
+            navigator.clipboard.writeText(text).then(function(){
+                layer.msg('已复制到剪贴板');
+            }).catch(function(){
+                fallbackCopy(text);
+            });
+        }else{
+            fallbackCopy(text);
+        }
+    }
+
+    function fallbackCopy(text){
+        var textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        try{
+            document.execCommand('copy');
+            layer.msg('已复制到剪贴板');
+        }catch(e){
+            layer.msg('复制失败，请手动复制');
+        }
+        document.body.removeChild(textarea);
+    }
+
+    $('#manual-copy-link').on('click', function(){
+        copyText(downloadUrl);
+    });
+
+    $('#manual-open-link').on('click', function(){
+        window.open(downloadUrl, '_blank');
+    });
+
+    $('#manual-copy-pwd').on('click', function(){
+        copyText(downloadPwd);
+    });
+})
+</script>
+</body>
+</html>

@@ -1,0 +1,2 @@
+INSERT INTO `admin_config` (`id`, `config_name`, `config_value`) VALUES (NULL, 'user_theme', 'default');
+INSERT INTO `admin_permission` (`id`, `pid`, `title`, `href`, `icon`, `sort`, `type`, `status`) VALUES (NULL, '22', '会员中心主题', '/ypay.user_theme/index', 'layui-icon layui-icon-username', '99', '1', '1');

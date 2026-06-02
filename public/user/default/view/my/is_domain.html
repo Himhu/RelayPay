@@ -1,0 +1,397 @@
+ {include file="public/user_header" title="域名审核" /}
+ <style>
+     table tbody tr td:last-child{
+         background-color:white;
+     }
+     .layui-upload-file{
+         display: none;
+     }
+ </style>
+<!-- Content -->
+            <div class="container-xxl flex-grow-1 container-p-y">
+                {if condition="(getConfig()['domain_notice'] != null || getConfig()['domain_notice'] != '')"}
+                <div class="col-md-12" style="padding-bottom: 20px;">
+                  <div class="card">
+                    <div class="card-body">
+                    {:getConfig()['domain_notice']}
+                    </div>
+                  </div>
+                </div>
+                {/if}
+              <div class="row">
+                <div class="col-md-12">
+                
+                  <div class="card">
+                    <!-- 域 名 列 表 -->
+                    <h5 class="card-header border-bottom">
+                        <span style="float:left;">域 名 列 表</span> 
+                    <button  type="button" style="float:right;" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#addDomain">
+                        <i class="bx bx-plus me-sm-1"></i> <span>新 增</span>
+                    </button>
+                    </h5>
+                    <div class="card-datatable text-nowrap">
+                      <table class="datatables-basic table border-top">
+                        <thead>
+                          <tr>
+                            <th>ID</th>
+                            <th>站点名称</th>
+                            <th>站点域名</th>
+                            <th>审核状态</th>
+                            <th style="background-color:white;">操作</th>
+                          </tr>
+                        </thead>
+                      </table>
+                    </div>
+                    <!--/ 域 名 列 表 -->
+                    
+                    <!--  添 加 域 名 -->
+                    <div class="modal fade" id="addDomain" tabindex="-1" aria-hidden="true">
+                       <div class="modal-dialog modal-dialog-centered1 modal-simple">
+                        <div class="modal-content p-3 p-md-5">
+                            <div class="modal-body">
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <div class="text-center">
+                                  <h3 class="mb-2">新 增 域 名</h3>
+                                  <p>在此添加你要审核的域名吧.</p>
+                                </div>
+                                <form id="domain_form" class="row g-3" onsubmit="return false">
+                                    <div class="col-12" >
+                                      <label class="form-label">站点名称</label>
+                                      <input
+                                        type="text"
+                                        name="sitename"
+                                        class="form-control"
+                                        placeholder="请输入您的站点名称"
+                                      />
+                                    </div>
+                                    <div class="col-12">
+                                      <label class="form-label">站点域名</label>
+                                      <input
+                                        type="text"
+                                        name="siteurl"
+                                        class="form-control"
+                                        placeholder="请输入域名,支持通配符*"
+                                      />
+                                    </div>
+                                    <div class="col-12 text-center">
+                                      <button type="submit" id="add_Submit" class="btn btn-primary me-sm-3 me-1">提 交</button>
+                                      <button
+                                        type="reset"
+                                        class="btn btn-label-secondary"
+                                      >
+                                        重 置
+                                      </button>
+                                    </div>
+                             </form>
+                            </div>
+                  </div>
+                </div>
+              </div>
+                    <!--/  添 加 域 名 -->
+                    
+                    <!-- 微 信 通 道 修 改 -->
+                    <div class="modal fade" id="editDomain" tabindex="-1" aria-hidden="true">
+                       <div class="modal-dialog modal-dialog-centered1 modal-simple">
+                        <div class="modal-content p-3 p-md-5">
+                            <div class="modal-body">
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <div class="text-center">
+                                  <h3 class="mb-2">修 改 域 名</h3>
+                                  <p>在此修改你要审核的域名吧.</p>
+                                </div>
+                                <form id="editFrom" class="row g-3" onsubmit="return false">
+                                    <input id="editId" name="id" style="display:none;">
+                                    <input id="editUserId" name="user_id" style="display:none;">
+                                    <div class="col-12" >
+                                      <label class="form-label">站点名称</label>
+                                      <input
+                                        type="text"
+                                        name="sitename"
+                                        class="form-control"
+                                        placeholder="请输入您的站点名称"
+                                      />
+                                    </div>
+                                    <div class="col-12">
+                                      <label class="form-label">站点域名</label>
+                                      <input
+                                        type="text"
+                                        name="siteurl"
+                                        class="form-control"
+                                        placeholder="请输入域名,支持通配符*"
+                                      />
+                                    </div>
+                                    <div class="col-12 text-center">
+                                      <button type="submit" id="editSubmit" class="btn btn-primary me-sm-3 me-1">提 交</button>
+                                      <button
+                                        type="reset"
+                                        class="btn btn-label-secondary"
+                                      >
+                                        重 置
+                                      </button>
+                                    </div>
+                             </form>
+                            </div>
+                  </div>
+                </div>
+              </div>
+                    <!--/  微 信 通 道 修 改-->
+                    
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- / Content -->
+            
+{include file="public/user_footer" /}
+ <!-- / Page Js -->
+<script>
+    layui.use([ 'form','admin'], function () {
+            var $ = layui.jquery;
+            var form = layui.form;
+            var admin = layui.admin;
+            
+             const domain_form = document.querySelector('#domain_form');
+
+            // Form validation for Submit
+            if (domain_form) {
+              const fv = FormValidation.formValidation(domain_form, {
+                fields: {
+                  sitename: {
+                    validators: {
+                      notEmpty: {
+                        message: '请 输 入 您 的 站 点 名 称'
+                      }
+                    }
+                  },
+                  siteurl: {
+                    validators: {
+                      notEmpty: {
+                        message: '请 输 入 您 站 点 地 址'
+                      }
+                    }
+                  }
+                },
+                plugins: {
+                  trigger: new FormValidation.plugins.Trigger(),
+                  bootstrap5: new FormValidation.plugins.Bootstrap5({
+                    eleValidClass: '',
+                    rowSelector: '.col-12'
+                  }),
+                  submitButton: new FormValidation.plugins.SubmitButton(),
+                  // Submit the form when all fields are valid
+                  // defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+                  autoFocus: new FormValidation.plugins.AutoFocus()
+                },
+                init: instance => {
+                  instance.on('plugins.message.placed', function (e) {
+                    if (e.element.parentElement.classList.contains('input-group')) {
+                      e.element.parentElement.insertAdjacentElement('afterend', e.messageElement);
+                    }
+                  });
+                }
+              });
+            }
+            
+            
+		   
+            
+    });
+    var dt_basic_table = $('.datatables-basic');
+     // DataTable
+            // --------------------------------------------------------------------
+    if (dt_basic_table.length) {
+             var table =  dt_basic_table.DataTable({
+                 ajax: '/My/is_domain',
+                 columns: [
+                   { data: 'id' },
+                   { data: 'sitename' },
+                   { data: 'siteurl' },
+                   { data: 'status' },
+                  { data: 'id' },
+                 ],
+                 columnDefs: [
+                    {
+                      // Label
+                      targets: 3,
+                      render: function (data, type, full, meta) {
+                        var $status = full['status'];
+                        var $array = {
+                            0: { title: '待审核', class: 'btn-warning' },
+                            1: { title: '审核通过', class: 'bg-label-success' },
+                            2: { title: '审核不通过:'+full['reason'], class: 'bg-label-danger' },
+                        };
+                        return (
+                          '<span class="badge rounded-pill ' +
+                          $array[$status].class +
+                          '">' +
+                          $array[$status].title +
+                          '</span>'
+                        );
+                      }
+                    },
+                    {
+                      // Label
+                      targets: -1,
+                      searchable: false,
+                      orderable: false,
+                      render: function (data, type, full, meta) {
+                        var id = full['id'];
+                        var status = full['status'];
+                        var del = '<button type="button" onclick="del('+id+')" class="btn rounded-pill btn-sm btn-google-plus">删除</button>';
+                        var editArr = [id,"'" + full['user_id'] + "'","'" + full['sitename'] + "'","'" + full['siteurl'] + "'"];
+                        if(status == 2){
+                           return (
+                                '<button type="button" data-bs-toggle="modal" data-bs-target="#editDomain" onclick="editDomain('+editArr+')" class="btn rounded-pill btn-sm btn-info">修改</button>&nbsp;'+
+                                del
+                            );          
+                        }else{
+                           return (
+                                del
+                            );  
+                        }
+                        
+                        
+                      }
+                    },
+                ],
+                 order: [[0, 'desc']],
+                 dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-center justify-content-md-end"f>>t<"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+                 displayLength: 10,
+                 lengthMenu: [10, 20, 50],
+                 scrollX:        true,
+                 deferRender: true,
+                 fixedColumns:   {
+                     left: 0,
+                     right: 1
+                 }
+            });
+            }
+    //刷新表单
+    function reload(){
+        table.ajax.reload();
+        // window.location.reload();
+    }
+     //添加域名
+		        $('#add_Submit').click(function(){
+		        let data = {};
+		        let value = $('#domain_form').serializeArray();
+                $.each(value, function (index, item) {
+                    data[item.name] = item.value;
+                });
+                $.post('/My/addDomain', data, function (res) {
+                                if (200 == res.code) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: res.msg,
+                                        customClass: {
+                                          confirmButton: 'btn btn-primary'
+                                        }
+                                    }).then(function (result) {
+                                        if(result.value){
+                                            reload();
+                                            $(".btn-close").trigger("click");
+                                            
+                                        }
+                                    });
+                                    } else {
+                                        Swal.fire({
+                                            title: res.msg,
+                                            icon: 'error',
+                                            customClass: {
+                                              confirmButton: 'btn btn-primary'
+                                            }
+                                        });
+                                    }
+                            }, 'json');
+                            return false;
+		        });
+	
+	//修改域名审核内容
+		    $('#editSubmit').click(function(){
+		        let data = {};
+		        let value = $('#editFrom').serializeArray();
+                $.each(value, function (index, item) {
+                    data[item.name] = item.value;
+                });
+                $.post('/My/editDomain', data, function (res) {
+                                if (200 == res.code) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: res.msg,
+                                        customClass: {
+                                          confirmButton: 'btn btn-primary'
+                                        }
+                                    }).then(function (result) {
+                                        if(result.value){
+                                            reload();
+                                            $(".btn-close").trigger("click");
+                                            
+                                        }
+                                    });
+                                    } else {
+                                        Swal.fire({
+                                            title: res.msg,
+                                            icon: 'error',
+                                            customClass: {
+                                              confirmButton: 'btn btn-primary'
+                                            }
+                                        });
+                                    }
+                            }, 'json');
+                            return false;
+		    });
+		        
+	//修改域名审核内容 id,站点名称,站点域名
+    function editDomain(id,user_id,siteName,siteUrl){
+            $('#editId').val(id);
+            $('#editUserId').val(user_id);
+            $('input[name="sitename"]').val(siteName);
+            $('input[name="siteurl"]').val(siteUrl);
+    }
+	
+    //删除域名
+    function del(id) {
+        Swal.fire({
+            text: '确定要删除吗?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '确 定',
+            cancelButtonText:'取消',
+            customClass: {
+              confirmButton: 'btn btn-primary me-2',
+              cancelButton: 'btn btn-label-secondary'
+            },
+            buttonsStyling: false
+          }).then(function (result) {
+            if (result.value) {
+              $.get("/My/delDomain", {
+                id: id
+            }, function (res) {
+                
+                if (res.code == 200) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: res.msg,
+                        customClass: {
+                          confirmButton: 'btn btn-primary'
+                        }
+                     }).then(function (result) {
+                         if(result.value){
+                             location.reload();
+                         }
+                     });
+                } else {
+                    Swal.fire({
+                        title: res.msg,
+                        icon: 'error',
+                        customClass: {
+                          confirmButton: 'btn btn-primary'
+                        }
+                    });
+                }
+            }, 'json');
+            }
+          });
+            }
+</script>

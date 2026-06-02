@@ -1,0 +1,322 @@
+ {include file="public/user_header" title="实名认证" /}
+    <link rel="stylesheet" href="/user/default/static/assets/vendor/libs/bs-stepper/bs-stepper.css" />
+     <!--<link rel="stylesheet" href="/user/default/static/assets/vendor/libs/@form-validation/umd/styles/index.min.css" />-->
+<!-- Content -->
+
+            <div class="container-xxl flex-grow-1 container-p-y">
+
+              <div class="row">
+                <div class="col-md-12">
+                  <ul class="nav nav-pills flex-column flex-md-row mb-3">
+                    <li class="nav-item">
+                      <a class="nav-link" href="/My/UserPro"><i class="bx bx-user me-1"></i> 账 户 详 情</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="/My/Security"><i class="bx bx-lock-alt me-1"></i>安 全 设 置</a></li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="/My/Notifications"
+                        ><i class="bx bx-bell me-1"></i> 通 知 设 置</a
+                      >
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="/My/Connections"
+                        ><i class="bx bx-link-alt me-1"></i>账 号 绑 定</a
+                      >
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link active" href="javascript:void(0);"
+                        ><i class='bx bx-id-card me-1'></i>实 名 认 证</a
+                      >
+                    </li>
+                  </ul>
+                  <div class="col-12 mb-4">
+                    <?php if($user['is_realName'] != 1): ?>
+                        <div id="wizard-validation" class="bs-stepper mt-2">
+                    <div class="bs-stepper-header">
+                      <div class="step" data-target="#account-details-validation">
+                        <button type="button" class="step-trigger">
+                          <span class="bs-stepper-circle">1</span>
+                          <span class="bs-stepper-label mt-1">
+                            <span class="bs-stepper-title">填写信息</span>
+                            <span class="bs-stepper-subtitle">填写您的身份证信息</span>
+                          </span>
+                        </button>
+                      </div>
+                      <div class="line">
+                        <i class="bx bx-chevron-right"></i>
+                      </div>
+                      <div class="step" data-target="#personal-info-validation">
+                        <button type="button" class="step-trigger">
+                          <span class="bs-stepper-circle">2</span>
+                          <span class="bs-stepper-label mt-1">
+                            <span class="bs-stepper-title">扫 码 认 证</span>
+                            <span class="bs-stepper-subtitle">选择微信/支付宝进行扫码认证</span>
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="bs-stepper-content">
+                      <form id="realName" onSubmit="return false">
+                        <!-- 填 写 信 息 -->
+                        <div id="account-details-validation" class="content">
+                          <div class="row g-3">
+                            <div class="col-sm-6">
+                              <label class="form-label" for="userName">姓名</label>
+                              <input
+                                type="text"
+                                name="userName"
+                                id="userName"
+                                class="form-control"
+                                placeholder="请填写您的姓名" />
+                            </div>
+                            <div class="col-sm-6">
+                              <label class="form-label" for="cardID">身份证号</label>
+                              <input
+                                type="text"
+                                name="cardID"
+                                id="cardID"
+                                class="form-control"
+                                placeholder="请填入您的身份证号" />
+                            </div>
+                            <div class="col-12 d-flex justify-content-between">
+                              <button class="btn btn-label-secondary btn-prev" disabled>
+                                <i class="bx bx-chevron-left bx-sm ms-sm-n2" style="margin-top: 3px;"></i>
+                                <span class="align-middle d-sm-inline-block d-none" >上 一 步</span>
+                              </button>
+                              <div>
+                                <?php foreach ($array as $key => $value): if($value['display'] != 'none'): ?>
+                                    <button class="btn {$value['btnColor']} btn-next" id="{$value['id']}">
+                                        <span class="align-middle d-sm-inline-block  me-sm-1">{$value['name']}</span>
+                                        <i class="bx bx-chevron-right bx-sm me-sm-n2" style="margin-top: 3px;"></i>
+                                    </button>
+                                <?php endif; endforeach; ?>
+                              </div>
+                              
+                            </div>
+                          </div>
+                          <div style="margin-top: 20px;">
+                            <?php if (getConfig()['realNameBear'] == 1): ?>
+                                <span style="color: red;">实名认证需花费{:getConfig()['bearMoney']}元,请保证余额充足</span>
+                                <br/>
+                            <?php endif; ?>
+                            认证提示:身份证资料必须和您扫码识别人脸信息一致
+                          </div>
+                        </div>
+                        <!-- 扫 码 认 证 -->
+                        <div id="personal-info-validation" class="content">
+                          <div class="row g-3">
+                                <div class="text-center">
+                                    <img src="/static/index/images/status/loading.gif" alt="Real Code" id="realCode" width="200" />
+                                </div>
+                            <div class="col-12 d-flex justify-content-between">
+                              <button class="btn btn-primary btn-prev">
+                                <i class="bx bx-chevron-left bx-sm ms-sm-n2" style="margin-top: 3px;"></i>
+                                <span class="align-middle d-sm-inline-block d-none" >上一步</span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                    <?php else: ?>
+                        <div  class="bs-stepper mt-2">
+
+                            <div class="bs-stepper-content">
+                                <div class="layui-card" style="height:300px">
+				<div class="result" style="height: 100%;display: flex;align-items: center;justify-content: center;align-content: center;flex-direction: column;">
+					<div class="success" style="color: #32C682;">
+					<svg viewBox="64 64 896 896" data-icon="check-circle" width="80px" height="80px" fill="currentColor" aria-hidden="true" focusable="false" class=""><path d="M699 353h-46.9c-10.2 0-19.9 4.9-25.9 13.3L469 584.3l-71.2-98.8c-6-8.3-15.6-13.3-25.9-13.3H325c-6.5 0-10.3 7.4-6.5 12.7l124.6 172.8a31.8 31.8 0 0 0 51.7 0l210.6-292c3.9-5.3.1-12.7-6.4-12.7z"></path><path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z"></path></svg>
+				    </div>
+					<h2 class="title" style="margin: 30px;">实 名 认 证 成 功</h2>
+				</div>
+			</div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- / Content -->
+<!--/ email -->
+
+{include file="public/user_footer" /}
+<!-- Page Js -->
+<script src="/user/default/static/assets/vendor/libs/bs-stepper/bs-stepper.js"></script>
+<script src="/user/default/static/assets/vendor/libs/@form-validation/umd/bundle/popular.min.js"></script>
+<script src="/user/default/static/assets/vendor/libs/@form-validation/umd/plugin-bootstrap5/index.min.js"></script>
+<script src="/user/default/static/assets/vendor/libs/@form-validation/umd/plugin-auto-focus/index.min.js"></script>
+<script src="/user/default/static/assets/vendor/libs/@form-validation/umd/validator-id/index.min.js"></script>
+<script>
+
+    $("#wechat").click(function(){
+        var formData = $("#realName").serializeArray();
+        var t1;
+        $("#realCode").attr("src", '/static/index/images/status/loading.gif');
+        $.post('/My/realName', {
+			formData,type:'wechat'
+		}, function(res) {
+			if (res.code === 200) {
+			    $("#orderNumber").attr("value",res.orderNumber);
+			    $("#realCode").attr("src", res.qrcode);
+			    function getRealNameStatus() {
+                   $.ajax({
+                       type:'post',
+                       url:'/My/getRealNameStatus',
+                       data:{orderNumber:res.orderNumber},
+                       dataType:'json',
+                       success:function(res){
+                            if (res.code == 200) {
+                                clearInterval(t1);
+                                $("#realCode").attr("src", '/static/index/images/status/pay_ok.png');
+                                location.reload();
+                            }
+                        }
+                   });
+        		}
+        		t1 = setInterval(function () { getRealNameStatus() }, 2000);  
+				return false;
+			} else {
+			    Swal.fire({
+                        icon: 'error',
+                        title: res.msg,
+                        customClass: {
+                          confirmButton: 'btn btn-danger'
+                        }
+                    })
+                
+			}
+		}, 'json');
+		return false;
+    });
+    
+    $("#ali").click(function(){
+        var formData = $("#realName").serializeArray();
+        var t1;
+        $("#realCode").attr("src", '/static/index/images/status/loading.gif');
+        $.post('/My/realName', {
+			formData,type:'ali'
+		}, function(res) {
+			if (res.code === 200) {
+			    $("#orderNumber").attr("value",res.orderNumber);
+			    $("#realCode").attr("src", res.qrcode);
+			    function getRealNameStatus() {
+                   $.ajax({
+                       type:'post',
+                       url:'/My/getRealNameStatus',
+                       data:{orderNumber:res.orderNumber},
+                       dataType:'json',
+                       success:function(res){
+                            if (res.code == 200) {
+                                clearInterval(t1);
+                                $("#realCode").attr("src", '/static/index/images/status/pay_ok.png');
+                                location.reload();
+                            }
+                        }
+                   });
+        		}
+        		t1 = setInterval(function () { getRealNameStatus() }, 2000);  
+				return false;
+			} else {
+			    Swal.fire({
+                        icon: 'error',
+                        title: res.msg,
+                        customClass: {
+                          confirmButton: 'btn btn-danger'
+                        }
+                    })
+			}
+		}, 'json');
+		return false;
+    });
+     // 数据验证
+  // --------------------------------------------------------------------
+  const wizardValidation = document.querySelector('#wizard-validation');
+  if (typeof wizardValidation !== undefined && wizardValidation !== null) {
+    // Wizard form
+    const wizardValidationForm = wizardValidation.querySelector('#realName');
+    // Wizard steps
+    const wizardValidationFormStep1 = wizardValidationForm.querySelector('#account-details-validation');
+    const wizardValidationFormStep2 = wizardValidationForm.querySelector('#personal-info-validation');
+    // Wizard next prev button
+    const wizardValidationNext = [].slice.call(wizardValidationForm.querySelectorAll('.btn-next'));
+    const wizardValidationPrev = [].slice.call(wizardValidationForm.querySelectorAll('.btn-prev'));
+
+    const validationStepper = new Stepper(wizardValidation, {
+      linear: true
+    });
+
+    // Account details
+    const FormValidation1 = FormValidation.formValidation(wizardValidationFormStep1, {
+      fields: {
+        userName: {
+          validators: {
+            notEmpty: {
+              message: '姓 名 不 能 为 空'
+            }
+          }
+        },
+        cardID: {
+          validators: {
+            notEmpty: {
+              message: '身 份 证 号 不 能 为 空'
+            }
+          }
+        },
+      },
+      plugins: {
+        trigger: new FormValidation.plugins.Trigger(),
+        bootstrap5: new FormValidation.plugins.Bootstrap5({
+          // Use this for enabling/changing valid/invalid class
+          // eleInvalidClass: '',
+          eleValidClass: '',
+          rowSelector: '.col-sm-6'
+        }),
+        autoFocus: new FormValidation.plugins.AutoFocus(),
+        submitButton: new FormValidation.plugins.SubmitButton()
+      },
+      init: instance => {
+        instance.on('plugins.message.placed', function (e) {
+          //* Move the error message out of the `input-group` element
+          if (e.element.parentElement.classList.contains('input-group')) {
+            e.element.parentElement.insertAdjacentElement('afterend', e.messageElement);
+          }
+        });
+      }
+    }).on('core.form.valid', function () {
+      // Jump to the next step when all fields in the current step are valid
+      validationStepper.next();
+    });
+
+
+    wizardValidationNext.forEach(item => {
+      item.addEventListener('click', event => {
+        // When click the Next button, we will validate the current step
+        switch (validationStepper._currentIndex) {
+          case 0:
+            FormValidation1.validate();
+            break;
+        }
+      });
+    });
+
+    wizardValidationPrev.forEach(item => {
+      item.addEventListener('click', event => {
+        switch (validationStepper._currentIndex) {
+          case 2:
+            validationStepper.previous();
+            break;
+
+          case 1:
+            validationStepper.previous();
+            break;
+
+          case 0:
+
+          default:
+            break;
+        }
+      });
+    });
+  }
+</script>

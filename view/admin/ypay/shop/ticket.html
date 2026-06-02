@@ -1,0 +1,313 @@
+{include file="public/header" type='pear-container'/}
+    <!--根据条件查询订单-->
+ 	<div class="layui-card">
+ 		<div class="layui-card-body">
+ 			<form class="layui-form" action="">
+ 				<div class="layui-form-item">
+ 					<div class="layui-form-item layui-inline">
+ 						<label class="layui-form-label">用户ID</label>
+ 						<div class="layui-input-inline">
+ 							<input type="text" name="creator_id" placeholder="" class="layui-input">
+ 						</div>
+ 					</div>
+ 					<div class="layui-form-item layui-inline">
+ 						<label class="layui-form-label">工单状态</label>
+ 						<div class="layui-input-inline">
+                            <select name="status">
+                                <option value="">请选择一个状态</option>
+                                <option value="0">待回复</option>
+                                <option value="1">处理中</option>
+                                <option value="2">已回复</option>
+                                <option value="3">已关闭</option>
+                            </select>  
+                        </div>
+ 					</div>
+ 					<div class="layui-form-item layui-inline">
+ 						<label class="layui-form-label">工单类型</label>
+ 						<div class="layui-input-inline">
+                            <select name="type">
+                                <option value="">请选择一个类型</option>
+                                {volist name="ticket_category" id="vo"}
+                                            <option value="{$vo.id}">{$vo.name}</option>
+                                {/volist}
+                            </select>  
+                        </div>
+ 					</div>
+ 					<div class="layui-form-item layui-inline">
+ 						<button class="pear-btn pear-btn-md pear-btn-primary" lay-submit lay-filter="query">
+ 							<i class="layui-icon layui-icon-search"></i>
+ 							查询
+ 						</button>
+ 						<button type="reset" class="pear-btn pear-btn-md">
+ 							<i class="layui-icon layui-icon-refresh"></i>
+ 							重置
+ 						</button>
+ 					</div>
+ 				</div>
+ 			</form>
+ 		</div>
+ 	</div>
+ 	
+ 	<!--显示订单数据表格-->
+ 	<div class="layui-card">
+ 		<div class="layui-card-body">
+ 			<table id="ticket" lay-filter="ticket"></table>
+ 		</div>
+ 	</div>
+    
+    <!--根据条件执行对应删除操作-->
+ 	<script type="text/html" id="toolbar">
+ 		<button class="pear-btn pear-btn-danger pear-btn-md" lay-event="batchRemove">
+		        <i class="layui-icon layui-icon-delete"></i>
+		        删除
+		 </button>
+ 	</script>
+ 	<!--操作-->
+    <script type="text/html" id="options">
+			<button class="pear-btn pear-btn-primary pear-btn-sm" lay-event="edit"><i class="layui-icon layui-icon-edit"></i></button>
+		    <button class="pear-btn pear-btn-danger pear-btn-sm" lay-event="remove"><i class="layui-icon layui-icon-delete"></i></button>
+    </script>
+ 	
+ 	{include file="public/footer"/}
+ 	<script>
+ 		layui.use(['table', 'form', 'jquery'], function() {
+ 			let table = layui.table;
+ 			let form = layui.form;
+ 			let $ = layui.jquery;
+ 			let MODULE_PATH = "{$Request.root}/ypay.shop/";
+
+ 			let cols = [
+ 				[{
+ 						type: 'checkbox'
+ 					}, {
+ 						field: "id",
+ 						title: "ID",
+ 						unresize: "true",
+ 						align: "center"
+ 					}, {
+ 						field: "creator_id",
+ 						title: "创建人ID",
+ 						minWidth: 200,
+ 						unresize: "true",
+ 						align: "center"
+ 					}, {
+ 						field: "type_name",
+ 						title: "工单类型",
+ 						unresize: "true",
+ 						align: "center",
+ 					}, {
+ 						field: "title",
+ 						title: "工单标题",
+                        minWidth: 150,
+ 						align: "center"
+ 					}, {
+ 						field: "create_time",
+ 						title: "创建时间",
+                        minWidth: 150,
+ 						align: "center"
+ 					}, {
+ 						field: "update_time",
+ 						title: "更新时间",
+                        minWidth: 150,
+ 						align: "center"
+ 					}, {
+ 						field: "reply_time",
+ 						title: "回复时间",
+                        minWidth: 150,
+ 						align: "center"
+ 					}
+ 					, {
+ 						field: "status",
+ 						title: "状态",
+                        minWidth: 150,
+ 						align: "center",
+ 						templet: function (d) {
+                            switch(d.status){
+                                case '0':
+                                    return '待处理';
+                                break;
+                                case '1':
+                                    return '处理中';
+                                break;
+                                case '2':
+                                    return '已回复';
+                                break;
+                                case '3':
+                                    return '已关闭';
+                                break;
+                            }
+                       }
+ 					},{
+                        title: '操作',
+                        toolbar: '#options',
+                        unresize: true,
+                        align: 'center',
+                        fixed: 'right',
+                        width:130,
+                    }
+ 				]
+ 			]
+
+ 			table.render({
+ 				elem: '#ticket',
+ 				url: MODULE_PATH + 'ticket',
+ 				page: true,
+ 				cols: cols,
+ 				cellMinWidth: 100,
+ 				skin: 'line',
+ 				toolbar: '#toolbar',
+ 				defaultToolbar: [{
+ 					title: '刷新',
+ 					layEvent: 'refresh',
+ 					icon: 'layui-icon-refresh',
+ 				}, 'filter', 'print', 'exports']
+ 			});
+            
+            table.on('tool(ticket)', function(obj) {
+                if (obj.event === 'remove') {
+                    window.remove(obj);
+                } else if (obj.event === 'edit') {
+                    window.edit(obj);
+                }
+            });
+
+ 			table.on('toolbar(ticket)', function(obj) {
+ 				if (obj.event === 'batchRemove') {
+                    window.batchRemove(obj);
+                }
+ 			});
+
+ 			form.on('submit(query)', function(data) {
+ 				table.reload('ticket', {
+ 					where: data.field,
+ 					page: {
+ 						curr: 1
+ 					}
+ 				})
+
+ 				return false;
+ 			});
+
+ 			//弹出窗设置 自己设置弹出百分比
+ 			function screen() {
+ 				if (typeof width !== 'number' || width === 0) {
+ 					width = $(window).width() * 0.5;
+ 				}
+ 				if (typeof height !== 'number' || height === 0) {
+ 					height = $(window).height() * 0.5;
+ 				}
+ 				return [width + 'px', height + 'px'];
+ 			}
+ 			
+ 			window.edit = function(obj) {
+                layer.open({
+                    type: 2,
+                    maxmin: true,
+                    title: '编辑/回复工单',
+                    shade: 0.1,
+                    area: screen(),
+                    content: MODULE_PATH + 'edit_ticket/id/'+obj.data['id']
+                });
+            }
+ 			
+ 			window.remove = function(obj) {
+                layer.confirm('确定要删除工单嘛?', {
+                    icon: 3,
+                    title: '提示'
+                }, function(index) {
+                    layer.close(index);
+                    let loading = layer.load();
+                    $.ajax({
+                        url:MODULE_PATH + 'ticketRemove',
+                        data:{id:obj.data['id']},
+                        dataType: 'json',
+                        type: 'POST',
+                        success: function(res) {
+                            layer.close(loading);
+                            //判断有没有权限
+                            if(res && res.code==999){
+                                layer.msg(res.msg, {
+                                    icon: 5,
+                                    time: 2000, 
+                                })
+                                return false;
+                            }else if (res.code==200) {
+                                layer.msg(res.msg, {
+                                    icon: 1,
+                                    time: 1000
+                                }, function() {
+                                    obj.del();
+                                });
+                            } else {
+                                layer.msg(res.msg, {
+                                    icon: 2,
+                                    time: 1000
+                                });
+                            }
+                        }
+                    })
+                });
+            }
+            
+            window.batchRemove = function(obj) {
+                let data = table.checkStatus(obj.config.id).data;
+                if (data.length === 0) {
+                    layer.msg("未选中数据", {
+                        icon: 3,
+                        time: 1000
+                    });
+                    return false;
+                }
+                var ids = []
+                var hasCheck = table.checkStatus('ticket')
+                var hasCheckData = hasCheck.data
+                if (hasCheckData.length > 0) {
+                    $.each(hasCheckData, function (index, element) {
+                        ids.push(element.id)
+                    })
+                }
+                layer.confirm('确定要删除这些工单嘛?', {
+                    icon: 3,
+                    title: '提示'
+                }, function(index) {
+                    layer.close(index);
+                    let loading = layer.load();
+                    $.ajax({
+                        url:MODULE_PATH + 'ticketBatchRemove',
+                        data:{ids:ids},
+                        dataType: 'json',
+                        type: 'POST',
+                        success: function(res) {
+                            layer.close(loading);
+                            //判断有没有权限
+                            if(res && res.code==999){
+                                layer.msg(res.msg, {
+                                    icon: 5,
+                                    time: 2000, 
+                                })
+                                return false;
+                            }else if (res.code==200) {
+                                layer.msg(res.msg, {
+                                    icon: 1,
+                                    time: 1000
+                                }, function() {
+                                    table.reload('ticket');
+                                });
+                            } else {
+                                layer.msg(res.msg, {
+                                    icon: 2,
+                                    time: 1000
+                                });
+                            }
+                        }
+                    })
+                });
+            }
+            
+ 			window.refresh = function(param) {
+ 				table.reload('ticket');
+ 			}
+ 		})
+ 	</script>
+ </body>
+ </html>

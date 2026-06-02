@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
+    <meta name="referrer" content="no-referrer">
+    <title>温馨提示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: #0f172a;
+            color: #f1f5f9;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+        .card {
+            max-width: 520px;
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px solid rgba(148, 163, 184, 0.4);
+            border-radius: 16px;
+            padding: 32px 28px;
+            box-shadow: 0 20px 60px rgba(15, 23, 42, 0.55);
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 16px;
+        }
+        p {
+            line-height: 1.6;
+            font-size: 16px;
+            color: #cbd5f5;
+        }
+        .token {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #94a3b8;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>该跳转页已关闭</h1>
+        <p>为消除安全隐患，此页面不再从外部来源加载内容。若您是业务管理员，请在后台配置安全的跳转地址或联系技术支持获取最新指引。</p>
+        <p class="token" id="token"></p>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const key = params.get('key');
+        if (key) {
+            document.getElementById('token').innerText = '请求标识：' + key;
+        }
+    </script>
+</body>
+</html>

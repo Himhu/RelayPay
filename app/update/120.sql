@@ -1,0 +1,2 @@
+INSERT INTO `ypay_payment` (`id`, `name`, `type`, `sort`, `status`, `create_time`, `update_time`, `delete_time`) VALUES (NULL, 'USDT', 'usdt', '50', '1', '2025-01-26 19:23:12', '2025-01-26 19:23:12', NULL);
+INSERT INTO `admin_channel` (`id`, `name`, `type`, `create_type`, `code`, `info`, `status`, `create_time`, `sort`, `maxcount`) VALUES (NULL, 'USDT', 'usdt', '1', 'usdt', 'USDT', '1', '2025-01-26 22:41:17', '0', '10');

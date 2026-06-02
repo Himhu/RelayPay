@@ -1,0 +1,297 @@
+ {include file="public/user_header" title="购买会员" /}
+ <style>
+  
+@media (min-width: 968px) {
+   .vip{
+       width: 378px;
+   }
+}
+  
+ </style>
+<!-- Content -->
+            <div class="container-xxl flex-grow-1 container-p-y">
+              <div class="card overflow-hidden">
+                <!-- Pricing Plans -->
+                <div class="pb-sm-5 pb-2 rounded-top">
+                  <div class="container py-5">
+                    <h2 class="text-center mb-2 mt-0 mt-md-4">为 您  找 到 合 适 的 套 餐</h2>
+                    <p class="text-center pb-3">
+                      从我们开始 - 它非常适合个人和团队.选择满足您需求的套餐.
+                    </p>
+
+                    <div class="row mx-0 gy-3 px-lg-5">
+
+                      <!-- Enterprise -->
+                      <?php foreach ($viplist as $key => $value): ?>
+                         <div class="col-lg">
+                        <div class="card border rounded shadow-none vip">
+                          <div class="card-body">
+                            <div class="my-3 pt-2 text-center">
+                                {if condition="$value.icon neq null || $value.icon neq ''"}
+                                
+                              <img
+                                src="{$value.icon}"
+                                height="65"
+                              />
+                              {else}
+                              <svg t="1696322078563" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="18178" width="65" height="65"><path d="M509.952 511.5904m-458.9056 0a458.9056 458.9056 0 1 0 917.8112 0 458.9056 458.9056 0 1 0-917.8112 0Z" fill="#D5B6FB" p-id="18179"></path><path d="M643.3792 262.9632a459.3152 459.3152 0 0 0-439.8592 590.2336A459.0592 459.0592 0 0 0 949.76 380.2624a457.216 457.216 0 0 0-306.3808-117.2992z" fill="#C693F9" p-id="18180"></path><path d="M826.0096 489.3696L725.0432 357.888a47.2064 47.2064 0 0 0-37.4784-18.4832H374.016a47.2576 47.2576 0 0 0-38.4 19.6608l-92.16 128.256a47.2576 47.2576 0 0 0 3.1744 59.136L501.76 830.6688a47.3088 47.3088 0 0 0 70.4 0l251.8016-280.9344a47.2576 47.2576 0 0 0 2.048-60.3648zM686.08 559.6672l-127.3344 144.7424a24.6784 24.6784 0 0 1-18.3296 8.3456 24.6784 24.6784 0 0 1-18.2784-8.0896L394.24 562.7904a24.6272 24.6272 0 1 1 36.5568-33.024l109.568 121.344L649.2672 527.36a24.6272 24.6272 0 0 1 37.0176 32.5632z" fill="#A15DF8" p-id="18181"></path><path d="M800.4608 417.3312l-100.9664-131.4816a47.36 47.36 0 0 0-37.5296-18.5344H348.416a47.4112 47.4112 0 0 0-38.4 19.712l-92.16 128a47.1552 47.1552 0 0 0 3.1744 59.136L476.16 758.6304a47.3088 47.3088 0 0 0 70.4 0l251.5968-280.9344a47.2576 47.2576 0 0 0 2.304-60.3648z m-139.7248 70.2976l-127.3344 144.7424a24.6784 24.6784 0 0 1-18.3808 8.3456 24.576 24.576 0 0 1-18.3808-8.0896L368.64 490.752a24.6272 24.6272 0 1 1 36.5568-33.024l109.568 121.344 109.056-124.0064a24.6272 24.6272 0 0 1 37.0176 32.5632z" fill="#FFFFFF" p-id="18182"></path><path d="M613.8368 641.4336a171.264 171.264 0 0 0-19.1488-78.7968l-61.44 69.7344a24.6784 24.6784 0 0 1-18.3808 8.3456 24.576 24.576 0 0 1-18.2272-8.0896L368.64 490.752a22.8352 22.8352 0 0 1-2.6624-3.6352 173.0048 173.0048 0 0 0-72.6528 67.84L476.16 758.6304a47.3088 47.3088 0 0 0 70.4 0l59.9552-66.9184a171.6736 171.6736 0 0 0 7.3216-50.2784z" fill="#D5B6FB" opacity=".5" p-id="18183"></path><path d="M417.28 471.04l97.28 107.8272 50.4832-57.4464A171.3664 171.3664 0 0 0 441.856 469.4528a169.3184 169.3184 0 0 0-24.576 1.5872z" fill="#D5B6FB" opacity=".5" p-id="18184"></path></svg>
+                              {/if}
+                            </div>
+                            <h3 class="card-title text-center text-capitalize fw-semibold mb-1">{$value.name}</h3>
+
+                            <div class="text-center">
+                              <div class="d-flex justify-content-center">
+                                <sup class="h6 text-primary pricing-currency mt-3 mb-0 me-1">¥</sup>
+                                <h1 class="price-toggle price-yearly fw-semibold display-4 text-primary mb-0">{$value.money}</h1>
+                                <sub class="h6 pricing-duration mt-auto mb-2 fw-normal text-muted">/{$value.viptime}天</sub>
+                              </div>
+                            </div>
+
+                            <ul class="ps-3 my-4 list-unstyled">
+                              <li class="mb-2">
+                                <span class="badge badge-center w-px-20 h-px-20 rounded-pill bg-label-primary me-2"
+                                  ><i class="bx bx-check bx-xs"></i
+                                ></span>
+                                费率：{$value.feilv} %
+                              </li>
+                              {if condition="$value.is_quota eq 1"}
+                                <li class="mb-2">
+                                  <span class="badge badge-center w-px-20 h-px-20 rounded-pill bg-label-primary me-2"
+                                    ><i class="bx bx-check bx-xs"></i
+                                  ></span>
+                                  日限额：¥{$value.today_quota??'0'}
+                                </li>
+                                <li class="mb-2">
+                                  <span class="badge badge-center w-px-20 h-px-20 rounded-pill bg-label-primary me-2"
+                                    ><i class="bx bx-check bx-xs"></i
+                                  ></span>
+                                  月限额：¥{$value.moon_quota??'0'}
+                                </li>
+                              {else}
+                                <li class="mb-2">
+                                  <span class="badge badge-center w-px-20 h-px-20 rounded-pill bg-label-primary me-2"
+                                    ><i class="bx bx-check bx-xs"></i
+                                  ></span>
+                                  日限额：不限制
+                                </li>
+                                <li class="mb-2">
+                                  <span class="badge badge-center w-px-20 h-px-20 rounded-pill bg-label-primary me-2"
+                                    ><i class="bx bx-check bx-xs"></i
+                                  ></span>
+                                  月限额：不限制
+                                </li>
+                              {/if}
+                              {if condition="$value.is_profiteer eq 1"}
+                                <li class="mb-2">
+                                  <span class="badge badge-center w-px-20 h-px-20 rounded-pill bg-label-primary me-2"
+                                    ><i class="bx bx-check bx-xs"></i
+                                  ></span>
+                                  订单加费：<i class="fa-solid fa-square-check"></i>
+                                </li>
+                              {else}
+                                <li class="mb-2">
+                                  <span class="badge badge-center w-px-20 h-px-20 rounded-pill bg-label-primary me-2"
+                                    ><i class="bx bx-check bx-xs"></i
+                                  ></span>
+                                  订单加费：<i class="fa-solid fa-square-xmark"></i>
+                                </li>
+                              {/if}
+                              {if condition="$value.is_addChannelNum eq 1"}
+                                <li class="mb-2">
+                                  <span class="badge badge-center w-px-20 h-px-20 rounded-pill bg-label-primary me-2"
+                                    ><i class="bx bx-check bx-xs"></i
+                                  ></span>
+                                  可添加通道：{$value.addChannelNum}个
+                                </li>
+                              {/if}
+                              {if condition="$value.is_passage eq 1"}
+                                <li class="mb-2">
+                                  <span class="badge badge-center w-px-20 h-px-20 rounded-pill bg-label-primary me-2"
+                                    ><i class="bx bx-check bx-xs"></i
+                                  ></span>
+                                  通道限制：<i class="fa-solid fa-square-check"></i>
+                                </li>
+                              {else}
+                                <li class="mb-2">
+                                  <span class="badge badge-center w-px-20 h-px-20 rounded-pill bg-label-primary me-2"
+                                    ><i class="bx bx-check bx-xs"></i
+                                  ></span>
+                                  通道限制：<i class="fa-solid fa-square-xmark"></i>
+                                </li>
+                              {/if}
+                            </ul>
+                            {if condition="$value.isBuy eq 'yes'"}
+                                <a href="javascript:void(0);" id="go-vip-{$value.id}" data-id="{$value.id}" class="btn btn-label-success d-grid w-100"
+                                 >续 费</a>
+                            {else}
+                                <a href="javascript:void(0);" id="go-vip-{$value.id}" data-id="{$value.id}" class="btn btn-label-primary d-grid w-100">开 通</a>
+                            {/if}
+                          </div>
+                        </div>
+                      </div>
+                      <?php endforeach; ?>
+                      
+                    </div>
+                  </div>
+                </div>
+                <!--/ Pricing Plans -->
+                <!-- FAQS -->
+                <div class="pricing-faqs bg-alt-pricing rounded-bottom">
+                  <div class="container py-5 px-lg-5">
+                    <div class="row mt-0 mt-md-4">
+                      <div class="col-12 text-center mb-4">
+                        <h2 class="mb-2">经常问的问题</h2>
+                        <p class="mb-4">让我们帮助回答您可能遇到的最常见问题.</p>
+                      </div>
+                    </div>
+                    <div class="row mx-2">
+                      <div class="col-12">
+                        <div id="faq" class="accordion accordion-popout">
+                          <div class="card accordion-item active">
+                            <h6 class="accordion-header">
+                              <button
+                                class="accordion-button collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                aria-expanded="false"
+                                data-bs-target="#faq-1"
+                                aria-controls="faq-1"
+                              >
+                                日限额是什么意思呢?
+                              </button>
+                            </h6>
+
+                            <div id="faq-1" class="accordion-collapse collapse show" data-bs-parent="#faq">
+                              <div class="accordion-body">
+                                当您的平台对接上本站之后,每个用户当天所产生成功订单的金额总和达到套餐的当天限制即为日限额.
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="card accordion-item">
+                            <h6 class="accordion-header">
+                              <button
+                                class="accordion-button collapsed"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#faq-4"
+                                aria-expanded="false"
+                                aria-controls="faq-4"
+                              >
+                                你们有退款保障嘛?
+                              </button>
+                            </h6>
+                            <div id="faq-4" class="accordion-collapse collapse" data-bs-parent="#faq">
+                              <div class="accordion-body">
+                                有的. 如果您在使用途中所遇到问题的最终结果是本站的导致的,您可以随时申请退款,无需任何额外解释.
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="card accordion-item mb-0 mb-md-4">
+                            <h6 class="accordion-header">
+                              <button
+                                class="accordion-button collapsed"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#faq-5"
+                                aria-expanded="false"
+                                aria-controls="faq-5"
+                              >
+                                我有更多问题. 我在哪里可以得到帮助?
+                              </button>
+                            </h6>
+                            <div id="faq-5" class="accordion-collapse collapse" data-bs-parent="#faq">
+                              <div class="accordion-body">
+                                如何您有任何其他问题或者疑惑,请联系我们.我们随时为您提供帮助.
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!--/ FAQS -->
+              </div>
+            </div>
+            <!--/ Content -->
+{include file="public/user_footer" /}
+<script>
+        layui.use([ 'jquery', 'form'], function () {
+            var $ = layui.jquery, form = layui.form;
+            $("a[id^='go-vip']").click(function () {
+                var id = $(this).attr("data-id");
+                Swal.fire({
+                    title: '确定',
+                    text: "你确定要开通嘛!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: '确 定',
+                    cancelButtonText: '取 消',
+                    customClass: {
+                      confirmButton: 'btn btn-primary me-3',
+                      cancelButton: 'btn btn-label-secondary'
+                    },
+                    buttonsStyling: false
+                      }).then(function (result) {
+                        if (result.value) {
+                            $.post('/Deal/Vip', { tcid: id }, function (res) {
+                                if (res.code === 200) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: '购买成功',
+                                        text: res.msg,
+                                        customClass: {
+                                          confirmButton: 'btn btn-success'
+                                        }
+                                    });
+                                    setTimeout(function () {
+                                        location.reload();
+                                    }, 2000);
+                                }else if(res.code == 202){
+                                      Swal.fire({
+                                        title: res.msg,
+                                        icon: 'error',
+                                        showCancelButton: true,
+                                        confirmButtonText: '确认',
+                                        cancelButtonText: '前往充值余额',
+                                        customClass: {
+                                            confirmButton: 'btn btn-primary me-3',
+                                            cancelButton: 'btn btn-success'
+                                        },
+                                        buttonsStyling: false,
+                                        reverseButtons: true
+                                      }).then((result) => {
+                                          if (result.dismiss === Swal.DismissReason.cancel) {
+                                              // 根据底部逻辑设置正确的菜单索引
+                                              const targetPath = '/Deal/Recharge';
+                                              const isRealName = {if condition="getConfig()['isRealName'] eq 1"}1{else}0{/if}; // 同步PHP配置
+
+                                              // 根据配置判断菜单索引（保持与底部nav数组一致）
+                                              let navIndex = 6; // 默认值（两种情况Vip索引都是7）
+
+                                              // 设置sessionStorage以激活对应菜单
+                                              sessionStorage.setItem('nav_index', navIndex);
+                                              sessionStorage.setItem('nav_item', navIndex); // 根据实际结构调整
+
+                                              // 跳转并强制刷新
+                                              window.location.href = `${targetPath}`;
+                                          }
+                                      });
+                                    } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: '购买失败',
+                                        text: res.msg,
+                                        customClass: {
+                                          confirmButton: 'btn btn-danger'
+                                        }
+                                    });
+                                }
+                            }, 'json');
+                       
+                    }
+                });
+                return false;
+            });
+        })
+    </script>

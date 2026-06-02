@@ -1,0 +1,449 @@
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="applicable-device" content="pc,mobile">
+<link href="/favicon.ico" rel="shortcut icon"/>
+<title>支付测试-{:getConfig()['sitename']}</title>
+<script src="/static/index/js/index/jquery.min.js"></script>
+<link rel="stylesheet" href="/static/index/css/bootstrap.min.css"/>
+<link rel="stylesheet" href="/static/index/css/demo.css"/>
+<link rel="stylesheet" href="/static/index/css/m_reset.css"/>
+    <!-- 依 赖 样 式-->
+    <link rel="stylesheet" href="/static/component/pear/css/pear.css" type="text/css"/>
+<style>
+    :root {
+        --primary-color: #8b5cf6;
+        --primary-light: #a78bfa;
+        --primary-dark: #7c3aed;
+        --gray-50: #fafafa;
+        --gray-100: #f4f4f5;
+        --gray-200: #e4e4e7;
+        --gray-300: #d4d4d8;
+        --gray-600: #52525b;
+        --gray-700: #3f3f46;
+        --gray-900: #18181b;
+    }
+
+    body {
+        background: linear-gradient(135deg, #f6f7f9 0%, #ffffff 100%);
+        min-height: 100vh;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        color: var(--gray-900);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    .container {
+        max-width: 680px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        perspective: 2000px;
+    }
+
+    .content {
+        background: white;
+        border-radius: 32px;
+        box-shadow: 0 12px 40px rgba(0,0,0,0.08),
+                    0 20px 80px rgba(139, 92, 246, 0.12);
+        padding: 3rem;
+    }
+
+    .logo-container {
+        text-align: center;
+        padding: 0.5rem 0 3rem;
+        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+    }
+
+    .logo-container img {
+        max-width: 220px;
+        height: auto;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .logo-container img:hover {
+        transform: scale(1.05) translateY(-5px);
+        filter: drop-shadow(0 8px 16px rgba(139, 92, 246, 0.2));
+    }
+
+    .order-number {
+        color: var(--gray-600);
+        font-size: 1.125rem;
+        padding: 1.25rem 1.5rem;
+        background: var(--gray-50);
+        border-radius: 16px;
+        margin-bottom: 2.5rem;
+        border: 1px solid var(--gray-200);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .order-number:hover {
+        background: white;
+        border-color: var(--primary-light);
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .amount-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4rem;
+        padding: 2.5rem 0;
+    }
+
+    .amount-label {
+        font-size: 1.5rem;
+        color: var(--gray-900);
+        font-weight: 600;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .amount-label:hover {
+        transform: translateY(-2px);
+        color: var(--primary-color);
+    }
+
+    .amount-input {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        width: 320px;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .amount-input:hover {
+        transform: translateY(-2px);
+    }
+
+    .amount-input span {
+        position: absolute;
+        left: 1.75rem;
+        color: var(--gray-900);
+        font-size: 2rem;
+        font-weight: 500;
+        pointer-events: none;
+        transition: all 0.3s ease;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .amount-input input {
+        width: 100%;
+        font-size: 2rem;
+        padding: 1.25rem 1rem 1.25rem 3.5rem;
+        border: 2px solid var(--gray-200);
+        border-radius: 20px;
+        outline: none;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        text-align: center;
+        color: var(--gray-900);
+        font-weight: 500;
+        background: var(--gray-50);
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .amount-input input:focus {
+        border-color: var(--primary-color);
+        background: white;
+        box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
+        transform: translateY(-1px);
+    }
+
+    .payment-methods {
+        margin: 3rem 0 1.5rem;
+    }
+
+    .payment-title {
+        font-size: 1.25rem;
+        color: var(--gray-600);
+        margin-bottom: 2rem;
+        font-weight: 500;
+        text-align: center;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .payment-title:hover {
+        transform: translateY(-2px);
+        color: var(--primary-color);
+    }
+
+    .payment-options {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        padding: 0 1.5rem;
+    }
+
+    .payment-option {
+        padding: 2rem;
+        border: 2px solid var(--gray-200);
+        border-radius: 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        background: white;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .payment-option:hover {
+        transform: translateY(-5px) scale(1.02);
+        border-color: var(--primary-light);
+        box-shadow: 0 8px 24px rgba(139, 92, 246, 0.15);
+    }
+
+    .payment-option.active {
+        border-color: var(--primary-color);
+        background: linear-gradient(135deg, white, var(--gray-50));
+        box-shadow: 0 8px 24px rgba(139, 92, 246, 0.2);
+        transform: translateY(-5px) scale(1.05);
+        animation: float 3s ease-in-out infinite;
+    }
+
+    .payment-option img {
+        height: 44px;
+        width: auto;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+    }
+
+    .payment-option:hover img {
+        transform: translateY(-2px) scale(1.1);
+        filter: drop-shadow(0 4px 8px rgba(139, 92, 246, 0.2));
+    }
+
+    .payment-actions {
+        text-align: center;
+        margin-top: 2.5rem;
+    }
+
+    .notice-text {
+        text-align: center;
+        color: var(--gray-600);
+        font-size: 1.125rem;
+        font-weight: 500;
+        margin-bottom: 1.5rem;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .notice-text:hover {
+        transform: translateY(-2px);
+        color: var(--primary-color);
+    }
+
+    .pay-button {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        width: 100%;
+        max-width: 400px;
+        padding: 1.5rem;
+        border: none;
+        border-radius: 20px;
+        font-size: 1.25rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        margin: 0 auto;
+        display: block;
+        position: relative;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        text-decoration: none;
+        animation: pulse 3s infinite;
+    }
+
+    .pay-button:hover {
+        background: linear-gradient(135deg, var(--primary-light), var(--primary-color));
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+
+    .pay-button:active {
+        transform: translateY(0);
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    }
+
+    @keyframes float {
+        0% {
+            transform: translateY(-5px) scale(1.05);
+        }
+        50% {
+            transform: translateY(-10px) scale(1.05);
+        }
+        100% {
+            transform: translateY(-5px) scale(1.05);
+        }
+    }
+
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+        50% {
+            box-shadow: 0 8px 24px rgba(139, 92, 246, 0.5);
+        }
+        100% {
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+    }
+
+    @media (max-width: 480px) {
+        .container {
+            margin: 1rem auto;
+            padding: 0 0.75rem;
+        }
+        
+        .content {
+            padding: 2rem;
+            border-radius: 28px;
+        }
+
+        .logo-container {
+            padding: 0.5rem 0 2rem;
+        }
+
+        .logo-container img {
+            max-width: 180px;
+        }
+
+        .amount-container {
+            flex-direction: column;
+            gap: 1.5rem;
+            padding: 2rem 0;
+        }
+
+        .amount-input {
+            width: 100%;
+        }
+
+        .amount-input input {
+            font-size: 1.75rem;
+            padding: 1rem 1rem 1rem 3rem;
+        }
+
+        .payment-options {
+            gap: 1.25rem;
+            padding: 0;
+        }
+
+        .payment-option {
+            padding: 1.5rem;
+        }
+
+        .payment-option img {
+            height: 36px;
+        }
+
+        .pay-button {
+            padding: 1.25rem;
+            font-size: 1.125rem;
+            max-width: 320px;
+        }
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="content">
+        <div class="logo-container">
+            <img src="{:getConfig()['logo']}" alt="{:getConfig()['sitename']}"/>
+            </div>
+
+        <div class="order-number">
+            订单号：<?php echo "Y".date("YmdHis").mt_rand(100,999); ?>
+            </div>
+
+        <div class="amount-container">
+            <div class="amount-label">支付测试</div>
+            <div class="amount-input">
+                <span>￥</span>
+                <input type="number" id="payAmount" value="{:getConfig()['demopay_money']}" step="0.01" min="0.01" placeholder="请输入金额"/>
+            </div>
+            </div>
+
+        <div class="payment-methods">
+            <div class="payment-title">请选择支付方式</div>
+            <div class="payment-options">
+                    <?php foreach ($array as $key => $value): ?>
+                        <?php if ($value['isOpen'] != 'no'): ?>
+                        <div class="payment-option {:$value['class']}">
+                            <img src="{:$value['src']}" alt="{:$value['name']}"/>
+                            </div>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+            </div>
+            <div class="payment-actions">
+                <div class="notice-text">测试体验商品不会发货</div>
+                <a href="javascript:;" class="pay-button">立即支付</a>
+            </div>
+        </div>
+</div>
+</div>
+
+<script src="/static/index/js/jquery-3.2.1.min.js"></script>
+<script src="/static/component/layui/layui.js"></script>
+<script src="/static/component/pear/pear.js"></script>
+<script>
+    layui.use(['layer'], function(){
+        var layer = layui.layer;
+        var flag = 0;
+        var type = '';
+        var out_trade_no = '';
+        
+        // 获取订单号
+        out_trade_no = $('.order-number').text().substr($('.order-number').text().lastIndexOf("：") + 1);
+
+        // 支付方式选择
+        $('.payment-option').click(function() {
+            $('.payment-option').removeClass('active');
+            $(this).addClass('active');
+            flag = 1;
+            
+            if($(this).hasClass('wechat_pay')) {
+                type = 'wxpay';
+            } else if($(this).hasClass('ali_pay')) {
+                type = 'alipay';
+            } else if($(this).hasClass('qq_pay')) {
+                type = 'qqpay';
+            }
+        });
+
+        // 支付按钮点击
+        $('.pay-button').click(function() {
+            var amount = $('#payAmount').val();
+            
+            if(!amount || amount <= 0) {
+                layer.msg('请输入正确的支付金额', {icon: 2});
+                return;
+            }
+            
+            if(flag == 0) {
+                layer.msg('请先选择支付方式', {icon: 2});
+                return;
+            }
+            
+            window.location.href = '/demo/dopay?type=' + type + '&out_trade_no=' + out_trade_no + '&amount=' + amount;
+        });
+
+        // 限制输入金额的格式
+        $('#payAmount').on('input', function() {
+            var value = $(this).val();
+            if(value.indexOf('.') != -1) {
+                var decimal = value.substring(value.indexOf('.') + 1);
+                if(decimal.length > 2) {
+                    $(this).val(parseFloat(value).toFixed(2));
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>

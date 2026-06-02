@@ -1,0 +1,8 @@
+/.idea
+/runtime
+/vendor
+/composer.lock
+*.log
+
+# GitHub rejects files larger than 100MB unless Git LFS is used.
+/教程及工具/PC自挂-收款语音小助手1.0.6版完整包.zip

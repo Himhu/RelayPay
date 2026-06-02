@@ -1,0 +1,1 @@
+INSERT INTO `admin_config` (`id`, `config_name`, `config_value`) VALUES (NULL, 'diy_userAvatar', '/static/admin/images/avatar.jpg');

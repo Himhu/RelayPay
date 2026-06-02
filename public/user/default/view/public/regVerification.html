@@ -1,0 +1,43 @@
+                {if condition="$config['regcode-type']== '1'"}
+	                <div class="mb-3">
+    				    <label class="form-label">手 机 号</label>
+    				    <input
+                            type="text"
+                            class="form-control"
+                            name="mobile"
+                            id="mobile"
+                            placeholder="请 输 入 您 的 手 机 号"
+                            autofocus
+                        />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">短 信 验 证 码</label>
+                        <div class="input-group">
+                            <input
+                                type="text"
+                                class="form-control"
+                                name="captcha"
+                                id = "numeral-mask"
+                                placeholder="请 输 入 短 信 验 证 码"
+                            />
+                            <button class="btn btn-outline-secondary"
+    														type="button" id="send-code">发送验证码</button>
+                        </div>
+                    </div>
+	            {/if}
+	            {if condition="$config['regcode-type'] == '2'"}
+	            <div class="mb-3">
+                        <label class="form-label">邮 箱 验 证 码</label>
+                        <div class="input-group">
+                            <input
+                                type="text"
+                                class="form-control"
+                                name="captcha"
+                                id = "numeral-mask"
+                                placeholder="请 输 入 邮 箱 验 证 码"
+                            />
+                            <button class="btn btn-outline-secondary"
+    														type="button" id="send-code">发送验证码</button>
+                        </div>
+                    </div>
+	            {/if}

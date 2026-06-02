@@ -1,0 +1,328 @@
+ {include file="public/user_header" title="我的工单" /}
+ <style>
+     table tbody tr td:last-child{
+         background-color:white;
+     }
+     .layui-upload-file{
+         display: none;
+     }
+ </style>
+<!-- Content -->
+            <div class="container-xxl flex-grow-1 container-p-y">
+              <div class="row">
+                <div class="col-md-12">
+                
+                  <div class="card">
+                    <!-- 工 单 列 表 -->
+                    <h5 class="card-header border-bottom">
+                        <span style="float:left;">工 单 列 表</span> 
+                    <button  type="button" style="float:right;" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#addTicket">
+                        <i class="bx bx-plus me-sm-1"></i> <span>新 增</span>
+                    </button>
+                    </h5>
+                    <div class="card-datatable text-nowrap">
+                      <table class="datatables-basic table border-top">
+                        <thead>
+                          <tr>
+                            <th>ID</th>
+                            <th>工单标题</th>
+                            <th>工单内容</th>
+                            <th>工单类型</th>
+                            <th>工单状态</th>
+                            <th style="background-color:white;">操作</th>
+                          </tr>
+                        </thead>
+                      </table>
+                    </div>
+                    <!--/ 工 单 列 表 -->
+                    
+                    <!--  添 加 工 单 -->
+                    <div class="modal fade" id="addTicket" tabindex="-1" aria-hidden="true">
+                       <div class="modal-dialog modal-dialog-centered1 modal-simple">
+                        <div class="modal-content p-3 p-md-5">
+                            <div class="modal-body">
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <div class="text-center">
+                                  <h3 class="mb-2">新 增 工 单</h3>
+                                </div>
+                                <form id="ticketForm" class="row g-3" onsubmit="return false">
+                                    <div class="col-12" >
+                                      <label class="form-label">创建人</label>
+                                      <input
+                                        type="text"
+                                        name="creator_id"
+                                        class="form-control"
+                                        value="{$user.id}"
+                                        disabled
+                                      />
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">工单类型</label>
+                                        <select class="form-select" name="type">
+                                        {volist name="ticket_category" id="vo"}
+                                            <option value="{$vo.id}">{$vo.name}</option>
+                                        {/volist}
+                                        </select>
+                                      
+                                    </div>
+                                    <div class="col-12" >
+                                      <label class="form-label">工单标题</label>
+                                      <input
+                                        type="text"
+                                        name="title"
+                                        class="form-control"
+                                      />
+                                    </div>
+                                    <div class="col-12" >
+                                      <label class="form-label">工单内容</label>
+                                      <textarea class="form-control" name="content" rows="3"></textarea>
+                                    </div>
+                                    <div class="col-12 text-center">
+                                      <button type="submit" id="add_Submit" class="btn btn-primary me-sm-3 me-1">提 交</button>
+                                      <button
+                                        type="reset"
+                                        class="btn btn-label-secondary"
+                                      >
+                                        重 置
+                                      </button>
+                                    </div>
+                             </form>
+                            </div>
+                  </div>
+                </div>
+              </div>
+                    <!--/  添 加 工 单 -->
+                    
+                    <!--  查 看 工 单 -->
+                    <div class="modal fade" id="viewTicket" tabindex="-1" aria-hidden="true">
+                       <div class="modal-dialog modal-dialog-centered1 modal-simple">
+                        <div class="modal-content p-3 p-md-5">
+                            <div class="modal-body">
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <div class="text-center">
+                                  <h3 class="mb-2">查 看 工 单</h3>
+                                </div>
+                                    <div class="col-12">
+                                        <label class="form-label">工单类型</label>
+                                        <input
+                                        type="text"
+                                        id="type"
+                                        class="form-control"
+                                        disabled
+                                      />
+                                    </div>
+                                    <div class="col-12" >
+                                      <label class="form-label">工单标题</label>
+                                      <input
+                                        type="text"
+                                        id="title"
+                                        class="form-control"
+                                        disabled
+                                      />
+                                    </div>
+                                    <div class="col-12" >
+                                      <label class="form-label">工单内容</label>
+                                      <textarea  class="form-control" id="content" disabled rows="3"></textarea>
+                                    </div>
+                                    <div class="col-12" >
+                                      <label class="form-label">回复内容</label>
+                                      <textarea class="form-control" id="reply_content" disabled rows="3"></textarea>
+                                    </div>
+                            </div>
+                  </div>
+                </div>
+              </div>
+                    <!--/  查 看 工 单 -->
+                    
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- / Content -->
+            
+{include file="public/user_footer" /}
+ <!-- / Page Js -->
+<script>
+    layui.use([ 'form','admin'], function () {
+            var $ = layui.jquery;
+            var form = layui.form;
+            var admin = layui.admin;
+
+		    //添加通道
+		    $('#add_Submit').click(function(){
+		        let data = {};
+		        let value = $('#ticketForm').serializeArray();
+                $.each(value, function (index, item) {
+                    data[item.name] = item.value;
+                });
+                $.post('/My/addTicket', data, function (res) {
+                                if (200 == res.code) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: res.msg,
+                                        customClass: {
+                                          confirmButton: 'btn btn-primary'
+                                        }
+                                    }).then(function (result) {
+                                        if(result.value){
+                                            reload();
+                                            $(".btn-close").trigger("click");
+                                            
+                                        }
+                                    });
+                                    } else {
+                                        Swal.fire({
+                                            title: res.msg,
+                                            icon: 'error',
+                                            customClass: {
+                                              confirmButton: 'btn btn-primary'
+                                            }
+                                        });
+                                    }
+                            }, 'json');
+                            return false;
+		    });
+            
+    });
+    var dt_basic_table = $('.datatables-basic');
+     // DataTable
+            // --------------------------------------------------------------------
+    if (dt_basic_table.length) {
+             var table =  dt_basic_table.DataTable({
+                 ajax: '/My/Ticket',
+                 columns: [
+                   { data: 'id' },
+                   { data: 'title' },
+                   { data: 'content' },
+                   { data: 'type' },
+                   { data: 'status' },
+                   { data: 'id' },
+                 ],
+                 columnDefs: [
+                     {
+                      // Label
+                      targets: 3,
+                      render: function (data, type, full, meta) {
+                        var $type = full['type_name'];
+                        return (
+                          '<span class="badge rounded-pill bg-label-dark">' +
+                          $type +
+                          '</span>'
+                        );
+                      }
+                    },
+                    {
+                      // Label
+                      targets: 4,
+                      render: function (data, type, full, meta) {
+                        var $status = full['status'];
+                        var $array = {
+                            0: { title: '待回复', class: 'bg-label-primary' },
+                            1: { title: '处理中', class: 'bg-label-info' },
+                            2: { title: '已回复', class: 'bg-label-success' },
+                            3: { title: '已关闭', class: 'bg-label-secondary' },
+                        };
+                        return (
+                          '<span class="badge rounded-pill ' +
+                          $array[$status].class +
+                          '">' +
+                          $array[$status].title +
+                          '</span>'
+                        );
+                      }
+                    },
+                    {
+                      // Label
+                      targets: -1,
+                      searchable: false,
+                      orderable: false,
+                      render: function (data, type, full, meta) {
+                        var id = full['id'];
+                        var type_name = "'" + full['type_name'] + "'";
+                        var title = "'" + full['title'] + "'";
+                        var content = "'" + full['content'] + "'";
+                        var reply_content = "'" + full['reply_content'] + "'";
+                        return (
+                                '<button type="button" onclick="viewTicket('+type_name+','+title+','+content+','+reply_content+')" data-bs-toggle="modal" data-bs-target="#viewTicket" class="btn rounded-pill btn-sm btn-info">查看</button>&nbsp;'+
+                                '<button type="button" onclick="del('+id+')" class="btn rounded-pill btn-sm btn-google-plus">删除</button>'
+                            ); 
+                        
+                      }
+                    },
+                ],
+                 order: [[0, 'desc']],
+                 dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-center justify-content-md-end"f>>t<"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+                 displayLength: 10,
+                 lengthMenu: [10, 20, 50],
+                 scrollX:        true,
+                 deferRender: true,
+                 fixedColumns:   {
+                     left: 0,
+                     right: 1
+                 }
+            });
+            }
+    //刷新表单
+    function reload(){
+        // table.ajax.reload();
+        window.location.reload();
+    }
+    
+    //查看工单
+    function viewTicket(type_name,title,content,reply_content){
+        if(reply_content == 'null'){
+            reply_content = '';
+        }
+        console.log(reply_content);
+        $('#type').val(type_name);
+        $('#title').val(title);
+        $('#content').val(content);
+        $('#reply_content').val(reply_content);
+    }
+    
+    //删除工单
+    function del(id) {
+        Swal.fire({
+            text: '确定要删除吗?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '确 定',
+            cancelButtonText:'取消',
+            customClass: {
+              confirmButton: 'btn btn-primary me-2',
+              cancelButton: 'btn btn-label-secondary'
+            },
+            buttonsStyling: false
+          }).then(function (result) {
+            if (result.value) {
+              $.get("/My/delTicket", {
+                id: id
+            }, function (res) {
+                
+                if (res.code == 200) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: res.msg,
+                        customClass: {
+                          confirmButton: 'btn btn-primary'
+                        }
+                     }).then(function (result) {
+                         if(result.value){
+                             location.reload();
+                         }
+                     });
+                } else {
+                    Swal.fire({
+                        title: res.msg,
+                        icon: 'error',
+                        customClass: {
+                          confirmButton: 'btn btn-primary'
+                        }
+                    });
+                }
+            }, 'json');
+            }
+          });
+            }
+</script>

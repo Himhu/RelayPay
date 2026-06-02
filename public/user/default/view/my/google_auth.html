@@ -1,0 +1,120 @@
+ {include file="public/user_header" title="安全效验" /}
+<!-- Content -->
+        
+          <div class="container-xxl flex-grow-1 container-p-y">
+
+<div class="row">
+  <div class="col-md-12">
+
+    <div class="card mb-4">
+        <div class="card">
+            <h5 class="card-header">安 全 效 验</h5>
+            <div class="card-body">
+                <form class="layui-form" id="formBasForm" lay-filter="formBasForm"> 
+                    <div class="mb-4">
+                        <input
+                          type="input"
+                          class="form-control"
+                          name="code"
+                          id="code"
+                          placeholder="输入你的验证码"
+                        />
+                    </div>
+                    <div class="col-12 mb-4">
+                        <p class="fw-semibold mt-2">如 何 获 取:</p>
+                        <ul class="ps-3 mb-0">
+                          <li class="mb-1">打开你关注的验证器小程序或者下载的应用APP</li>
+                          <li>找到对应绑定的验证器,复制时效内的验证码提交即可</li>
+                        </ul>
+                    </div>
+                    <div class="col-12 mt-1">
+                        <button type="submit" class="btn btn-primary me-2" lay-filter="formBasSubmit" lay-submit>提 交</button>
+                        <button type="reset" class="btn btn-secondary">重 置</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+  </div>
+</div>
+
+
+
+          </div>
+
+          <!-- / Content -->
+{include file="public/user_footer" /}
+
+<!-- Page Js -->
+
+    <script>
+        layui.use([ 'form'], function () {
+            var $ = layui.jquery;
+            var form = layui.form;
+            const formChangePass = document.querySelector('#formBasForm');
+
+            // Form validation for Submit
+            if (formChangePass) {
+              const fv = FormValidation.formValidation(formChangePass, {
+                fields: {
+                  code: {
+                    validators: {
+                      notEmpty: {
+                        message: '请 输 入 您 的 验 证 码'
+                      }
+                    }
+                  },
+                },
+                plugins: {
+                  trigger: new FormValidation.plugins.Trigger(),
+                  bootstrap5: new FormValidation.plugins.Bootstrap5({
+                    eleValidClass: '',
+                    rowSelector: '.mb-4'
+                  }),
+                  submitButton: new FormValidation.plugins.SubmitButton(),
+                  // Submit the form when all fields are valid
+                  // defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+                  autoFocus: new FormValidation.plugins.AutoFocus()
+                },
+                init: instance => {
+                  instance.on('plugins.message.placed', function (e) {
+                    if (e.element.parentElement.classList.contains('input-group')) {
+                      e.element.parentElement.insertAdjacentElement('afterend', e.messageElement);
+                    }
+                  });
+                }
+              });
+             fv.on('core.form.valid', function() {
+                form.on('submit(formBasSubmit)', function (obj) {
+                    $.post('/My/GoogleAuth', obj.field, function (res) {
+                        //layer.close(loadIndex);
+                        if (res.code === 200) {
+                            Swal.fire({
+                                title: res.msg,
+                                icon: 'success',
+                                customClass: {
+                                  confirmButton: 'btn btn-primary'
+                                 }
+                            }).then((value) => {
+                                location.replace('/Channel/Index');
+                            });
+                            
+                        } else {
+                             Swal.fire({
+                                title: res.msg,
+                                icon: 'error',
+                                customClass: {
+                                  confirmButton: 'btn btn-primary'
+                                 }
+                            });
+                        }
+                    }, 'json');
+                    return false;
+                });
+             });
+            }
+        })
+    </script>
