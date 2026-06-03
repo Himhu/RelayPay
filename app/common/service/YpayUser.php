@@ -675,14 +675,29 @@ class YpayUser
             $__day[$i] = date('Y-m-d', $time);
         }
 
-        $sum_data = [];
+        $__sum_data = [];
         foreach ($__day as $k => $time) {
             $endTime = date("Y-m-d", strtotime($time . " + 1 day"));
-            $__sum_data[$k] = YpayOrder::where('status', 1)->where('user_id', self::getUserId())->whereTime('create_time', 'between', [$time, $endTime])->sum('money');
+            $__sum_data[$k] = (float) YpayOrder::where('status', 1)->where('user_id', self::getUserId())->whereTime('create_time', 'between', [$time, $endTime])->sum('money');
+        }
+        $maxMoney = max($__sum_data ?: [0]);
+        $maxMoney = $maxMoney > 0 ? $maxMoney : 1;
+        $revenueItems = [];
+        foreach ($day as $key => $label) {
+            $money = $__sum_data[$key] ?? 0;
+            $revenueItems[] = [
+                'label' => $label,
+                'money' => $money,
+                'percent' => round($money / $maxMoney * 100, 2),
+            ];
         }
         $time = [];
         $time['time_arr'] = str_replace('"', "'", json_encode($day));
         $time['sum_data'] = json_encode($__sum_data);
+        $time['time_json'] = json_encode($day, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
+        $time['sum_json'] = json_encode($__sum_data, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
+        $time['revenue_items'] = $revenueItems;
+        $time['total_money'] = array_sum($__sum_data);
         return $time;
     }
 
@@ -796,14 +811,27 @@ class YpayUser
             $__day[$i] = date('Y-m-d', $time);
         }
 
-        $sum_data = [];
+        $__sum_data = [];
         foreach ($__day as $k => $time) {
             $endTime = date("Y-m-d", strtotime($time . " + 1 day"));
-            $__sum_data[$k] = MoneyLog::where('user_id', $user_id)->whereTime('create_time', 'between', [$time, $endTime])->sum('money');
+            $__sum_data[$k] = (float) MoneyLog::where('user_id', $user_id)->whereTime('create_time', 'between', [$time, $endTime])->sum('money');
         }
-        $time = [];
         $bottom['time_arr'] = str_replace('"', "'", json_encode($day));
         $bottom['sum_data'] = json_encode($__sum_data);
+        $bottom['time_json'] = json_encode($day, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
+        $bottom['sum_json'] = json_encode($__sum_data, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
+        $maxMoneyLog = max(array_map('abs', $__sum_data ?: [0]));
+        $maxMoneyLog = $maxMoneyLog > 0 ? $maxMoneyLog : 1;
+        $expenseItems = [];
+        foreach ($day as $key => $label) {
+            $money = $__sum_data[$key] ?? 0;
+            $expenseItems[] = [
+                'label' => $label,
+                'money' => $money,
+                'percent' => round(abs($money) / $maxMoneyLog * 100, 2),
+            ];
+        }
+        $bottom['expense_items'] = $expenseItems;
 
         $bottom['week_money'] = abs(MoneyLog::where('user_id', $user_id)->whereWeek('create_time')->sum('money')); //获取本周消费余额
         $last_weekMoney = abs(MoneyLog::where('user_id', $user_id)->whereWeek('create_time', 'last week')->sum('money')); //获取上周消费余额

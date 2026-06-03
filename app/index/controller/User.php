@@ -33,6 +33,7 @@ class User extends \app\BaseController
             [
                 'user' => $users,
                 'vip' => S::getVip(),
+                'config' => getConfig(),
                 'quotations' => S::getQuotations(),
                 'totalRevenue' => S::getUser_totalRevenue(),
                 'comparison' => S::getUser_ComparisonData(),
