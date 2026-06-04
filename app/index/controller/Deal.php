@@ -83,24 +83,18 @@ class Deal extends \app\BaseController
             $this->getJson(S::govip(Request::param('','','strip_tags')));
         }
         $user = S::getUser();
-        $userBasic = Db::name('ypay_userbasic')->where('user_id', $user['id'])->find();
-        
-        // 调试输出
-        \think\facade\Log::info('用户会员信息：', [
-            'vip_time' => $user['vip_time'],
-            'vip_id' => $user['vip_id']
-        ]);
-        
         $userInfo = [
             'username' => $user['username'],
-            'vip_time' => !empty($user['vip_time']) ? date('Y-m-d', strtotime($user['vip_time'])) : '未开通会员'
+            'money' => $user['money'] ?? 0,
+            'vip_time' => !empty($user['vip_time']) ? date('Y-m-d', strtotime($user['vip_time'])) : '未开通会员',
+            'current_vip' => '未开通会员',
         ];
         
-        $viplist = Db::table('ypay_vip')->where('status', 1)->order('sort','asc')->select()->toArray();
+        $viplist = YpayVip::where('status', 1)->order('sort','asc')->select()->toArray();
         
         // 获取当前会员套餐信息
         if (!empty($user['vip_id'])) {
-            $currentVip = Db::table('ypay_vip')->where('id', $user['vip_id'])->find();
+            $currentVip = YpayVip::where('id', $user['vip_id'])->find();
             if ($currentVip) {
                 $userInfo['current_vip'] = $currentVip['name'];
             }
@@ -115,8 +109,9 @@ class Deal extends \app\BaseController
         }
         
         View::assign([
-            'user' => S::getUser(),
+            'user' => $user,
             'vip' => S::getVip(),
+            'config' => getConfig(),
             'userInfo' => $userInfo
         ]);
         View::assign('viplist', $viplist);

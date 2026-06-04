@@ -1258,24 +1258,38 @@ class YpayUser
     //购买VIP套餐
     public static function govip($data)
     {
-        if (empty($data['tcid'])) {
+        if (!isset($data['tcid']) || !ctype_digit((string)$data['tcid']) || (int)$data['tcid'] <= 0) {
             return ['msg' => '请选择套餐', 'code' => 201];
         }
-        $user = M::where(['token' => Cookie::get('front_token'), 'is_frozen' => 0])->find();
-        if (!$user) return ['msg' => '会员不存在', 'code' => 201];
-        $vip = YpayVip::where(['id' => $data['tcid']])->find();
-        if (!$vip) return ['msg' => '套餐不存在', 'code' => 201];
-        if ($user['money'] < $vip['money']) {
-            return ['msg' => '余额不足请充值', 'code' => 202];
-        }
+        $vipId = (int)$data['tcid'];
+        Db::startTrans();
         try {
+            $user = M::where(['token' => Cookie::get('front_token'), 'is_frozen' => 0])->lock(true)->find();
+            if (!$user) {
+                Db::rollback();
+                return ['msg' => '会员不存在', 'code' => 201];
+            }
 
-            M::money("-" . $vip['money'], $user->id, '购买套餐扣款');
+            $vip = YpayVip::where(['id' => $vipId, 'status' => 1])->find();
+            if (!$vip) {
+                Db::rollback();
+                return ['msg' => '套餐不存在或已下架', 'code' => 201];
+            }
+
+            $balance = (string)($user['money'] ?? '0');
+            $price = (string)($vip['money'] ?? '0');
+            $isInsufficient = function_exists('bccomp') ? bccomp($balance, $price, 2) < 0 : (float)$balance < (float)$price;
+            if ($isInsufficient) {
+                Db::rollback();
+                return ['msg' => '余额不足请充值', 'code' => 202];
+            }
+
+            M::money("-" . $price, $user->id, '购买套餐扣款');
             //判断是否开启返利功能
-            if (getConfig()['is_aff'] && !empty($user['superior_id']) && !empty(getConfig()['aff_percentage']) && getConfig()['aff_type'] == 1) {
-                $aff_money   = $vip['money'] * getConfig()['aff_percentage'];
+            $config = getConfig();
+            if ($config['is_aff'] && !empty($user['superior_id']) && !empty($config['aff_percentage']) && $config['aff_type'] == 1) {
+                $aff_money = (float)$vip['money'] * (float)$config['aff_percentage'];
                 M::money("+" . $aff_money, $user['superior_id'], '下级购买会员套餐返利');
-                M::where('id', $user['superior_id'])->inc('money', $aff_money);
             }
             $viptime = $vip['viptime'];
             if (empty($user['vip_time'])) {
@@ -1293,8 +1307,10 @@ class YpayUser
                     M::where('id', $user->id)->update(['vip_id' => $vip['id'], 'vip_time' => date("Y-m-d H:i:s", strtotime("+ $viptime day")), 'feilv' => $vip['feilv']]);
                 }
             }
-            return ['msg' => '操作成功'];
+            Db::commit();
+            return ['msg' => '操作成功', 'code' => 200];
         } catch (\Exception $e) {
+            Db::rollback();
             return ['msg' => '操作失败' . $e->getMessage(), 'code' => 201];
         }
     }

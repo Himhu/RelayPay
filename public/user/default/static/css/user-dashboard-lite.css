@@ -679,6 +679,10 @@ button {
   background: rgba(17, 24, 39, 0.36);
 }
 
+.dashboard-modal[hidden] {
+  display: none;
+}
+
 .modal-card {
   width: min(460px, 100%);
   padding: 26px;
@@ -698,6 +702,253 @@ button {
   color: var(--muted);
 }
 
+.vip-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 28px;
+  align-items: center;
+  margin-bottom: 18px;
+  padding: 30px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.vip-hero h1 {
+  max-width: 720px;
+  margin: 0;
+  font-size: 32px;
+  line-height: 1.2;
+}
+
+.vip-hero p:not(.eyebrow) {
+  max-width: 760px;
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 16px;
+}
+
+.vip-account {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-soft);
+}
+
+.vip-account dl {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.vip-account div {
+  min-width: 0;
+}
+
+.vip-account dt,
+.vip-account dd {
+  margin: 0;
+}
+
+.vip-account dt {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.vip-account dd {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 900;
+}
+
+.vip-message {
+  margin-bottom: 18px;
+  padding: 13px 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 800;
+}
+
+.vip-message.success {
+  border-color: rgba(4, 120, 87, 0.28);
+  background: #edf8f3;
+  color: var(--accent);
+}
+
+.vip-message.error {
+  border-color: rgba(180, 35, 24, 0.28);
+  background: #fff1f0;
+  color: var(--danger);
+}
+
+.vip-message a {
+  margin-left: 10px;
+  color: var(--primary);
+}
+
+.vip-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  align-items: stretch;
+}
+
+.vip-plan {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.vip-plan.current {
+  border-color: rgba(29, 78, 216, 0.36);
+  box-shadow: 0 14px 32px rgba(29, 78, 216, 0.08);
+}
+
+.plan-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.plan-icon,
+.plan-symbol {
+  width: 54px;
+  height: 54px;
+  border-radius: 8px;
+}
+
+.plan-icon {
+  border: 1px solid var(--line);
+  object-fit: cover;
+}
+
+.plan-symbol {
+  display: grid;
+  place-items: center;
+  background: #eef4ff;
+  color: var(--primary);
+  font-weight: 900;
+}
+
+.plan-head h2 {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 20px;
+}
+
+.plan-head span {
+  display: block;
+  overflow: hidden;
+  color: var(--muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.plan-price {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  margin-bottom: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.plan-price strong {
+  overflow-wrap: anywhere;
+  color: var(--primary);
+  font-size: 34px;
+  line-height: 1;
+}
+
+.plan-price span {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.feature-list {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 22px;
+  padding: 0;
+  list-style: none;
+}
+
+.feature-list li {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.feature-list span {
+  color: var(--muted);
+}
+
+.feature-list strong {
+  overflow-wrap: anywhere;
+  text-align: right;
+}
+
+.plan-buy {
+  width: 100%;
+  margin-top: auto;
+}
+
+.plan-buy:disabled,
+.modal-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.68;
+}
+
+.vip-faq {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.vip-faq article {
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.vip-faq h2 {
+  margin: 0 0 10px;
+  font-size: 18px;
+}
+
+.vip-faq p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
 body.sidebar-open {
   overflow: hidden;
 }
@@ -708,7 +959,9 @@ body.sidebar-open {
   }
 
   .dashboard-grid,
-  .dashboard-grid.three {
+  .dashboard-grid.three,
+  .vip-grid,
+  .vip-faq {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -747,13 +1000,16 @@ body.sidebar-open {
     width: min(100% - 32px, 1280px);
   }
 
-  .hero-panel {
+  .hero-panel,
+  .vip-hero {
     grid-template-columns: 1fr;
     padding: 24px;
   }
 
   .dashboard-grid,
-  .dashboard-grid.three {
+  .dashboard-grid.three,
+  .vip-grid,
+  .vip-faq {
     grid-template-columns: 1fr;
   }
 }
@@ -793,8 +1049,21 @@ body.sidebar-open {
     font-size: 26px;
   }
 
-  .account-panel {
+  .account-panel,
+  .vip-account {
     grid-template-columns: 1fr;
+  }
+
+  .vip-hero h1 {
+    font-size: 26px;
+  }
+
+  .plan-price strong {
+    font-size: 28px;
+  }
+
+  .modal-actions {
+    flex-direction: column-reverse;
   }
 
   .metric-grid {
